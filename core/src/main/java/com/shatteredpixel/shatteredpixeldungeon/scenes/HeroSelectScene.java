@@ -380,6 +380,12 @@ public class HeroSelectScene extends PixelScene {
 							new ItemSprite(ItemSpriteSheet.GLOVES, null)
 					};
 					break;
+				case HERETIC:
+					tabIcons = new Image[]{
+							Icons.get(Icons.HERETIC),
+							new ItemSprite(ItemSpriteSheet.BONE_BLADE, null)
+					};
+					break;
 			}
 
 			tab = new IconTab( tabIcons[0] ){

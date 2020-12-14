@@ -25,11 +25,15 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfAquaticRejuvenation;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Corrosion extends Armor.Glyph {
 
@@ -44,6 +48,11 @@ public class Corrosion extends Armor.Glyph {
 				Splash.at(pos+i, 0x000000, 5);
 				if (Actor.findChar(pos+i) != null)
 					Buff.affect(Actor.findChar(pos+i), Ooze.class).set( Ooze.DURATION );
+			}
+
+			if (hero.heroClass == HeroClass.HERETIC){
+				int pow = Random.NormalIntRange(1+armor.buffedLvl(), 2*armor.buffedLvl());
+				Buff.affect(hero, ElixirOfAquaticRejuvenation.AquaHealing.class).set(pow);
 			}
 		}
 

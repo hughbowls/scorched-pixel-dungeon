@@ -34,10 +34,15 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -61,6 +66,7 @@ import java.util.ArrayList;
 public abstract class Wand extends Item {
 
 	public static final String AC_ZAP	= "ZAP";
+	public static final String AC_CURSE	= "CURSE";
 
 	private static final float TIME_TO_ZAP	= 1f;
 	
@@ -92,6 +98,9 @@ public abstract class Wand extends Item {
 		if (curCharges > 0 || !curChargeKnown) {
 			actions.add( AC_ZAP );
 		}
+		if (hero.heroClass == HeroClass.HERETIC) {
+			actions.add( AC_CURSE );
+		}
 
 		return actions;
 	}
@@ -107,6 +116,25 @@ public abstract class Wand extends Item {
 			curItem = this;
 			GameScene.selectCell( zapper );
 			
+		}
+
+		else if (action.equals( AC_CURSE )) {
+
+			if (!isIdentified()) {
+				GLog.w(Messages.get(this, "heretic_fail_curse"));
+			} else {
+				cursed = true;
+
+				GLog.p( Messages.get(this, "heretic_wand_curse", this.name()));
+				hero.spend(1f);
+				hero.busy();
+
+				hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				Sample.INSTANCE.play( Assets.Sounds.CURSED );
+				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+
+				updateQuickslot();
+			}
 		}
 	}
 

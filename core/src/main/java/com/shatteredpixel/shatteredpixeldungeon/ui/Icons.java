@@ -64,7 +64,8 @@ public enum Icons {
 	MAGE,
 	ROGUE,
 	HUNTRESS,
-	
+	HERETIC,
+
 	//main menu icons
 	ENTER,
 	GOLD,
@@ -187,6 +188,9 @@ public enum Icons {
 		case HUNTRESS:
 			icon.frame( icon.texture.uvRect( 64, 48, 80, 64 ) );
 			break;
+		case HERETIC:
+			icon.frame( icon.texture.uvRect( 80, 48, 92, 56 ) );
+			break;
 		
 		case ENTER:
 			icon.frame( icon.texture.uvRect( 0, 64, 16, 80 ) );
@@ -256,6 +260,8 @@ public enum Icons {
 			return get( ROGUE );
 		case HUNTRESS:
 			return get( HUNTRESS );
+		case HERETIC:
+			return get( HERETIC );
 		default:
 			return null;
 		}

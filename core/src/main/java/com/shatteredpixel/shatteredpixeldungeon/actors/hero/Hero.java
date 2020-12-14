@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
@@ -63,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
@@ -97,6 +99,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Flail;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -221,6 +224,10 @@ public class Hero extends Char {
 		AdrenalineSurge buff = buff(AdrenalineSurge.class);
 		if (buff != null){
 			STR += buff.boost();
+		}
+
+		if (isStarving()){
+			STR += pointsInTalent(Talent.ASCETIC);
 		}
 
 		return STR;
@@ -455,6 +462,13 @@ public class Hero extends Char {
 		
 		Blocking.BlockBuff block = buff(Blocking.BlockBuff.class);
 		if (block != null)              dr += block.blockingRoll();
+
+		if (hasTalent(Talent.MALEVOLENT_ARMOR)){
+			if (belongings.armor != null && (belongings.armor.cursed
+					|| ((Armor)belongings.armor).hasCurseGlyph()))
+				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dr += 1;
+				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dr += 3;
+		}
 		
 		return dr;
 	}
@@ -1084,6 +1098,12 @@ public class Hero extends Char {
 				});
 			}
 			break;
+		case BLOODKNIGHT:
+			if (wep instanceof MeleeWeapon && ((MeleeWeapon)wep).hasCurseEnchant()){
+				if (enemy.isAlive() && Random.Int(3) == 0)
+					Buff.affect(enemy, Bleeding.class).set( Math.round(damage*0.25f) );
+			}
+			break;
 		default:
 		}
 		
@@ -1141,6 +1161,15 @@ public class Hero extends Char {
 		if (belongings.armor != null && belongings.armor.hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
 			dmg -= AntiMagic.drRoll(belongings.armor.buffedLvl());
+		}
+
+		if (hasTalent(Talent.MALEVOLENT_ARMOR) && AntiMagic.RESISTS.contains(src.getClass())){
+			if (hasTalent(Talent.MALEVOLENT_ARMOR)){
+				if (belongings.armor != null && (belongings.armor.cursed
+						|| ((Armor)belongings.armor).hasCurseGlyph()))
+					if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dmg -= 1;
+				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dmg -= 3;
+			}
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){

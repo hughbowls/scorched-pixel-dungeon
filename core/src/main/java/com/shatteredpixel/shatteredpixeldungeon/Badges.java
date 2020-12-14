@@ -585,7 +585,7 @@ public class Badges {
 			
 			if (badge == Badge.BOSS_SLAIN_1) {
 				switch (Dungeon.hero.heroClass) {
-				case WARRIOR:
+				case WARRIOR: default:
 					badge = Badge.BOSS_SLAIN_1_WARRIOR;
 					break;
 				case MAGE:
@@ -676,7 +676,7 @@ public class Badges {
 		
 		Badge badge = null;
 		switch (Dungeon.hero.heroClass) {
-		case WARRIOR:
+		case WARRIOR: default:
 			badge = Badge.MASTERY_WARRIOR;
 			break;
 		case MAGE:
@@ -728,7 +728,7 @@ public class Badges {
 		displayBadge( badge );
 
 		switch (Dungeon.hero.heroClass) {
-		case WARRIOR:
+		case WARRIOR: default:
 			badge = Badge.VICTORY_WARRIOR;
 			break;
 		case MAGE:

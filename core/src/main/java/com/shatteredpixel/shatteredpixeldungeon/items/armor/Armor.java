@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
@@ -71,6 +72,8 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Armor extends EquipableItem {
 
@@ -469,6 +472,10 @@ public class Armor extends EquipableItem {
 		if (glyph != null  && (cursedKnown || !glyph.curse())) {
 			info += "\n\n" +  Messages.get(Armor.class, "inscribed", glyph.name());
 			info += " " + glyph.desc();
+
+			if (hero.heroClass == HeroClass.HERETIC && hasCurseGlyph()){
+				info += "\n- " + Messages.get(glyph, "heretic_desc");
+			}
 		}
 		
 		if (cursed && isEquipped( Dungeon.hero )) {

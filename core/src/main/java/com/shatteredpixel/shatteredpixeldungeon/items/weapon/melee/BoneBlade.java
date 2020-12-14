@@ -19,45 +19,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
+package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.watabou.utils.Random;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
+public class BoneBlade extends MeleeWeapon {
+	
+	{
+		image = ItemSpriteSheet.BONE_BLADE;
+		hitSound = Assets.Sounds.HIT_STAB;
+		hitSoundPitch = 0.9f;
 
-public class Sacrificial extends Weapon.Enchantment {
-
-	private static ItemSprite.Glowing BLACK = new ItemSprite.Glowing( 0x000000 );
+		tier = 1;
+		
+		bones = false;
+	}
 
 	@Override
-	public int proc(Weapon weapon, Char attacker, Char defender, int damage ) {
+	public int max(int lvl) {
+		return  4*(tier+1) +    //8 base damage, down from 10
+				lvl*(tier+1);   //scaling unaffected
+	}
 
-		if (Random.Int(12) == 0){
-			Buff.affect(attacker, Bleeding.class).set(Math.max(1, attacker.HP/6));
-
-			if (hero.heroClass == HeroClass.HERETIC){
-				int pow = (int) (Random.NormalFloat(weapon.buffedLvl()*0.25f, weapon.buffedLvl()*0.75f));
-				damage += Math.max(1, attacker.HP/6)*pow;
+	@Override
+	public int proc( Char attacker, Char defender, int damage ) {
+		if (attacker instanceof Hero) {
+			Hero hero = (Hero)attacker;
+			Char enemy = hero.enemy();
+			if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
+				Buff.affect( defender, Bleeding.class ).set( Math.round( 1f+(damage*0.6f)) );
 			}
 		}
-
-		return damage;
-	}
-
-	@Override
-	public boolean curse() {
-		return true;
-	}
-
-	@Override
-	public ItemSprite.Glowing glowing() {
-		return BLACK;
+		return super.proc( attacker, defender, damage );
 	}
 
 }

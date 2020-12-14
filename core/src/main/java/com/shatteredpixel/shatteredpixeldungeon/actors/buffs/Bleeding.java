@@ -22,7 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -37,73 +40,82 @@ public class Bleeding extends Buff {
 		type = buffType.NEGATIVE;
 		announced = true;
 	}
-	
+
 	protected float level;
 
 	public float level(){
 		return level;
 	}
-	
+
 	private static final String LEVEL	= "level";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( LEVEL, level );
-		
+
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		level = bundle.getFloat( LEVEL );
 	}
-	
+
 	public void set( float level ) {
 		this.level = Math.max(this.level, level);
 	}
-	
+
 	@Override
 	public int icon() {
 		return BuffIndicator.BLEEDING;
 	}
-	
+
 	@Override
 	public String toString() {
 		return Messages.get(this, "name");
 	}
-	
+
 	@Override
 	public boolean act() {
 		if (target.isAlive()) {
-			
+
+			if (target != Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.BLOODKNIGHT){
+				Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, TICK).charID = target.id();
+			}
+
 			level = NormalFloat(level / 2f, level);
 			int dmg = Math.round(level);
-			
+
 			if (dmg > 0) {
-				
+
 				target.damage( dmg, this );
 				if (target.sprite.visible) {
 					Splash.at( target.sprite.center(), -PointF.PI / 2, PointF.PI / 6,
 							target.sprite.blood(), Math.min( 10 * dmg / target.HT, 10 ) );
 				}
-				
+
 				if (target == Dungeon.hero && !target.isAlive()) {
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "ondeath") );
 				}
-				
+
+				if (target != Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.BLOODKNIGHT){
+					Dungeon.hero.HP = Math.min(Dungeon.hero.HP+dmg, Dungeon.hero.HT);
+					Dungeon.hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				}
+
 				spend( TICK );
 			} else {
 				detach();
 			}
-			
+
 		} else {
-			
+
 			detach();
-			
+
 		}
-		
+
 		return true;
 	}
 

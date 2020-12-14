@@ -21,13 +21,21 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Stench extends Armor.Glyph {
 
@@ -39,6 +47,16 @@ public class Stench extends Armor.Glyph {
 		if ( Random.Int( 8 ) == 0) {
 
 			GameScene.add( Blob.seed( defender.pos, 250, ToxicGas.class ) );
+
+			if (hero.heroClass == HeroClass.HERETIC){
+				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+					float pow = 3f + Random.NormalFloat(armor.buffedLvl()*0.33f, armor.buffedLvl()*0.66f);
+					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+						Buff.affect(mob, Paralysis.class, pow);
+						mob.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+					}
+				}
+			}
 
 		}
 

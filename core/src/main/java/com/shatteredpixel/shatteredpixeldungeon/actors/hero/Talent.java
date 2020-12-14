@@ -25,19 +25,36 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BloodParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PoisonParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -104,12 +121,23 @@ public enum Talent {
 	RESTORED_NATURE(53),
 	REJUVENATING_STEPS(54),
 	HEIGHTENED_SENSES(55),
-	DURABLE_PROJECTILES(56);
+	DURABLE_PROJECTILES(56),
+
+	BUTCHERY(64),
+	ACCURSEDS_INTUITION(65),
+	KNOWLEDGE_IS_POWER(66),
+	MALEVOLENT_ARMOR(67),
+	ASCETIC(68),
+	TRANSFER_HARM(69),
+	ENHANCED_CURSE(70),
+	CHAOS_ADEPT(71),
+	WRAITH_DECEPTION(72);
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class RejuvenatingStepsCooldown extends FlavourBuff{};
+	public static class TransferHarmCooldown extends FlavourBuff{};
 
 	int icon;
 
@@ -142,6 +170,10 @@ public enum Talent {
 			else                                           Buff.count(hero, NatureBerriesAvailable.class, 2);
 		}
 
+		if (talent == BUTCHERY && hero.pointsInTalent(BUTCHERY) == 0){
+			Buff.count(hero, ButcheryMeatAvailable.class, 4);
+		}
+
 		if (talent == ARMSMASTERS_INTUITION && hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2){
 			if (hero.belongings.weapon != null) hero.belongings.weapon.identify();
 			if (hero.belongings.armor != null)  hero.belongings.armor.identify();
@@ -159,10 +191,16 @@ public enum Talent {
 			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.setKnown();
 			if (hero.belongings.misc instanceof Ring) ((Ring) hero.belongings.misc).setKnown();
 		}
+		if (hero.hasTalent(ACCURSEDS_INTUITION)){
+			for (Item item : Dungeon.hero.belongings){
+				item.cursedKnown = true;
+			}
+		}
 	}
 
 	public static class CachedRationsDropped extends CounterBuff{};
 	public static class NatureBerriesAvailable extends CounterBuff{};
+	public static class ButcheryMeatAvailable extends CounterBuff{};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL)){
@@ -220,6 +258,10 @@ public enum Talent {
 		if (item instanceof Ring){
 			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION);
 		}
+
+		// curseID/3x for heretic talent
+		if (hero.pointsInTalent(ACCURSEDS_INTUITION) == 2) factor *= 3f;
+
 		return factor;
 	}
 
@@ -304,6 +346,9 @@ public enum Talent {
 		if (hero.pointsInTalent(THIEFS_INTUITION) == 2){
 			if (item instanceof Ring) ((Ring) item).setKnown();
 		}
+		if (hero.hasTalent(ACCURSEDS_INTUITION)){
+			item.cursedKnown = true;
+		}
 	}
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
@@ -318,6 +363,10 @@ public enum Talent {
 			//2/3 turns of wand recharging
 			Buff.affect(hero, Recharging.class, 1f + hero.pointsInTalent(TESTED_HYPOTHESIS));
 			ScrollOfRecharging.charge(hero);
+		}
+		if (hero.hasTalent(KNOWLEDGE_IS_POWER)){
+			//15/20 turns of adrenaline surge with 1 boost
+			Buff.affect(hero, AdrenalineSurge.class).add(1, 10f + 5f*(float)hero.pointsInTalent(KNOWLEDGE_IS_POWER));
 		}
 	}
 
@@ -338,6 +387,63 @@ public enum Talent {
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 				}
 				enemy.buff(FollowupStrikeTracker.class).detach();
+			}
+		}
+
+		if (hero.hasTalent(Talent.TRANSFER_HARM)
+				&& enemy instanceof Mob
+				&& hero.belongings.weapon instanceof MeleeWeapon
+				&& ((MeleeWeapon)hero.belongings.weapon).hasCurseEnchant()
+				&& hero.buff(TransferHarmCooldown.class) == null
+				&& (hero.buff(Poison.class) != null || hero.buff(Cripple.class) != null
+				|| hero.buff(Weakness.class) != null || hero.buff(Vulnerable.class) != null
+				|| hero.buff(Hex.class) != null || hero.buff(Bleeding.class) != null
+				|| hero.buff(Slow.class) != null || hero.buff(Vertigo.class) != null
+				|| hero.buff(Burning.class) != null || hero.buff(Chill.class) != null
+				|| hero.buff(Ooze.class) != null || hero.buff(Roots.class) != null
+				|| hero.buff(Blindness.class) != null)){
+
+			enemy.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+			Buff.affect(hero, Talent.TransferHarmCooldown.class, 15f);
+
+			if (hero.buff(Poison.class) != null) {
+				Buff.affect(enemy, Poison.class).set(Math.round(dmg * 0.6f));
+				CellEmitter.center( enemy.pos ).burst( PoisonParticle.SPLASH, 3 );
+			} if (hero.buff(Cripple.class) != null) { Buff.affect( enemy, Cripple.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Weakness.class) != null) { Buff.affect( enemy, Weakness.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Vulnerable.class) != null) { Buff.affect( enemy, Vulnerable.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Hex.class) != null) { Buff.affect( enemy, Hex.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Bleeding.class) != null) {
+				Buff.affect(enemy, Bleeding.class).set(Math.round(dmg * 0.6f));
+				CellEmitter.center( enemy.pos ).burst( BloodParticle.BURST, 3 );
+			} if (hero.buff(Slow.class) != null) { Buff.affect( enemy, Slow.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Vertigo.class) != null) { Buff.affect( enemy, Vertigo.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Burning.class) != null) {
+				Buff.affect(enemy, Burning.class).reignite( enemy );
+				Splash.at( enemy.sprite.center(), 0xFFBB0000, 5);
+			} if (hero.buff(Chill.class) != null) {
+				Buff.affect( enemy, Chill.class, Math.round(dmg*0.6f));
+				Splash.at( enemy.sprite.center(), 0xFFB2D6FF, 5);
+			} if (hero.buff(Ooze.class) != null) {
+				Buff.affect(enemy, Ooze.class).set(Math.round(dmg * 0.6f));
+				enemy.sprite.burst( 0x000000, 5 );
+			} if (hero.buff(Roots.class) != null) { Buff.affect( enemy, Roots.class, Math.round(dmg*0.6f)); }
+			if (hero.buff(Blindness.class) != null) { Buff.affect( enemy, Blindness.class, Math.round(dmg*0.6f)); }
+
+			if (hero.pointsInTalent(Talent.TRANSFER_HARM) == 2){
+				hero.buff(Poison.class).detach();			//
+				hero.buff(Cripple.class).detach();			//
+				hero.buff(Weakness.class).detach();			//
+				hero.buff(Vulnerable.class).detach();		//
+				hero.buff(Hex.class).detach();				//
+				hero.buff(Bleeding.class).detach();			//
+				hero.buff(Slow.class).detach();				//
+				hero.buff(Vertigo.class).detach();			//
+				hero.buff(Burning.class).detach();			//
+				hero.buff(Chill.class).detach();			//
+				hero.buff(Ooze.class).detach();				//
+				hero.buff(Roots.class).detach();			//
+				hero.buff(Blindness.class).detach();		//
 			}
 		}
 
@@ -374,6 +480,9 @@ public enum Talent {
 			case HUNTRESS:
 				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
 				break;
+			case HERETIC:
+				Collections.addAll(tierTalents, BUTCHERY, ACCURSEDS_INTUITION, KNOWLEDGE_IS_POWER, MALEVOLENT_ARMOR);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			talents.get(0).put(talent, 0);
@@ -393,6 +502,9 @@ public enum Talent {
 				break;
 			case HUNTRESS:
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, RESTORED_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
+				break;
+			case HERETIC:
+				Collections.addAll(tierTalents, ASCETIC, TRANSFER_HARM, ENHANCED_CURSE, CHAOS_ADEPT, WRAITH_DECEPTION);
 				break;
 		}
 		for (Talent talent : tierTalents){

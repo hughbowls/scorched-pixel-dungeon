@@ -26,14 +26,18 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SnowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor.Glyph;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite.Glowing;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class AntiEntropy extends Glyph {
 
@@ -52,6 +56,10 @@ public class AntiEntropy extends Glyph {
 			Buff.affect( defender, Burning.class ).reignite( defender );
 			defender.sprite.emitter().burst( FlameParticle.FACTORY, 5 );
 
+			if (hero.heroClass == HeroClass.HERETIC){
+				float pow = Random.NormalFloat(2f, (float)armor.buffedLvl()+2f);
+				Buff.affect(defender, Swiftthistle.TimeBubble.class).add(pow);
+			}
 		}
 		
 		return damage;

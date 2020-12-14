@@ -207,6 +207,7 @@ public class Assets {
 		public static final String MAGE		= "splashes/mage.jpg";
 		public static final String ROGUE	= "splashes/rogue.jpg";
 		public static final String HUNTRESS	= "splashes/huntress.jpg";
+		public static final String HERETIC	= "splashes/heretic.jpg";
 	}
 
 	public static class Sprites {
@@ -273,5 +274,7 @@ public class Assets {
 		public static final String PYLON	= "sprites/pylon.png";
 		public static final String DM200	= "sprites/dm200.png";
 		public static final String LOTUS	= "sprites/lotus.png";
+		public static final String HERETIC  = "sprites/heretic.png";
+		public static final String HERETIC_SUMMON  = "sprites/heretic_summon.png";
 	}
 }

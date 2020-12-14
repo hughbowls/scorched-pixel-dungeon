@@ -21,10 +21,19 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Polarized extends Weapon.Enchantment {
 	
@@ -36,6 +45,17 @@ public class Polarized extends Weapon.Enchantment {
 		if (Random.Int(2) == 0){
 			return Math.round(1.5f*damage);
 		} else {
+
+			if (hero.heroClass == HeroClass.HERETIC){
+				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+					float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+						Buff.affect(mob, Weakness.class, pow);
+						mob.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+					}
+				}
+			}
+
 			return 0;
 		}
 		

@@ -24,10 +24,16 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Friendly extends Weapon.Enchantment {
 	
@@ -45,6 +51,12 @@ public class Friendly extends Weapon.Enchantment {
 			c.ignoreNextHit = true;
 			c.object = attacker.id();
 			defender.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 5 );
+
+			if (hero.heroClass == HeroClass.HERETIC){
+				float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+				Buff.prolong(defender, StoneOfAggression.Aggression.class, pow);
+				defender.sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.3f, 3 );
+			}
 			
 		}
 		

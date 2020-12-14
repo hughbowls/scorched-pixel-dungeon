@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor.Glyph;
@@ -32,6 +33,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite.Glowing;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Metabolism extends Glyph {
 
@@ -52,6 +55,11 @@ public class Metabolism extends Glyph {
 				if (!hunger.isStarving()) {
 					
 					hunger.affectHunger( healing * -10 );
+
+					if (hero.heroClass == HeroClass.HERETIC){
+						int pow = (int)(armor.buffedLvl()*0.5f);
+						healing = Math.max( healing, Random.NormalIntRange(healing*pow+1, healing*(pow+1)*2));
+					}
 					
 					defender.HP += healing;
 					defender.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );

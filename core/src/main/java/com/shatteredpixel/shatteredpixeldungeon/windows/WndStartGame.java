@@ -51,7 +51,7 @@ import com.watabou.utils.DeviceCompat;
 
 public class WndStartGame extends Window {
 	
-	private static final int WIDTH    = 120;
+	private static final int WIDTH    = 124;
 	private static final int HEIGHT   = 140;
 
 	public WndStartGame(final int slot){
@@ -65,7 +65,7 @@ public class WndStartGame extends Window {
 		PixelScene.align(title);
 		add(title);
 		
-		float heroBtnSpacing = (WIDTH - 4*HeroBtn.WIDTH)/5f;
+		float heroBtnSpacing = (WIDTH - 5*HeroBtn.WIDTH)/5f;
 		
 		float curX = heroBtnSpacing;
 		for (HeroClass cl : HeroClass.values()){
@@ -331,6 +331,11 @@ public class WndStartGame extends Window {
 							heroItem.icon(new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null));
 							heroLoadout.icon(new ItemSprite(ItemSpriteSheet.GLOVES, null));
 							heroMisc.icon(new Image(Assets.Environment.TILES_SEWERS, 112, 96, 16, 16 ));
+							break;
+						case HERETIC:
+							heroItem.icon(new ItemSprite(ItemSpriteSheet.CANDLE, null));
+							heroLoadout.icon(new ItemSprite(ItemSpriteSheet.BONE_BLADE, null));
+							heroMisc.icon(new Image(Assets.Environment.TILES_HALLS, 0, 96, 16, 16 ));
 							break;
 					}
 					

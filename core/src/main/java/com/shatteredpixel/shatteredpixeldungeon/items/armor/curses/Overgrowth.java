@@ -21,9 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -32,6 +37,8 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Overgrowth extends Armor.Glyph {
 	
@@ -57,7 +64,16 @@ public class Overgrowth extends Armor.Glyph {
 			} else {
 				p.activate( defender );
 			}
-			
+
+			if (hero.heroClass == HeroClass.HERETIC){
+				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+					float pow = 5f + Random.NormalFloat(armor.buffedLvl()*0.5f, armor.buffedLvl()*1.5f);
+					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+						Buff.affect(mob, Roots.class, pow);
+						CellEmitter.get( mob.pos ).burst( LeafParticle.LEVEL_SPECIFIC, 10 );
+					}
+				}
+			}
 			
 			CellEmitter.get( defender.pos ).burst( LeafParticle.LEVEL_SPECIFIC, 10 );
 			

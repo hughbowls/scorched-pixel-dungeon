@@ -22,9 +22,17 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Fragile extends Weapon.Enchantment {
 
@@ -36,6 +44,28 @@ public class Fragile extends Weapon.Enchantment {
 		//degrades from 100% to 25% damage over 150 hits
 		damage *= (1f - hits*0.005f);
 		if (hits < 150) hits++;
+
+		if (hero.heroClass == HeroClass.HERETIC){
+
+			int enemyHealth = defender.HP - damage;
+			if (enemyHealth <= 0) return damage; //no point in proccing if they're already dead.
+
+			// BaseMax at 150 hits = 25%, +2% per lvl
+			int chanceGrim = (int) (0.1f+(hits*0.166f)) + (int) (weapon.buffedLvl()*2f);
+			if (Random.Int( 100 ) <= chanceGrim){
+				defender.damage( defender.HP, Grim.class );
+				defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				hits = Math.max(0, hits-30);
+
+			} else {
+				// BaseMax at 150 hits = 40%, +2.5% per lvl
+				int chanceDoom = (int) (1f+(hits*0.26f)) + (int) (weapon.buffedLvl()*2.5f);
+				if (Random.Int( 100 ) <= chanceDoom){
+					Buff.affect(defender, Doom.class);
+					defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				}
+			}
+		}
 		return damage;
 	}
 

@@ -56,7 +56,7 @@ abstract public class ClassArmor extends Armor {
 		ClassArmor classArmor = null;
 		
 		switch (owner.heroClass) {
-		case WARRIOR:
+		case WARRIOR: default:
 			classArmor = new WarriorArmor();
 			BrokenSeal seal = armor.checkSeal();
 			if (seal != null) {
@@ -71,6 +71,9 @@ abstract public class ClassArmor extends Armor {
 			break;
 		case HUNTRESS:
 			classArmor = new HuntressArmor();
+			break;
+		case HERETIC:
+			classArmor = new HereticArmor();
 			break;
 		}
 		

@@ -21,12 +21,19 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Displacement extends Armor.Glyph {
 
@@ -37,6 +44,12 @@ public class Displacement extends Armor.Glyph {
 
 		if (defender == Dungeon.hero && Random.Int(20) == 0){
 			ScrollOfTeleportation.teleportHero(Dungeon.hero);
+
+			if (hero.heroClass == HeroClass.HERETIC) {
+				float pow = 5f + Random.NormalFloat(armor.buffedLvl()*0.5f, armor.buffedLvl()*1.5f);
+				Buff.affect(hero, Invisibility.class, pow);
+				Sample.INSTANCE.play(Assets.Sounds.MELD);
+			}
 			return 0;
 		}
 

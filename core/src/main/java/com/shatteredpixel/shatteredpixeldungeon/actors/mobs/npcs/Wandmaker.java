@@ -141,7 +141,7 @@ public class Wandmaker extends NPC {
 			String msg1 = "";
 			String msg2 = "";
 			switch(Dungeon.hero.heroClass){
-				case WARRIOR:
+				case WARRIOR: default:
 					msg1 += Messages.get(this, "intro_warrior");
 					break;
 				case ROGUE:
@@ -152,6 +152,9 @@ public class Wandmaker extends NPC {
 					break;
 				case HUNTRESS:
 					msg1 += Messages.get(this, "intro_huntress");
+					break;
+				case HERETIC:
+					msg1 += Messages.get(this, "intro_heretic");
 					break;
 			}
 

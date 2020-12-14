@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
@@ -37,17 +38,21 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BoneBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.BlindPowder;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -59,7 +64,8 @@ public enum HeroClass {
 	WARRIOR( "warrior", HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
 	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
 	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
-	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN );
+	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
+	HERETIC("heretic", HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT);
 
 	private String title;
 	private HeroSubClass[] subClasses;
@@ -92,6 +98,10 @@ public enum HeroClass {
 			case HUNTRESS:
 				initHuntress( hero );
 				break;
+
+			case HERETIC:
+				initCultist( hero );
+				break;
 		}
 
 	}
@@ -110,6 +120,7 @@ public enum HeroClass {
 	public Badges.Badge masteryBadge() {
 		switch (this) {
 			case WARRIOR:
+			case HERETIC:
 				return Badges.Badge.MASTERY_WARRIOR;
 			case MAGE:
 				return Badges.Badge.MASTERY_MAGE;
@@ -190,6 +201,24 @@ public enum HeroClass {
 		new ScrollOfLullaby().identify();
 	}
 
+	private static void initCultist( Hero hero ) {
+
+		(hero.belongings.weapon = new BoneBlade()).identify();
+
+		BlindPowder powders = new BlindPowder();
+		powders.quantity(5).collect();
+
+		Dungeon.quickslot.setSlot(0, powders);
+
+		new ScrollHolder().collect();
+		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+
+		new ScrollOfRemoveCurse().identify();
+		new PotionOfPurity().identify();
+
+		new TomeOfMastery().collect();
+	}
+
 	public String title() {
 		return Messages.get(HeroClass.class, title);
 	}
@@ -208,6 +237,8 @@ public enum HeroClass {
 				return Assets.Sprites.ROGUE;
 			case HUNTRESS:
 				return Assets.Sprites.HUNTRESS;
+			case HERETIC:
+				return Assets.Sprites.HERETIC;
 		}
 	}
 
@@ -221,6 +252,8 @@ public enum HeroClass {
 				return Assets.Splashes.ROGUE;
 			case HUNTRESS:
 				return Assets.Splashes.HUNTRESS;
+			case HERETIC:
+				return Assets.Splashes.HERETIC;
 		}
 	}
 	
@@ -257,6 +290,14 @@ public enum HeroClass {
 						Messages.get(HeroClass.class, "huntress_perk3"),
 						Messages.get(HeroClass.class, "huntress_perk4"),
 						Messages.get(HeroClass.class, "huntress_perk5"),
+				};
+			case HERETIC:
+				return new String[]{
+						Messages.get(HeroClass.class, "heretic_perk1"),
+						Messages.get(HeroClass.class, "heretic_perk2"),
+						Messages.get(HeroClass.class, "heretic_perk3"),
+						Messages.get(HeroClass.class, "heretic_perk4"),
+						Messages.get(HeroClass.class, "heretic_perk5"),
 				};
 		}
 	}

@@ -26,7 +26,13 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -37,6 +43,7 @@ public abstract class EquipableItem extends Item {
 
 	public static final String AC_EQUIP		= "EQUIP";
 	public static final String AC_UNEQUIP	= "UNEQUIP";
+	public static final String AC_CURSE	    = "CURSE";
 
 	{
 		bones = true;
@@ -46,6 +53,11 @@ public abstract class EquipableItem extends Item {
 	public ArrayList<String> actions(Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
 		actions.add( isEquipped( hero ) ? AC_UNEQUIP : AC_EQUIP );
+		if (hero.heroClass == HeroClass.HERETIC
+				&& (this instanceof MeleeWeapon || this instanceof Armor)
+				&& !(this instanceof MissileWeapon)) {
+			actions.add( AC_CURSE );
+		}
 		return actions;
 	}
 
@@ -65,6 +77,97 @@ public abstract class EquipableItem extends Item {
 			}
 		} else if (action.equals( AC_UNEQUIP )) {
 			doUnequip( hero, true );
+
+		} else if (action.equals( AC_CURSE )) {
+
+			if (!isEquipped( hero )) {
+				GLog.w(Messages.get(this, "heretic_need_equip"));
+			} else if (!isIdentified()) {
+				GLog.w(Messages.get(this, "heretic_fail_curse"));
+			} else {
+
+			if (this instanceof MeleeWeapon) {
+				Weapon w = (Weapon) this;
+				if (w.hasCurseEnchant()) {
+					if (hero.pointsInTalent(Talent.ENHANCED_CURSE) == 2){
+						w.enchant(Weapon.Enchantment.randomCurse(w.enchantment.getClass()));
+						GLog.p( Messages.get(this, "heretic_weapon_curse", w.name()));
+						hero.spend( 1f );
+						hero.busy();
+
+						hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+						Sample.INSTANCE.play(Assets.Sounds.CURSED);
+						Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+
+						updateQuickslot();
+					} else GLog.w(Messages.get(this, "heretic_fail_curse"));
+
+				} else {
+					cursed = true;
+					if (w.enchantment != null) {
+					    w.enchant(Weapon.Enchantment.randomCurse(w.enchantment.getClass()));
+					} else {
+						w.enchant(Weapon.Enchantment.randomCurse());
+				    }
+
+					GLog.p( Messages.get(this, "heretic_weapon_curse", w.name()));
+					hero.spend( 1f );
+					hero.busy();
+
+					hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+					Sample.INSTANCE.play(Assets.Sounds.CURSED);
+					Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+
+					updateQuickslot();
+			    }
+			} else if (this instanceof Armor){
+				Armor a = (Armor) this;
+				if (a.hasCurseGlyph()) {
+					if (hero.pointsInTalent(Talent.ENHANCED_CURSE) == 2){
+						a.inscribe(Armor.Glyph.randomCurse(a.glyph.getClass()));
+						GLog.p( Messages.get(this, "heretic_armor_curse", a.name()));
+						hero.spend( 1f );
+						hero.busy();
+
+						hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+						Sample.INSTANCE.play(Assets.Sounds.CURSED);
+						Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+
+						updateQuickslot();
+					}
+					else GLog.w(Messages.get(this, "heretic_fail_curse"));
+
+				} else {
+					cursed = true;
+					if (a.glyph != null){
+						a.inscribe(Armor.Glyph.randomCurse(a.glyph.getClass()));
+					} else {
+						a.inscribe(Armor.Glyph.randomCurse());
+					}
+
+					GLog.p( Messages.get(this, "heretic_armor_curse", a.name()));
+					hero.spend( 1f );
+					hero.busy();
+
+					hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+					Sample.INSTANCE.play(Assets.Sounds.CURSED);
+					Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+
+					updateQuickslot();
+				}
+			} else {
+				cursed = true;
+
+				GLog.p( Messages.get(this, "heretic_other_curse", this.name()));
+				hero.spend(1f);
+				hero.busy();
+
+				hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				Sample.INSTANCE.play( Assets.Sounds.CURSED );
+				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+
+				updateQuickslot();
+			} }
 		}
 	}
 

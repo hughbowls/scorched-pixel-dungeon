@@ -24,7 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -33,6 +36,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Annoying extends Weapon.Enchantment {
 
@@ -49,6 +54,15 @@ public class Annoying extends Weapon.Enchantment {
 			Sample.INSTANCE.play(Assets.Sounds.MIMIC);
 			Invisibility.dispel();
 			GLog.n(Messages.get(this, "msg_" + (Random.Int(5)+1)));
+
+			if (hero.heroClass == HeroClass.HERETIC){
+				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+					float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+						Buff.affect(mob, Amok.class, pow);
+					}
+				}
+			}
 		}
 
 		return damage;

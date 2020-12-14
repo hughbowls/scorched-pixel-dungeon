@@ -86,6 +86,10 @@ public class Swiftthistle extends Plant {
 		public void reset(){
 			left = 7f;
 		}
+
+		public void add(float pow){
+			left += pow;
+		}
 		
 		@Override
 		public String toString() {

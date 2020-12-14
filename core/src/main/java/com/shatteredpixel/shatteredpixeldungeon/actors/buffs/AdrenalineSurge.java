@@ -35,10 +35,16 @@ public class AdrenalineSurge extends Buff {
 	
 	private int boost;
 	private float interval;
-	
+
 	public void reset(int boost, float interval){
 		this.boost = boost;
 		this.interval = interval;
+		spend(interval - cooldown());
+	}
+
+	public void add(int boost, float interval){
+		if (this.boost <= boost) this.boost = boost;
+		this.interval += interval;
 		spend(interval - cooldown());
 	}
 	

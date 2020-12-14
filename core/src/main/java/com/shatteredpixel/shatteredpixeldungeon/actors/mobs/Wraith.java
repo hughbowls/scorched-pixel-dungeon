@@ -24,6 +24,9 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WraithSprite;
@@ -112,6 +115,10 @@ public class Wraith extends Mob {
 			w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
 			
 			w.sprite.emitter().burst( ShadowParticle.CURSE, 5 );
+
+			if (Dungeon.hero.hasTalent(Talent.WRAITH_DECEPTION)){
+				Buff.affect(w, Amok.class, 3f*Dungeon.hero.pointsInTalent(Talent.WRAITH_DECEPTION));
+			}
 			
 			return w;
 		} else {

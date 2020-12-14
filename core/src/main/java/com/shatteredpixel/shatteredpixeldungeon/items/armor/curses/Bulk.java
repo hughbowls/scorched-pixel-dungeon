@@ -22,8 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.watabou.utils.Random;
 
 public class Bulk extends Armor.Glyph {
 	
@@ -33,8 +37,16 @@ public class Bulk extends Armor.Glyph {
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
 		
 		//no proc effect, see armor.speedfactor
+
+		if (defender.buff(HereticBulkProc.class) != null){
+			float pow = 5f + Random.NormalFloat(armor.buffedLvl()*0.5f, armor.buffedLvl()*1.5f);
+			Buff.affect(attacker, Terror.class, pow).object = defender.id();
+		}
+
 		return damage;
 	}
+
+	public static class HereticBulkProc extends FlavourBuff {};
 	
 	@Override
 	public ItemSprite.Glowing glowing() {

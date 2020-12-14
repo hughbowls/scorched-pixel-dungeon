@@ -33,13 +33,18 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ParalyticGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Regrowth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
@@ -109,7 +114,9 @@ public class CursedWand {
 			case 2:
 				return rareEffect(origin, user, targetPos);
 			case 3:
-				return veryRareEffect(origin, user, targetPos);
+				if (Dungeon.hero.hasTalent(Talent.CHAOS_ADEPT)){
+					return cursedEffect(origin, user, targetPos);
+				} else return veryRareEffect(origin, user, targetPos);
 		}
 	}
 
@@ -121,9 +128,13 @@ public class CursedWand {
 				Char target = Actor.findChar(targetPos);
 				if (Random.Int(2) == 0) {
 					if (target != null) Buff.affect(target, Burning.class).reignite(target);
-					Buff.affect(user, Frost.class, Frost.DURATION);
+					if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2) {
+						Buff.affect(user, Chill.class, Chill.DURATION);
+					} else Buff.affect(user, Frost.class, Frost.DURATION);
 				} else {
-					Buff.affect(user, Burning.class).reignite(user);
+					if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2) {
+						Buff.affect(user, Burning.class).reignite(user, 4f);
+					} else Buff.affect(user, Burning.class).reignite(user);
 					if (target != null) Buff.affect(target, Frost.class, Frost.DURATION);
 				}
 				return true;
@@ -135,7 +146,18 @@ public class CursedWand {
 
 			//random teleportation
 			case 2:
-				if(Random.Int(2) == 0) {
+				if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2) {
+					Char ch = Actor.findChar( targetPos );
+					if (ch != null && !ch.properties().contains(Char.Property.IMMOVABLE)) {
+						if (ch instanceof Mob) {
+							if (((Mob) ch).state == ((Mob) ch).HUNTING) ((Mob) ch).state = ((Mob) ch).WANDERING;
+							((Mob) ch).beckon(Dungeon.level.randomDestination( ch ));
+						}
+						ScrollOfTeleportation.teleportChar(ch);
+					} else {
+						return cursedEffect(origin, user, targetPos);
+					}
+				} else if (Random.Int(2) == 0) {
 					if (user != null && !user.properties().contains(Char.Property.IMMOVABLE)) {
 						ScrollOfTeleportation.teleportChar(user);
 					} else {
@@ -154,6 +176,9 @@ public class CursedWand {
 			//random gas at location
 			case 3:
 				Sample.INSTANCE.play( Assets.Sounds.GAS );
+				if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2){
+					Buff.affect(user, BlobImmunity.class, 4f);
+				}
 				switch (Random.Int(3)) {
 					case 0: default:
 						GameScene.add( Blob.seed( targetPos, 800, ConfusionGas.class ) );
@@ -200,6 +225,9 @@ public class CursedWand {
 					} else {
 						toHeal = target;
 						toDamage = user;
+						if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2){
+							damage = Math.max(1, damage/2);
+						}
 					}
 					toHeal.HP = Math.min(toHeal.HT, toHeal.HP + damage);
 					toHeal.sprite.emitter().burst(Speck.factory(Speck.HEALING), 3);
@@ -268,15 +296,21 @@ public class CursedWand {
 
 			//curses!
 			case 1:
+				if (Dungeon.hero.hasTalent(Talent.CHAOS_ADEPT)){
+					return cursedEffect(origin, user, targetPos);
+				} else {
 				if (user instanceof Hero) {
 					CursingTrap.curse( (Hero) user );
 				} else {
 					return cursedEffect(origin, user, targetPos);
-				}
+				} }
 				return true;
 
 			//inter-level teleportation
 			case 2:
+				if (Dungeon.hero.hasTalent(Talent.CHAOS_ADEPT)){
+					return cursedEffect(origin, user, targetPos);
+				} else {
 				if (Dungeon.depth > 1 && !Dungeon.bossLevel() && user == Dungeon.hero) {
 
 					//each depth has 1 more weight than the previous depth.
@@ -298,13 +332,16 @@ public class CursedWand {
 				} else {
 					ScrollOfTeleportation.teleportChar(user);
 
-				}
+				} }
 				return true;
 
 			//summon monsters
 			case 3:
+				if (Dungeon.hero.hasTalent(Talent.CHAOS_ADEPT)){
+					return cursedEffect(origin, user, targetPos);
+				} else {
 				new SummoningTrap().set( targetPos ).activate();
-				return true;
+				return true; }
 		}
 	}
 
