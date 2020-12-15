@@ -194,6 +194,25 @@ public enum Talent {
 		if (hero.hasTalent(ACCURSEDS_INTUITION)){
 			for (Item item : Dungeon.hero.belongings){
 				item.cursedKnown = true;
+				if (hero.pointsInTalent(ACCURSEDS_INTUITION) == 1){
+					if (item.isEquipped(Dungeon.hero)){
+						if (item instanceof MeleeWeapon && ((MeleeWeapon)item).hasCurseEnchant()){
+							item.identify();
+						} else if (item instanceof Armor && ((Armor)item).hasCurseGlyph()){
+							item.identify();
+						} else if (item.cursed){
+							item.identify();
+						}
+					}
+				} else if (hero.pointsInTalent(ACCURSEDS_INTUITION) == 2){
+					if (item instanceof MeleeWeapon && ((MeleeWeapon)item).hasCurseEnchant()){
+						item.identify();
+					} else if (item instanceof Armor && ((Armor)item).hasCurseGlyph()){
+						item.identify();
+					} else if (item.cursed){
+						item.identify();
+					}
+				}
 			}
 		}
 	}
@@ -258,10 +277,6 @@ public enum Talent {
 		if (item instanceof Ring){
 			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION);
 		}
-
-		// curseID/3x for heretic talent
-		if (hero.pointsInTalent(ACCURSEDS_INTUITION) == 2) factor *= 3f;
-
 		return factor;
 	}
 
@@ -340,6 +355,15 @@ public enum Talent {
 				((Ring) item).setKnown();
 			}
 		}
+		if (hero.hasTalent(ACCURSEDS_INTUITION)){
+			if (item instanceof MeleeWeapon && ((MeleeWeapon)item).hasCurseEnchant()){
+				item.identify();
+			} else if (item instanceof Armor && ((Armor)item).hasCurseGlyph()){
+				item.identify();
+			} else if (item.cursed){
+				item.identify();
+			}
+		}
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
@@ -348,6 +372,15 @@ public enum Talent {
 		}
 		if (hero.hasTalent(ACCURSEDS_INTUITION)){
 			item.cursedKnown = true;
+			if (hero.pointsInTalent(ACCURSEDS_INTUITION) == 2){
+				if (item instanceof MeleeWeapon && ((MeleeWeapon)item).hasCurseEnchant()){
+					item.identify();
+				} else if (item instanceof Armor && ((Armor)item).hasCurseGlyph()){
+					item.identify();
+				} else if (item.cursed){
+					item.identify();
+				}
+			}
 		}
 	}
 

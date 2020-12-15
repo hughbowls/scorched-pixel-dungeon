@@ -61,7 +61,7 @@ public class Metabolism extends Glyph {
 						healing = Math.max( healing, Random.NormalIntRange(healing*pow+1, healing*(pow+1)*2));
 					}
 					
-					defender.HP += healing;
+					defender.HP = Math.min(defender.HT, defender.HP+=healing);
 					defender.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 					defender.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( healing ) );
 				}

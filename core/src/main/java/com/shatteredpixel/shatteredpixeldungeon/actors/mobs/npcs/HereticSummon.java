@@ -360,9 +360,7 @@ public abstract class HereticSummon extends NPC {
 			int zap = damageRoll();
 			if (enemy instanceof Eye) zap /= 2;
 			enemy.sprite.emitter().burst(PurpleParticle.BURST, 5);
-			enemy.HP -= zap;
-			if (enemy.HP <= 0)
-				enemy.die(this);
+			enemy.damage(zap, this);
 		}
 	}
 

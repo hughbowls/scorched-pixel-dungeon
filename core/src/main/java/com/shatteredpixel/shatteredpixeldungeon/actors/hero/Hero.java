@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BloodKnightTrigger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
@@ -46,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Fury;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
@@ -65,6 +67,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.HereticArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
@@ -372,7 +375,11 @@ public class Hero extends Char {
 	}
 	
 	public int tier() {
-		return belongings.armor == null ? 0 : belongings.armor.tier;
+		Metamorphosis morph = this.buff(Metamorphosis.class);
+		if (morph != null && belongings.armor != null
+				&& belongings.armor instanceof HereticArmor)
+			return 7;
+		else return belongings.armor == null ? 0 : belongings.armor.tier;
 	}
 	
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
@@ -600,7 +607,16 @@ public class Hero extends Char {
 		
 		checkVisibleMobs();
 		BuffIndicator.refreshHero();
-		
+
+		for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])){
+			if (m != null && m.buff(Bleeding.class) != null
+					&& Dungeon.level.heroFOV[m.pos]
+					&& subClass == HeroSubClass.BLOODKNIGHT){
+				if (buff(BloodKnightTrigger.class) == null)
+					Buff.affect(this, BloodKnightTrigger.class).set();
+			}
+		}
+
 		if (paralysed > 0) {
 			
 			curAction = null;
@@ -1105,6 +1121,11 @@ public class Hero extends Char {
 			}
 			break;
 		default:
+		}
+
+		Metamorphosis morph = buff(Metamorphosis.class);
+		if (morph != null && enemy.isAlive() && wep instanceof MeleeWeapon){
+			morph.attackproc(enemy);
 		}
 		
 		return damage;

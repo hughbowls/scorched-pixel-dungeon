@@ -51,7 +51,7 @@ public class Corrosion extends Armor.Glyph {
 			}
 
 			if (hero.heroClass == HeroClass.HERETIC){
-				int pow = Random.NormalIntRange(1+armor.buffedLvl(), 2*armor.buffedLvl());
+				int pow = 5 + Random.NormalIntRange(1+armor.buffedLvl(), 2*armor.buffedLvl());
 				Buff.affect(hero, ElixirOfAquaticRejuvenation.AquaHealing.class).set(pow);
 			}
 		}

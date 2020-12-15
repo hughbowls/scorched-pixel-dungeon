@@ -611,8 +611,7 @@ public abstract class Char extends Actor {
 						}
 					}
 					// non-DoT
-					else if (src == WandOfFrost.class
-							|| buff(Chill.class) != null
+					else if (buff(Chill.class) != null
 							|| buff(Frost.class) != null) {
 						if (!found) {
 							HereticSummon.FrostSummon summon = new HereticSummon.FrostSummon();

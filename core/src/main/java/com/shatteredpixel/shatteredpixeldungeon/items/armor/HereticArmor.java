@@ -22,12 +22,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Metamorphosis;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
@@ -42,18 +41,13 @@ public class HereticArmor extends ClassArmor {
 
 		charge -= 35;
 		updateQuickslot();
-
-		int amt = (int) (0.5f * curUser.HP);
-		curUser.HP -= amt;
-		Buff.affect(curUser, Barrier.class).setShield(amt*2);
+		Buff.affect(curUser, Metamorphosis.class).set(20f);
+		Sample.INSTANCE.play( Assets.Sounds.BADGE );
+		GameScene.flash(0xFF0000);
 		
 		curUser.spend( Actor.TICK );
 		curUser.sprite.operate( curUser.pos );
 		Invisibility.dispel();
 		curUser.busy();
-		
-		curUser.sprite.emitter().start( ShadowParticle.CURSE, 0.025f, 20 );
-		Sample.INSTANCE.play( Assets.Sounds.MELD );
 	}
-
 }
