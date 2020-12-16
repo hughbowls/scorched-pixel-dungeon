@@ -464,19 +464,19 @@ public enum Talent {
 			if (hero.buff(Blindness.class) != null) { Buff.affect( enemy, Blindness.class, Math.round(dmg*0.6f)); }
 
 			if (hero.pointsInTalent(Talent.TRANSFER_HARM) == 2){
-				hero.buff(Poison.class).detach();			//
-				hero.buff(Cripple.class).detach();			//
-				hero.buff(Weakness.class).detach();			//
-				hero.buff(Vulnerable.class).detach();		//
-				hero.buff(Hex.class).detach();				//
-				hero.buff(Bleeding.class).detach();			//
-				hero.buff(Slow.class).detach();				//
-				hero.buff(Vertigo.class).detach();			//
-				hero.buff(Burning.class).detach();			//
-				hero.buff(Chill.class).detach();			//
-				hero.buff(Ooze.class).detach();				//
-				hero.buff(Roots.class).detach();			//
-				hero.buff(Blindness.class).detach();		//
+				if (hero.buff(Poison.class) != null) hero.buff(Poison.class).detach();
+				if (hero.buff(Cripple.class) != null) hero.buff(Cripple.class).detach();
+				if (hero.buff(Weakness.class) != null) hero.buff(Weakness.class).detach();
+				if (hero.buff(Vulnerable.class) != null) hero.buff(Vulnerable.class).detach();
+				if (hero.buff(Hex.class) != null) hero.buff(Hex.class).detach();
+				if (hero.buff(Bleeding.class) != null) hero.buff(Bleeding.class).detach();
+				if (hero.buff(Slow.class) != null) hero.buff(Slow.class).detach();
+				if (hero.buff(Vertigo.class) != null) hero.buff(Vertigo.class).detach();
+				if (hero.buff(Burning.class) != null) hero.buff(Burning.class).detach();
+				if (hero.buff(Chill.class) != null) hero.buff(Chill.class).detach();
+				if (hero.buff(Ooze.class) != null) hero.buff(Ooze.class).detach();
+				if (hero.buff(Roots.class) != null) hero.buff(Roots.class).detach();
+				if (hero.buff(Blindness.class) != null) hero.buff(Blindness.class).detach();
 			}
 		}
 

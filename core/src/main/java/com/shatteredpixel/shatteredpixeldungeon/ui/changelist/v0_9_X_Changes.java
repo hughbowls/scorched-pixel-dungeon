@@ -48,7 +48,22 @@ public class v0_9_X_Changes {
 
 	public static void add_v0_9_0_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		ChangeInfo changes = new ChangeInfo("v0.9.1", true, "");
+		ChangeInfo changes = new ChangeInfo("v0.9.1 base", true, "");
+		changes.hardlight(0xD06300);
+		changeInfos.add(changes);
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new_scorched"), false, null);
+		changes.hardlight(0xD06300);
+		changeInfos.add(changes);
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.HERETIC, 0, 15, 12, 15), "New Class: the Heretic",
+				"The _Heretic_, who focus to the curse and debuffs is added:\n\n" +
+						"- Has unique effects from the equipped weapon and armor with _curse_.\n\n" +
+						"- Specialized to debuff-relate combat and high-risk, high-return.\n\n" +
+						"- Starts with a unique weapon: Bone Blade and Blindpowder.\n\n" +
+						"- Including tier-1 and tier-2 talents, subclasses, and legendary armor ability."));
+
+		changes = new ChangeInfo("v0.9.1", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 

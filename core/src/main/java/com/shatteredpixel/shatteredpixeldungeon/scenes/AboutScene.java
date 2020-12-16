@@ -55,6 +55,15 @@ public class AboutScene extends PixelScene {
 		Component content = list.content();
 		content.clear();
 
+		CreditsBlock scorched = new CreditsBlock(true, 0xD06300,
+				"Scorched Pixel Dungeon",
+				Icons.HERETIC.get(),
+				"Developed by: _dreamdream0222_\nBased on Shattered Pixel Dungeon's open source",
+				"github repository",
+				"https://github.com/dreamdream0222/scorched-pixel-dungeon");
+		scorched.setRect((w - fullWidth)/2f, 6, 120, 0);
+		content.add(scorched);
+
 		//*** Shattered Pixel Dungeon Credits ***
 
 		String shpxLink = "https://ShatteredPixel.com";
@@ -69,7 +78,7 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				shpxLink);
-		shpx.setRect((w - fullWidth)/2f, 6, 120, 0);
+		shpx.setRect(scorched.left(), scorched.bottom() + 8, colWidth, 0);
 		content.add(shpx);
 
 		CreditsBlock alex = new CreditsBlock(false, Window.SHPX_COLOR,
@@ -94,6 +103,8 @@ public class AboutScene extends PixelScene {
 				"https://s9menine.itch.io");
 		charlie.setRect(alex.right(), alex.top(), colWidth/2f, 0);
 		content.add(charlie);
+
+		addLine(shpx.top() - 4, content);
 
 		//*** Pixel Dungeon Credits ***
 
