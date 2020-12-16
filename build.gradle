@@ -12,9 +12,9 @@ allprojects {
 
     ext {
         appName = 'Scorched Pixel Dungeon'
-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
+        appPackageName = 'com.scorchedpixel.scorchedpixeldungeon'
 
-        appVersionCode = 499
+        appVersionCode = 500
         appVersionName = '0.9.1 base'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
