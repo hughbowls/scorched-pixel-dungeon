@@ -58,9 +58,9 @@ public class AboutScene extends PixelScene {
 		CreditsBlock scorched = new CreditsBlock(true, 0xD06300,
 				"Scorched Pixel Dungeon",
 				Icons.HERETIC.get(),
-				"Developed by: _dreamdream0222_\nBased on Shattered Pixel Dungeon's open source",
+				"Developed by: _dreamdream2020_\nBased on Shattered Pixel Dungeon's open source",
 				"github repository",
-				"https://github.com/dreamdream0222/scorched-pixel-dungeon");
+				"https://github.com/dreamdream2020/scorched-pixel-dungeon");
 		scorched.setRect((w - fullWidth)/2f, 6, 120, 0);
 		content.add(scorched);
 
