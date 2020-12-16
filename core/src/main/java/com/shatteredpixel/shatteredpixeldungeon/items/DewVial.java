@@ -22,16 +22,23 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndScorchedFeedbackPrompt;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DewVial extends Item {
@@ -151,6 +158,27 @@ public class DewVial extends Item {
 	public void fill() {
 		volume = MAX_VOLUME;
 		updateQuickslot();
+	}
+
+	@Override
+	public boolean doPickUp(Hero hero) {
+
+		if(!SPDSettings.scorchedfeedbackNagged()){
+			try {
+				Dungeon.saveAll();
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						ShatteredPixelDungeon.scene().add(new WndScorchedFeedbackPrompt());
+					}
+				});
+			} catch (IOException e) {
+				ShatteredPixelDungeon.reportException(e);
+			}
+
+		}
+
+		return super.doPickUp(hero);
 	}
 
 	@Override

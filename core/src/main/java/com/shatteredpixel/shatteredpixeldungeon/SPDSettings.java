@@ -162,6 +162,7 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_INTRO		= "intro";
 
 	public static final String KEY_SUPPORT_NAGGED= "support_nagged";
+	public static final String KEY_FEEDBACK_NAGGED= "feedback_nagged";
 
 	public static void intro( boolean value ) {
 		put( KEY_INTRO, value );
@@ -194,6 +195,15 @@ public class SPDSettings extends GameSettings {
 	public static boolean supportNagged() {
 		return getBoolean(KEY_SUPPORT_NAGGED, false);
 	}
+
+	public static void scorchedfeedbackNagged( boolean value ) {
+		put( KEY_FEEDBACK_NAGGED, value );
+	}
+
+	public static boolean scorchedfeedbackNagged() {
+		return getBoolean(KEY_FEEDBACK_NAGGED, false);
+	}
+
 
 	//Audio
 	

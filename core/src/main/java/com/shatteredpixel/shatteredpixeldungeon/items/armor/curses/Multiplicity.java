@@ -100,12 +100,6 @@ public class Multiplicity extends Armor.Glyph {
 							}
 						}
 					}
-
-					if (hero.heroClass == HeroClass.HERETIC && m != null){
-						float pow = 10f + armor.buffedLvl()*2f;
-						Buff.affect(m, Amok.class, pow);
-						m.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-					}
 				}
 
 				if (m != null) {
@@ -122,6 +116,13 @@ public class Multiplicity extends Armor.Glyph {
 					if (!spawnPoints.isEmpty()) {
 						GameScene.add(m);
 						ScrollOfTeleportation.appear(m, Random.element(spawnPoints));
+
+						if (hero.heroClass == HeroClass.HERETIC && m != null
+							&& m.alignment != Char.Alignment.ALLY){
+							float pow = 10f + armor.buffedLvl()*2f;
+							Buff.affect(m, Amok.class, pow);
+							m.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+						}
 					}
 				}
 

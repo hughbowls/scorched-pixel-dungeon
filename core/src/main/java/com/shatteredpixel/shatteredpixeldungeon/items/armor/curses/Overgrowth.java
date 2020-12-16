@@ -48,7 +48,6 @@ public class Overgrowth extends Armor.Glyph {
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
 		
 		if ( Random.Int( 20 ) == 0) {
-			
 			Plant.Seed s;
 			do{
 				s = (Plant.Seed) Generator.randomUsingDefaults(Generator.Category.SEED);
