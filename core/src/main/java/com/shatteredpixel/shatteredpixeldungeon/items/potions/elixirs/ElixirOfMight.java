@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -97,11 +98,17 @@ public class ElixirOfMight extends Elixir {
 		}
 		
 		public int boost(){
-			return Math.round(left*boost(target.HT)/5f);
+			int amt = Math.round(left*boost(target.HT)/5f);
+			if (Dungeon.hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 1) amt += amt*0.25f;
+			if (Dungeon.hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 2) amt += amt*0.333f;
+			return amt;
 		}
 		
 		public static int boost(int HT){
-			return Math.round(4 + HT/20f);
+			int amt = Math.round(4 + HT/20f);
+			if (Dungeon.hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 1) amt += amt*0.25f;
+			if (Dungeon.hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 2) amt += amt*0.333f;
+			return amt;
 		}
 		
 		public void onLevelUp(){

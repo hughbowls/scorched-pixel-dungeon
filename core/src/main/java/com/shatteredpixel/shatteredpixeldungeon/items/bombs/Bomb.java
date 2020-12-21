@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
@@ -170,6 +171,10 @@ public class Bomb extends Item {
 					}
 				}
 			}
+
+			if (curUser.hasTalent(Talent.GRENADIER)) {
+				Dungeon.level.drop(new Bomb.Grenade(), cell).sprite.drop();
+			}
 			
 			for (Char ch : affected){
 
@@ -186,6 +191,10 @@ public class Bomb extends Item {
 				}
 
 				dmg -= ch.drRoll();
+
+				if (ch == Dungeon.hero &&  Dungeon.hero.pointsInTalent(Talent.GRENADIER) == 2) {
+					dmg -= dmg*0.666f;
+				}
 
 				if (dmg > 0) {
 					ch.damage(dmg, this);
@@ -234,7 +243,10 @@ public class Bomb extends Item {
 	
 	@Override
 	public String desc() {
-		if (fuse == null)
+		if (this instanceof Grenade) {
+			return super.desc();
+		}
+		else if (fuse == null)
 			return super.desc()+ "\n\n" + Messages.get(this, "desc_fuse");
 		else
 			return super.desc() + "\n\n" + Messages.get(this, "desc_burning");
@@ -329,6 +341,78 @@ public class Bomb extends Item {
 			return false;
 		}
 	}
+
+	public static class Grenade extends Bomb {
+
+		{
+			image = ItemSpriteSheet.TENGU_BOMB;
+			defaultAction = AC_THROW;
+			usesTargeting = true;
+			stackable = true;
+		}
+
+		@Override
+		protected void onThrow( int cell ) {
+			// Almost same as bomb, but which explode without fuse
+			Sample.INSTANCE.play( Assets.Sounds.BLAST );
+			if (explodesDestructively()) {
+				ArrayList<Char> affected = new ArrayList<>();
+				if (Dungeon.level.heroFOV[cell]) {
+					CellEmitter.center(cell).burst(BlastParticle.FACTORY, 30);
+				}
+				boolean terrainAffected = false;
+				for (int n : PathFinder.NEIGHBOURS9) {
+					int c = cell + n;
+					if (c >= 0 && c < Dungeon.level.length()) {
+						if (Dungeon.level.heroFOV[c]) {
+							CellEmitter.get(c).burst(SmokeParticle.FACTORY, 4);
+						} if (Dungeon.level.flamable[c]) {
+							Dungeon.level.destroy(c);
+							GameScene.updateMap(c);
+							terrainAffected = true;
+						}
+						Heap heap = Dungeon.level.heaps.get(c);
+						if (heap != null) heap.explode();
+						Char ch = Actor.findChar(c);
+						if (ch != null) { affected.add(ch); }
+					}
+				}
+
+				for (Char ch : affected){
+					if(!ch.isAlive()){ continue; }
+					int dmg = Random.NormalIntRange(5 + Dungeon.depth, 10 + Dungeon.depth*2);
+					if (ch.pos != cell){ dmg = Math.round(dmg*0.67f); }
+					dmg -= ch.drRoll();
+					if (ch == Dungeon.hero &&  Dungeon.hero.pointsInTalent(Talent.GRENADIER) == 2) {
+						dmg -= dmg*0.666f;
+					} if (dmg > 0) { ch.damage(dmg, this); }
+					if (ch == Dungeon.hero && !ch.isAlive()) { Dungeon.fail(Bomb.class); }
+				} if (terrainAffected) { Dungeon.observe(); }
+			}
+		}
+
+		@Override
+		public ArrayList<String> actions(Hero hero) {
+			ArrayList<String> actions = super.actions( hero );
+			actions.remove ( AC_LIGHTTHROW );
+			return actions;
+		}
+
+		@Override
+		public boolean isUpgradable() {
+			return false;
+		}
+
+		@Override
+		public boolean isIdentified() {
+			return true;
+		}
+
+		@Override
+		public int value() {
+			return 5 * quantity;
+		}
+	}
 	
 	public static class EnhanceBomb extends Recipe {
 		
@@ -375,7 +459,7 @@ public class Bomb extends Item {
 			
 			for (Item i : ingredients){
 				if (!i.isIdentified()) return false;
-				if (i.getClass().equals(Bomb.class)){
+				if (i.getClass().equals(Bomb.class) && !i.getClass().equals(Bomb.Grenade.class)){
 					bomb = true;
 				} else if (validIngredients.containsKey(i.getClass())){
 					ingredient = true;

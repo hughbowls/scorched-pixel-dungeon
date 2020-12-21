@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Inferno;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -60,8 +61,8 @@ public class InfernalBrew extends Brew {
 		{
 			inputs =  new Class[]{PotionOfLiquidFlame.class, AlchemicalCatalyst.class};
 			inQuantity = new int[]{1, 1};
-			
-			cost = 6;
+
+			cost = 6 - (Dungeon.hero.pointsInTalent(Talent.GASEOUS_WARFARE) == 2 ? 3 : 0);
 			
 			output = InfernalBrew.class;
 			outQuantity = 1;

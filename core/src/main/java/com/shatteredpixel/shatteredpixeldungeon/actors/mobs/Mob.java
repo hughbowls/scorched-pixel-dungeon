@@ -81,6 +81,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Lucky;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -602,7 +603,8 @@ public abstract class Mob extends Char {
 			//TODO this is somewhat messy, it would be nicer to not have to manually handle delays here
 			// playing the strong hit sound might work best as another property of weapon?
 			if (Dungeon.hero.belongings.weapon instanceof SpiritBow.SpiritArrow
-				|| Dungeon.hero.belongings.weapon instanceof Dart){
+				|| Dungeon.hero.belongings.weapon instanceof Dart
+				|| Dungeon.hero.belongings.weapon instanceof Pistol.PistolShot){
 				Sample.INSTANCE.playDelayed(Assets.Sounds.HIT_STRONG, 0.125f);
 			} else {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);

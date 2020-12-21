@@ -386,6 +386,12 @@ public class HeroSelectScene extends PixelScene {
 							new ItemSprite(ItemSpriteSheet.BONE_BLADE, null)
 					};
 					break;
+				case ALCHEMIST:
+					tabIcons = new Image[]{
+							new ItemSprite(ItemSpriteSheet.PISTOL, null),
+							new ItemSprite(ItemSpriteSheet.ARTIFACT_TOOLKIT, null)
+					};
+					break;
 			}
 
 			tab = new IconTab( tabIcons[0] ){

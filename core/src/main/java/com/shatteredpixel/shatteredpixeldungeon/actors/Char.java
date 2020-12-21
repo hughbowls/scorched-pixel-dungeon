@@ -48,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LifeLink;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Reaction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
@@ -69,6 +70,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BloodParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PoisonParticle;
@@ -78,13 +80,18 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Bulk;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Potential;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCorrosiveGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDragonsBreath;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfSnapFreeze;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfElements;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blazing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
@@ -94,6 +101,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -288,6 +296,19 @@ public abstract class Char extends Actor {
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
 					dr = 0;
 				}
+				if ((h.belongings.weapon instanceof Pistol
+						|| h.belongings.weapon instanceof Pistol.PistolShot)
+						&& h.subClass == HeroSubClass.TRAILBLAZER
+						&& h.buff(Reaction.class) != null){
+					dr = 0;
+					Sample.INSTANCE.play(Assets.Sounds.CHAINS, 0.66f, 0.66f);
+					Buff.detach(h, Reaction.class);
+					if (enemy.isAlive()){
+						Ballistica trajectory = new Ballistica(h.pos, enemy.pos, Ballistica.STOP_TARGET);
+						trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
+						WandOfBlastWave.throwChar(enemy, trajectory, 2, true, false);
+					}
+				}
 			}
 			
 			int dmg;
@@ -319,6 +340,23 @@ public abstract class Char extends Actor {
 				return true;
 			}
 
+			if (this instanceof Hero){
+				Hero h = (Hero)this;
+				if ((h.belongings.weapon instanceof Pistol
+						|| h.belongings.weapon instanceof Pistol.PistolShot)){
+					Pistol pistol = h.belongings.getItem(Pistol.class);
+					if (pistol.potionAttrib instanceof PotionOfSnapFreeze) {
+						Buff.prolong(enemy, Frost.class, Frost.DURATION);
+						return true; // No damage, Frost only
+					} else if (pistol.potionAttrib instanceof PotionOfCorrosiveGas) {
+						Splash.at( enemy.sprite.center(), 0xFF8800, 5);
+						Buff.affect(enemy, Corrosion.class).set(2f+pistol.speedFactor(h), (int) (effectiveDamage * 0.666f));
+						return true; // No damage, instead Corrosion
+					} else if (pistol.potionAttrib instanceof PotionOfDragonsBreath) {
+						return true; // No damage, instead Explosion
+					}
+				}
+			}
 			enemy.damage( effectiveDamage, this );
 
 			if (buff(FireImbue.class) != null)

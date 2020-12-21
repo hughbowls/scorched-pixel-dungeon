@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -258,7 +259,7 @@ public class Blandfruit extends Food {
 		
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			return 3;
+			return Math.max(0, 3-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
 		}
 		
 		@Override

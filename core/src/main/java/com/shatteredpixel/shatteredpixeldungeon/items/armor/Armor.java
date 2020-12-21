@@ -105,7 +105,7 @@ public class Armor extends EquipableItem {
 	
 	public Glyph glyph;
 	public boolean curseInfusionBonus = false;
-	
+
 	private BrokenSeal seal;
 	
 	public int tier;
@@ -125,6 +125,11 @@ public class Armor extends EquipableItem {
 	private static final String SEAL            = "seal";
 	private static final String AUGMENT			= "augment";
 
+	public int innovationBonus = 0;
+	public int innovationLeft = 0;
+	private static final String INNOVATION_BONUS	 = "innovation_bonus";
+	private static final String INNOVATION_LEFT 	 = "innovation_left";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
@@ -134,6 +139,9 @@ public class Armor extends EquipableItem {
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( SEAL, seal);
 		bundle.put( AUGMENT, augment);
+
+		bundle.put( INNOVATION_BONUS, innovationBonus );
+		bundle.put( INNOVATION_LEFT, innovationLeft );
 	}
 
 	@Override
@@ -146,6 +154,9 @@ public class Armor extends EquipableItem {
 		seal = (BrokenSeal)bundle.get(SEAL);
 		
 		augment = bundle.getEnum(AUGMENT, Augment.class);
+
+		innovationBonus = bundle.getInt( INNOVATION_BONUS );
+		innovationLeft = bundle.getInt( INNOVATION_LEFT );
 	}
 
 	@Override
@@ -155,6 +166,9 @@ public class Armor extends EquipableItem {
 		availableUsesToID = USES_TO_ID/2f;
 		//armor can be kept in bones between runs, the seal cannot.
 		seal = null;
+		// for Innovator
+		innovationBonus = 0;
+		innovationLeft = 0;
 	}
 
 	@Override
@@ -380,12 +394,27 @@ public class Armor extends EquipableItem {
 	@Override
 	public int buffedLvl() {
 		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
+			if (innovationBonus != 0) {
+				return super.buffedLvl()+innovationBonus;
+			}
 			return super.buffedLvl();
 		} else {
 			return level();
 		}
 	}
-	
+
+	public void setInnovation(int bonus, int left) {
+		this.innovationBonus = bonus;
+		this.innovationLeft = left;
+		if (this.level() >= 4){
+			this.innovationBonus--;
+			if (this.level() >= 8){
+				this.innovationBonus--;
+			}
+		}
+		if (this.innovationBonus < 0) this.innovationBonus = 0;
+	}
+
 	@Override
 	public Item upgrade() {
 		return upgrade( false );
@@ -422,6 +451,13 @@ public class Armor extends EquipableItem {
 				GLog.p( Messages.get(Armor.class, "identify") );
 				Badges.validateItemLevelAquired( this );
 			}
+		}
+
+		if (innovationBonus != 0){
+			innovationLeft--;
+			if (innovationLeft == 5) GLog.w(Messages.get(Armor.class, "innovation_msg"));
+			if (innovationLeft <= 0) innovationBonus = 0;
+			updateQuickslot();
 		}
 		
 		return damage;
@@ -467,6 +503,12 @@ public class Armor extends EquipableItem {
 				info += "\n\n" + Messages.get(Armor.class, "defense");
 				break;
 			case NONE:
+		}
+
+		if (innovationBonus != 0){
+			if (innovationLeft == 51){ // for sample output
+				info += "\n\n" + Messages.get(Armor.class, "innovation_sample", innovationBonus, innovationLeft-1);
+			} else info += "\n\n" + Messages.get(Armor.class, "innovation", innovationBonus, innovationLeft);
 		}
 		
 		if (glyph != null  && (cursedKnown || !glyph.curse())) {
@@ -529,6 +571,10 @@ public class Armor extends EquipableItem {
 	}
 
 	public int STRReq(){
+		if (innovationBonus != 0){
+			return STRReq(level()+innovationBonus);
+		}
+
 		return STRReq(level());
 	}
 

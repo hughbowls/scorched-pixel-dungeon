@@ -63,6 +63,13 @@ public class v0_9_X_Changes {
 						"- Starts with a unique weapon: Bone Blade and Blindpowder.\n\n" +
 						"- Including tier-1 and tier-2 talents, subclasses, and legendary armor ability."));
 
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.ALCHEMIST, 0, 15, 12, 15), "New Class: the Alchemist",
+				"The _Alchemist_, and his reload-required pistol is added:\n\n" +
+						"- Starts without melee weapon, but starts with _unique pistol_, which able to infuse potion by alchemy. Infusing potion of strength will upgrade it.\n\n" +
+						"- Requires all-kinds of tactics and using consumables to survive.\n\n" +
+						"- Starts with pistol and alchemist toolkit.\n\n" +
+						"- Including tier-1 and tier-2 talents, subclasses, and legendary armor ability."));
+
 		changes = new ChangeInfo("v0.9.1", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);

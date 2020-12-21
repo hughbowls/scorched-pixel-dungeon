@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -515,6 +516,11 @@ public class Potion extends Item {
 			
 			if (result instanceof PotionOfHealing) {
 				Dungeon.LimitedDrops.COOKING_HP.count++;
+			}
+
+			if (Dungeon.hero.heroClass == HeroClass.ALCHEMIST
+					&& !((Potion)result).isKnown()) {
+				result.identify();
 			}
 			
 			Statistics.potionsCooked++;

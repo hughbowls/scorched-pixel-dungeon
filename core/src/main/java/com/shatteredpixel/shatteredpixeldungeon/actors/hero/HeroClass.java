@@ -25,11 +25,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.ArmorKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
@@ -40,13 +39,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibili
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BoneBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
@@ -66,7 +68,8 @@ public enum HeroClass {
 	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
 	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	HERETIC("heretic", HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT);
+	HERETIC("heretic", HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT),
+	ALCHEMIST("alchemist", HeroSubClass.TRAILBLAZER, HeroSubClass.INNOVATOR);
 
 	private String title;
 	private HeroSubClass[] subClasses;
@@ -101,7 +104,11 @@ public enum HeroClass {
 				break;
 
 			case HERETIC:
-				initCultist( hero );
+				initHeretic( hero );
+				break;
+
+			case ALCHEMIST:
+				initAlchemist( hero );
 				break;
 		}
 
@@ -122,6 +129,7 @@ public enum HeroClass {
 		switch (this) {
 			case WARRIOR:
 			case HERETIC:
+			case ALCHEMIST:
 				return Badges.Badge.MASTERY_WARRIOR;
 			case MAGE:
 				return Badges.Badge.MASTERY_MAGE;
@@ -202,7 +210,7 @@ public enum HeroClass {
 		new ScrollOfLullaby().identify();
 	}
 
-	private static void initCultist( Hero hero ) {
+	private static void initHeretic(Hero hero ) {
 
 		(hero.belongings.weapon = new BoneBlade()).identify();
 
@@ -216,6 +224,27 @@ public enum HeroClass {
 
 		new ScrollOfRemoveCurse().identify();
 		new PotionOfPurity().identify();
+	}
+
+	private static void initAlchemist(Hero hero ) {
+
+		Pistol pistol = new Pistol();
+		pistol.identify().collect();
+		pistol.reload_start();
+
+		AlchemistsToolkit kit = new AlchemistsToolkit();
+		(hero.belongings.artifact = kit).identify();
+		hero.belongings.artifact.activate( hero );
+		kit.bones = false;
+
+		Dungeon.quickslot.setSlot(0, pistol);
+		Dungeon.quickslot.setSlot(1, kit);
+
+		new PotionBandolier().collect();
+		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
+
+		new ScrollOfTransmutation().identify();
+		new PotionOfStrength().identify();
 	}
 
 	public String title() {
@@ -238,6 +267,8 @@ public enum HeroClass {
 				return Assets.Sprites.HUNTRESS;
 			case HERETIC:
 				return Assets.Sprites.HERETIC;
+			case ALCHEMIST:
+				return Assets.Sprites.ALCHEMIST;
 		}
 	}
 
@@ -253,6 +284,8 @@ public enum HeroClass {
 				return Assets.Splashes.HUNTRESS;
 			case HERETIC:
 				return Assets.Splashes.HERETIC;
+			case ALCHEMIST:
+				return Assets.Splashes.ALCHEMIST;
 		}
 	}
 	
@@ -297,6 +330,14 @@ public enum HeroClass {
 						Messages.get(HeroClass.class, "heretic_perk3"),
 						Messages.get(HeroClass.class, "heretic_perk4"),
 						Messages.get(HeroClass.class, "heretic_perk5"),
+				};
+			case ALCHEMIST:
+				return new String[]{
+						Messages.get(HeroClass.class, "alchemist_perk1"),
+						Messages.get(HeroClass.class, "alchemist_perk2"),
+						Messages.get(HeroClass.class, "alchemist_perk3"),
+						Messages.get(HeroClass.class, "alchemist_perk4"),
+						Messages.get(HeroClass.class, "alchemist_perk5"),
 				};
 		}
 	}

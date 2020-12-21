@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ToxicImbue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PoisonParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
@@ -38,7 +39,10 @@ public class ElixirOfToxicEssence extends Elixir {
 	
 	@Override
 	public void apply(Hero hero) {
-		Buff.affect(hero, ToxicImbue.class).set(ToxicImbue.DURATION);
+		float amt = ToxicImbue.DURATION;
+		if (hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 1) amt += amt*0.5f;
+		if (hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 2) amt += amt*0.666f;
+		Buff.affect(hero, ToxicImbue.class).set(amt);
 		hero.sprite.emitter().burst(PoisonParticle.SPLASH, 10);
 	}
 	

@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -69,6 +70,9 @@ public class HolyBomb extends Bomb {
 				
 				//bomb deals an additional 67% damage to unholy enemies in a 5x5 range
 				int damage = Math.round(Random.NormalIntRange( Dungeon.depth+5, 10 + Dungeon.depth * 2 ) * 0.67f);
+				if (ch == Dungeon.hero &&  Dungeon.hero.pointsInTalent(Talent.GRENADIER) == 2) {
+					damage -= damage*0.666f;
+				}
 				ch.damage(damage, this);
 			}
 		}

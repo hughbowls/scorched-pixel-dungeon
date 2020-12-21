@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
@@ -48,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
+import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
@@ -63,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -131,7 +134,17 @@ public enum Talent {
 	TRANSFER_HARM(69),
 	ENHANCED_CURSE(70),
 	CHAOS_ADEPT(71),
-	WRAITH_DECEPTION(72);
+	WRAITH_DECEPTION(72),
+
+	FOOD_ALCHEMY(80),
+	INVENTORS_INTUITION(81),
+	PREEMPTIVE_FIRE(82),
+	EXPERIMENTAL_BARRIER(83),
+	FRESH_MEAL(84),
+	RELOADING_UPGRADE(85),
+	ELIXIR_FORMULA(86),
+	GRENADIER(87),
+	GASEOUS_WARFARE(88);
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
@@ -257,6 +270,10 @@ public enum Talent {
 			//effectively 1/2 turns of haste
 			Buff.affect( hero, Haste.class, 0.67f+hero.pointsInTalent(INVIGORATING_MEAL));
 		}
+		if (hero.hasTalent(FRESH_MEAL)){
+			//5/8 turns of blob immunity
+			Buff.affect( hero, BlobImmunity.class, 2 + 3*(hero.pointsInTalent(FRESH_MEAL)));
+		}
 	}
 
 	public static class WarriorFoodImmunity extends FlavourBuff{};
@@ -342,6 +359,13 @@ public enum Talent {
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
 		}
+		if (hero.hasTalent(RELOADING_UPGRADE)){
+			Pistol pistol = hero.belongings.getItem(Pistol.class);
+			if (pistol != null){
+				pistol.reload_talent();
+			}
+			Dungeon.hero.sprite.emitter().start(MagicMissile.MagicParticle.ATTRACTING, 0.025f, 10 );
+		}
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
@@ -423,6 +447,15 @@ public enum Talent {
 			}
 		}
 
+		if (hero.hasTalent(PREEMPTIVE_FIRE)) {
+			if (hero.belongings.weapon instanceof Pistol.PistolShot) {
+				if (enemy.buff(PreemptiveFireTracker.class) == null) {
+					dmg += hero.pointsInTalent(PREEMPTIVE_FIRE);
+					Buff.affect(enemy, PreemptiveFireTracker.class);
+				}
+			}
+		}
+
 		if (hero.hasTalent(Talent.TRANSFER_HARM)
 				&& enemy instanceof Mob
 				&& hero.belongings.weapon instanceof MeleeWeapon
@@ -485,6 +518,7 @@ public enum Talent {
 
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends Buff{};
+	public static class PreemptiveFireTracker extends Buff{};
 
 	public static final int MAX_TALENT_TIERS = 2;
 
@@ -516,6 +550,9 @@ public enum Talent {
 			case HERETIC:
 				Collections.addAll(tierTalents, BUTCHERY, ACCURSEDS_INTUITION, KNOWLEDGE_IS_POWER, MALEVOLENT_ARMOR);
 				break;
+			case ALCHEMIST:
+				Collections.addAll(tierTalents, FOOD_ALCHEMY, INVENTORS_INTUITION, PREEMPTIVE_FIRE, EXPERIMENTAL_BARRIER);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			talents.get(0).put(talent, 0);
@@ -538,6 +575,9 @@ public enum Talent {
 				break;
 			case HERETIC:
 				Collections.addAll(tierTalents, ASCETIC, TRANSFER_HARM, ENHANCED_CURSE, CHAOS_ADEPT, WRAITH_DECEPTION);
+				break;
+			case ALCHEMIST:
+				Collections.addAll(tierTalents, FRESH_MEAL, RELOADING_UPGRADE, ELIXIR_FORMULA, GRENADIER, GASEOUS_WARFARE);
 				break;
 		}
 		for (Talent talent : tierTalents){

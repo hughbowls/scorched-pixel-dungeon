@@ -32,7 +32,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.AlchemistArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -558,7 +560,12 @@ public class Item implements Bundlable {
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 30f);
 								}
 							}
-							user.spendAndNext(delay);
+
+							AlchemistArmor.Showdown showdown = enemy.buff(AlchemistArmor.Showdown.class);
+							if (Item.this instanceof Pistol.PistolShot && showdown != null){
+								user.spendAndNext(0f);
+							}
+							else user.spendAndNext(delay);
 						}
 					});
 		} else {

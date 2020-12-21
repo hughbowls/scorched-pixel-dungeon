@@ -96,6 +96,35 @@ public class PotionOfPurity extends Potion {
 		}
 		
 	}
+
+	// for Alchemist's pistol
+	public static void purify( int cell ) {
+
+		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 1 );
+
+		ArrayList<Blob> blobs = new ArrayList<>();
+		for (Class c : affectedBlobs){
+			Blob b = Dungeon.level.blobs.get(c);
+			if (b != null && b.volume > 0){ blobs.add(b); }
+		}
+
+		for (int i=0; i < Dungeon.level.length(); i++) {
+			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+				for (Blob blob : blobs) {
+					int value = blob.cur[i];
+					if (value > 0) {
+						blob.clear(i);
+						blob.cur[i] = 0;
+						blob.volume -= value;
+					}
+				}
+
+				if (Dungeon.level.heroFOV[i]) {
+					CellEmitter.get( i ).burst( Speck.factory( Speck.DISCOVER ), 2 );
+				}
+			}
+		}
+	}
 	
 	@Override
 	public void apply( Hero hero ) {

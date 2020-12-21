@@ -156,6 +156,9 @@ public class Wandmaker extends NPC {
 				case HERETIC:
 					msg1 += Messages.get(this, "intro_heretic");
 					break;
+				case ALCHEMIST:
+					msg1 += Messages.get(this, "intro_alchemist");
+					break;
 			}
 
 			msg1 += Messages.get(this, "intro_1");

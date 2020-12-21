@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projecting;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -265,7 +266,7 @@ abstract public class MissileWeapon extends Weapon {
 	public int damageRoll(Char owner) {
 		int damage = augment.damageFactor(super.damageRoll( owner ));
 		
-		if (owner instanceof Hero) {
+		if (owner instanceof Hero && !(this instanceof Pistol.PistolShot)) {
 			int exStr = ((Hero)owner).STR() - STRReq();
 			if (exStr > 0) {
 				damage += Random.IntRange( 0, exStr );

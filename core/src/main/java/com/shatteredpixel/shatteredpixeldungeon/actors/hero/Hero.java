@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Fury;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Reaction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
@@ -98,6 +99,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
@@ -412,9 +414,13 @@ public class Hero extends Char {
 		
 		float accuracy = 1;
 		accuracy *= RingOfAccuracy.accuracyMultiplier( this );
-		
+
+		if (wep instanceof Pistol.PistolShot) {
+			return (int)(attackSkill * accuracy * wep.accuracyFactor( this ));
+		}
+
 		if (wep instanceof MissileWeapon){
-			if (Dungeon.level.adjacent( pos, target.pos )) {
+			if (Dungeon.level.adjacent(pos, target.pos)) {
 				accuracy *= 0.5f;
 			} else {
 				accuracy *= 1.5f;
@@ -1358,7 +1364,13 @@ public class Hero extends Char {
 			sprite.move(pos, step);
 			move(step);
 
-			spend( 1 / speed );
+			Reaction reaction = buff(Reaction.class);
+			if (reaction != null){
+				spend(0f);
+				reaction.detach();
+			} else {
+				spend( 1 / speed );
+			}
 			justMoved = true;
 			
 			search(false);

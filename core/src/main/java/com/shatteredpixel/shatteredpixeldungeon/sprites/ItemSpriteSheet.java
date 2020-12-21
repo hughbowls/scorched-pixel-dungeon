@@ -91,6 +91,7 @@ public class ItemSpriteSheet {
 	
 	public static final int TENGU_BOMB      = UNCOLLECTIBLE+9;
 	public static final int TENGU_SHOCKER   = UNCOLLECTIBLE+10;
+	public static final int PISTOL_SHOT		= UNCOLLECTIBLE+11;
 	static{
 		assignItemRect(GOLD,        15, 13);
 		assignItemRect(DEWDROP,     10, 10);
@@ -103,6 +104,7 @@ public class ItemSpriteSheet {
 		
 		assignItemRect(TENGU_BOMB,      10, 10);
 		assignItemRect(TENGU_SHOCKER,   10, 10);
+		assignItemRect(PISTOL_SHOT,   12, 12);
 	}
 
 	private static final int CONTAINERS     =                               xy(1, 3);   //16 slots
@@ -198,13 +200,15 @@ public class ItemSpriteSheet {
 	public static final int BONE_BLADE      = WEP_TIER1+1;
 //	public static final int CUDGEL          = WEP_TIER1+1;
 	public static final int GLOVES          = WEP_TIER1+2;
-	public static final int RAPIER          = WEP_TIER1+3;
+//	public static final int RAPIER          = WEP_TIER1+3;
+	public static final int PISTOL          = WEP_TIER1+3;
 	public static final int DAGGER          = WEP_TIER1+4;
 	public static final int MAGES_STAFF     = WEP_TIER1+5;
 	static{
 		assignItemRect(WORN_SHORTSWORD, 13, 13);
 		assignItemRect(BONE_BLADE,      12, 13);
 		assignItemRect(GLOVES,          12, 16);
+		assignItemRect(PISTOL,          13, 15);
 		assignItemRect(DAGGER,          12, 13);
 		assignItemRect(MAGES_STAFF,     15, 16);
 	}
@@ -349,6 +353,7 @@ public class ItemSpriteSheet {
 	public static final int ARMOR_ROGUE     = ARMOR+7;
 	public static final int ARMOR_HUNTRESS  = ARMOR+8;
 	public static final int ARMOR_HERETIC   = ARMOR+9;
+	public static final int ARMOR_ALCHEMIST   = ARMOR+10;
 	static{
 		assignItemRect(ARMOR_CLOTH,     15, 12);
 		assignItemRect(ARMOR_LEATHER,   14, 13);
@@ -360,6 +365,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ARMOR_ROGUE,     14, 12);
 		assignItemRect(ARMOR_HUNTRESS,  13, 15);
 		assignItemRect(ARMOR_HERETIC,   14, 16);
+		assignItemRect(ARMOR_ALCHEMIST,   16, 12);
 	}
 
 	                                                                                    //16 free slots
@@ -657,6 +663,7 @@ public class ItemSpriteSheet {
 	public static final int TOKEN   = QUEST+6;
 	public static final int BLOB    = QUEST+7;
 	public static final int SHARD   = QUEST+8;
+	public static final int INNOVATION   = QUEST+9;
 	static{
 		assignItemRect(SKULL,   16, 11);
 		assignItemRect(DUST,    12, 11);
@@ -667,6 +674,7 @@ public class ItemSpriteSheet {
 		assignItemRect(TOKEN,   12, 12);
 		assignItemRect(BLOB,    10,  9);
 		assignItemRect(SHARD,    8, 10);
+		assignItemRect(INNOVATION,    11, 11);
 	}
 
 	private static final int BAGS       =                                   xy(1, 31);  //16 slots

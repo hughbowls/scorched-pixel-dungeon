@@ -65,7 +65,14 @@ public class Barkskin extends Buff {
 			spend(time - cooldown() - 1);
 		}
 	}
-	
+
+	public void add( int value, int time ) {
+		//for Alchemist's pistol
+		level += value;
+		interval += time;
+		spend(time - cooldown() - 1);
+	}
+
 	@Override
 	public int icon() {
 		return BuffIndicator.BARKSKIN;

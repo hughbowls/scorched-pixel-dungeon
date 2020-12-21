@@ -75,6 +75,9 @@ abstract public class ClassArmor extends Armor {
 		case HERETIC:
 			classArmor = new HereticArmor();
 			break;
+		case ALCHEMIST:
+			classArmor = new AlchemistArmor();
+			break;
 		}
 		
 		classArmor.level(armor.level() - (armor.curseInfusionBonus ? 1 : 0));

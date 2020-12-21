@@ -50,17 +50,24 @@ public class Fragile extends Weapon.Enchantment {
 			int enemyHealth = defender.HP - damage;
 			if (enemyHealth <= 0) return damage; //no point in proccing if they're already dead.
 
-			// BaseMax at 150 hits = 25%, +2% per lvl
-			int chanceGrim = (int) (0.1f+(hits*0.166f)) + (int) (weapon.buffedLvl()*2f);
-			if (Random.Int( 100 ) <= chanceGrim){
-				defender.damage( defender.HP, Grim.class );
+			// BaseMax at 150 hits = 10%, +1% per lvl, activates only after 50 hits+
+			// Limited at 25%
+			int chanceGrim = Math.max(0, (hits + (int) (weapon.buffedLvl()*1.5f) - 50));
+			float res = defender.resist(Grim.class);
+			if (chanceGrim > (int) (250*1.5)) chanceGrim = 250;
+			if (Random.Int( 1500 ) <= chanceGrim
+				&& !(defender.isImmune(Grim.class)
+					|| defender.isInvulnerable(attacker.getClass()))){
+				defender.damage( defender.HP * (int) (res), Grim.class );
 				defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-				hits = Math.max(0, hits-30);
+				hits = Math.max(0, hits-50);
 
 			} else {
-				// BaseMax at 150 hits = 40%, +2.5% per lvl
-				int chanceDoom = (int) (1f+(hits*0.26f)) + (int) (weapon.buffedLvl()*2.5f);
-				if (Random.Int( 100 ) <= chanceDoom){
+				// BaseMax at 150 hits = 20%, +2% per lvl
+				// Limited at 66%
+				int chanceDoom = Math.max(0, (hits + (int) (weapon.buffedLvl()*2f)));
+				if (chanceDoom > 660) chanceDoom = 660;
+				if (Random.Int( 1000 ) <= chanceDoom){
 					Buff.affect(defender, Doom.class);
 					defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
 				}

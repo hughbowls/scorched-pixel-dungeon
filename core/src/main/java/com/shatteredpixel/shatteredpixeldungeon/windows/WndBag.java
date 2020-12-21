@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutat
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -434,7 +435,8 @@ public class WndBag extends WndTabbed {
 						mode == Mode.UPGRADEABLE && item.isUpgradable() ||
 						mode == Mode.UNIDENTIFED && !item.isIdentified() ||
 						mode == Mode.UNCURSABLE && ScrollOfRemoveCurse.uncursable(item) ||
-						mode == Mode.CURSABLE && ((item instanceof EquipableItem && !(item instanceof MissileWeapon)) || item instanceof Wand) ||
+						mode == Mode.CURSABLE && ((item instanceof EquipableItem && !(item instanceof MissileWeapon)
+													&& !(item instanceof Pistol)) || item instanceof Wand) ||
 						mode == Mode.QUICKSLOT && (item.defaultAction != null) ||
 						mode == Mode.WEAPON && (item instanceof MeleeWeapon) ||
 						mode == Mode.ARMOR && (item instanceof Armor) ||

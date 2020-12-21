@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -153,6 +154,11 @@ public class ExoticPotion extends Potion {
 				if (regToExo.containsKey(i.getClass())) {
 					result = Reflection.newInstance(regToExo.get(i.getClass()));
 				}
+			}
+
+			if (Dungeon.hero.heroClass == HeroClass.ALCHEMIST
+				&& !((Potion)result).isKnown()) {
+				result.identify();
 			}
 			return result;
 		}

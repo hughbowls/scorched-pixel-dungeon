@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projec
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -98,7 +99,7 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	public Enchantment enchantment;
 	public boolean curseInfusionBonus = false;
-	
+
 	@Override
 	public int proc( Char attacker, Char defender, int damage ) {
 		
@@ -115,6 +116,13 @@ abstract public class Weapon extends KindOfWeapon {
 				GLog.p( Messages.get(Weapon.class, "identify") );
 				Badges.validateItemLevelAquired( this );
 			}
+		}
+
+		if (this instanceof MeleeWeapon && ((MeleeWeapon)this).innovationBonus != 0){
+			innovationLeft--;
+			if (innovationLeft == 5) GLog.w(Messages.get(Weapon.class, "innovation_msg"));
+			if (innovationLeft <= 0) innovationBonus = 0;
+			updateQuickslot();
 		}
 
 		return damage;
@@ -134,6 +142,11 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String CURSE_INFUSION_BONUS = "curse_infusion_bonus";
 	private static final String AUGMENT	        = "augment";
 
+	public int innovationBonus = 0;
+	public int innovationLeft = 0;
+	private static final String INNOVATION_BONUS	 = "innovation_bonus";
+	private static final String INNOVATION_LEFT 	 = "innovation_left";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
@@ -142,6 +155,9 @@ abstract public class Weapon extends KindOfWeapon {
 		bundle.put( ENCHANTMENT, enchantment );
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( AUGMENT, augment );
+
+		bundle.put( INNOVATION_BONUS, innovationBonus );
+		bundle.put( INNOVATION_LEFT, innovationLeft );
 	}
 	
 	@Override
@@ -153,6 +169,9 @@ abstract public class Weapon extends KindOfWeapon {
 		curseInfusionBonus = bundle.getBoolean( CURSE_INFUSION_BONUS );
 
 		augment = bundle.getEnum(AUGMENT, Augment.class);
+
+		innovationBonus = bundle.getInt( INNOVATION_BONUS );
+		innovationLeft = bundle.getInt( INNOVATION_LEFT );
 	}
 	
 	@Override
@@ -160,6 +179,9 @@ abstract public class Weapon extends KindOfWeapon {
 		super.reset();
 		usesLeftToID = USES_TO_ID;
 		availableUsesToID = USES_TO_ID/2f;
+		// for Innovator
+		innovationBonus = 0;
+		innovationLeft = 0;
 	}
 	
 	@Override
@@ -200,6 +222,10 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	public int STRReq(){
+		if (innovationBonus != 0){
+			return STRReq(level()+innovationBonus);
+		}
+
 		return STRReq(level());
 	}
 
@@ -214,10 +240,25 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int buffedLvl() {
 		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
+			if (innovationBonus != 0) {
+				return super.buffedLvl()+innovationBonus;
+			}
 			return super.buffedLvl();
 		} else {
 			return level();
 		}
+	}
+
+	public void setInnovation(int bonus, int left) {
+		this.innovationBonus = bonus;
+		this.innovationLeft = left;
+		if (this.level() >= 4){
+			this.innovationBonus--;
+			if (this.level() >= 8){
+				this.innovationBonus--;
+			}
+		}
+		if (this.innovationBonus < 0) this.innovationBonus = 0;
 	}
 	
 	@Override

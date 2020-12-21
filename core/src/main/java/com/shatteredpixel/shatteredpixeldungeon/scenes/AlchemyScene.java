@@ -26,7 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
@@ -401,6 +404,11 @@ public class AlchemyScene extends PixelScene {
 			);
 			
 			result = recipe.brew(ingredients);
+
+			if (Dungeon.hero.hasTalent(Talent.EXPERIMENTAL_BARRIER)) {
+				Buff.affect(Dungeon.hero, Barrier.class).setShield(2+2*Dungeon.hero.pointsInTalent(Talent.EXPERIMENTAL_BARRIER));
+			}
+
 		}
 		
 		if (result != null){

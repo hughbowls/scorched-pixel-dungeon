@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.GooWarn;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -82,6 +83,9 @@ public class ArcaneBomb extends Bomb {
 			// 100%/83%/67% bomb damage based on distance, but pierces armor.
 			int damage = Math.round(Random.NormalIntRange( Dungeon.depth+5, 10 + Dungeon.depth * 2 ));
 			float multiplier = 1f - (.16667f*Dungeon.level.distance(cell, ch.pos));
+			if (ch == Dungeon.hero &&  Dungeon.hero.pointsInTalent(Talent.GRENADIER) == 2) {
+				damage /= 2;
+			}
 			ch.damage(Math.round(damage*multiplier), this);
 			if (ch == Dungeon.hero && !ch.isAlive()){
 				Dungeon.fail(Bomb.class);

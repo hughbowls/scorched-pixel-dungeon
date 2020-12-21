@@ -49,7 +49,10 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 		if (Dungeon.isChallenged(Challenges.NO_HEALING)){
 			PotionOfHealing.pharmacophobiaProc(hero);
 		} else {
-			Buff.affect(hero, AquaHealing.class).set(Math.round(hero.HT * 1.5f));
+			int amt = Math.round(hero.HT * 1.5f);
+			if (hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 1) amt += amt*0.25f;
+			if (hero.pointsInTalent(Talent.ELIXIR_FORMULA) == 2) amt += amt*0.333f;
+			Buff.affect(hero, AquaHealing.class).set( (int)amt );
 			Talent.onHealingPotionUsed( hero );
 		}
 	}

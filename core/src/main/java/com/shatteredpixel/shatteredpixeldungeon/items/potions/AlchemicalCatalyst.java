@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
@@ -65,6 +67,18 @@ public class AlchemicalCatalyst extends Potion {
 		}
 		p.anonymize();
 		p.apply(hero);
+
+		if (hero.hasTalent(Talent.INVENTORS_INTUITION)){
+			hero.belongings.observe();
+
+			if (hero.pointsInTalent(Talent.INVENTORS_INTUITION) == 2){
+				for (Item item : hero.belongings.backpack) {
+					if (item instanceof EquipableItem) {
+						item.identify();
+					}
+				}
+			}
+		}
 	}
 	
 	@Override

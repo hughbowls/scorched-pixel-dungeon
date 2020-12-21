@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
@@ -72,6 +73,9 @@ public class ShockBomb extends Bomb {
 			if (power > 0){
 				//32% to 8% regular bomb damage
 				int damage = Math.round(Random.NormalIntRange(5 + Dungeon.depth, 10 + 2*Dungeon.depth) * (power/50f));
+				if (ch == Dungeon.hero &&  Dungeon.hero.pointsInTalent(Talent.GRENADIER) == 2) {
+					damage -= damage*0.666f;
+				}
 				ch.damage(damage, this);
 				if (ch.isAlive()) Buff.prolong(ch, Paralysis.class, power);
 				arcs.add(new Lightning.Arc(DungeonTilemap.tileCenterToWorld(cell), ch.sprite.center()));

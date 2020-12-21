@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -97,6 +96,12 @@ public class MeleeWeapon extends Weapon {
 				info += "\n\n" + Messages.get(Weapon.class, "stronger");
 				break;
 			case NONE:
+		}
+
+		if (innovationBonus != 0){
+			if (innovationLeft == 51){ // for sample output
+				info += "\n\n" + Messages.get(Weapon.class, "innovation_sample", innovationBonus, innovationLeft-1);
+			} else info += "\n\n" + Messages.get(Weapon.class, "innovation", innovationBonus, innovationLeft);
 		}
 
 		if (enchantment != null && (cursedKnown || !enchantment.curse())){

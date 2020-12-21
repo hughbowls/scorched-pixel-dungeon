@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.food;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -41,8 +43,8 @@ public class StewedMeat extends Food {
 		{
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{1};
-			
-			cost = 2;
+
+			cost = Math.max(0, 2-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
 			
 			output = StewedMeat.class;
 			outQuantity = 1;
@@ -53,8 +55,8 @@ public class StewedMeat extends Food {
 		{
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{2};
-			
-			cost = 3;
+
+			cost = Math.max(0, 3-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
 			
 			output = StewedMeat.class;
 			outQuantity = 2;
@@ -68,8 +70,8 @@ public class StewedMeat extends Food {
 		{
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{3};
-			
-			cost = 4;
+
+			cost = Math.max(0, 4-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
 			
 			output = StewedMeat.class;
 			outQuantity = 3;
