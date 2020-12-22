@@ -70,6 +70,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -256,19 +257,37 @@ public abstract class Recipe {
 	public static boolean usableInRecipe(Item item){
 
 		if (Dungeon.hero.subClass == HeroSubClass.INNOVATOR) {
+			if (item instanceof EquipableItem){
+				if (item instanceof MeleeWeapon){
+					if (!item.isIdentified()) return false;
+					if (item.isEquipped(Dungeon.hero)) return false;
+					if (item.cursed && !item.cursedKnown) {
+						if (((MeleeWeapon) item).curseInfusionBonus) {
+							return true;
+						} else return false;
+					}
+				} else if (item instanceof Armor){
+					if (!item.isIdentified()) return false;
+					if (item.isEquipped(Dungeon.hero)) return false;
+					if (item.cursed && !item.cursedKnown) {
+						if (((Armor) item).curseInfusionBonus) {
+							return true;
+						} else return false;
+					}
+				} else if (item instanceof AlchemistsToolkit && item.isIdentified()) return true;
+				else return false;
+			}
+			else if (item instanceof Pistol) return true;
+			else if (item instanceof Wand) return false;
+			else return true;
+		}
 
-		return (((item instanceof MeleeWeapon || item instanceof Armor) && item.isIdentified() && !item.isEquipped(Dungeon.hero))
-				|| item instanceof Pistol
-				|| (item instanceof AlchemistsToolkit && !item.cursed && item.isIdentified()))
-				&& !(item instanceof Wand);
-
-		} else
-
-		return !item.cursed
-				&& (!(item instanceof EquipableItem)
+			return !item.cursed
+					&& (!(item instanceof EquipableItem)
 					|| item instanceof Pistol
 					|| (item instanceof AlchemistsToolkit && item.isIdentified()))
-				&& !(item instanceof Wand);
+					&& !(item instanceof Wand);
+
 	}
 
 	public static class InnovationCounter extends CounterBuff {};
