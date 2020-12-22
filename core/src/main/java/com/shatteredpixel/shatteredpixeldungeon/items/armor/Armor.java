@@ -505,10 +505,8 @@ public class Armor extends EquipableItem {
 			case NONE:
 		}
 
-		if (innovationBonus != 0){
-			if (innovationLeft == 51){ // for sample output
-				info += "\n\n" + Messages.get(Armor.class, "innovation_sample", innovationBonus, innovationLeft-1);
-			} else info += "\n\n" + Messages.get(Armor.class, "innovation", innovationBonus, innovationLeft);
+		if (innovationBonus != 0) {
+			info += "\n\n" + Messages.get(Armor.class, "innovation", innovationBonus, innovationLeft);
 		}
 		
 		if (glyph != null  && (cursedKnown || !glyph.curse())) {

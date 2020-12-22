@@ -70,6 +70,15 @@ public class v0_9_X_Changes {
 						"- Starts with pistol and alchemist toolkit.\n\n" +
 						"- Including tier-1 and tier-2 talents, subclasses, and legendary armor ability."));
 
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes.hardlight(CharSprite.WARNING);
+		changeInfos.add(changes);
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed:\n" +
+						"_-_ Alchemy pot in the secret room crash\n" +
+						"_-_ Innovator related bugs"));
+
 		changes = new ChangeInfo("v0.9.1", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);

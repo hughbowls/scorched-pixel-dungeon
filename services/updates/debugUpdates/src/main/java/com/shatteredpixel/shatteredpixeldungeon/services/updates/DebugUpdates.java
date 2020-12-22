@@ -44,7 +44,7 @@ public class DebugUpdates extends UpdateService {
 
 		debugUpdateInfo = new AvailableUpdateData();
 		debugUpdateInfo.versionCode = Game.versionCode+1;
-		debugUpdateInfo.URL = "http://www.google.com";
+		debugUpdateInfo.URL = "https://github.com/dreamdream2020/scorched-pixel-dungeon/releases";
 
 		callback.onUpdateAvailable(debugUpdateInfo);
 

@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -109,6 +110,9 @@ public class Ring extends KindofMisc {
 			image = handler.image(this);
 			gem = handler.label(this);
 		}
+		// for Innovator
+		innovationBonus = 0;
+		innovationLeft = 0;
 	}
 	
 	public void activate( Char ch ) {
@@ -157,6 +161,10 @@ public class Ring extends KindofMisc {
 	public String info(){
 		
 		String desc = isKnown() ? super.desc() : Messages.get(this, "unknown_desc");
+
+		if (innovationBonus != 0){
+			desc += "\n\n" + Messages.get(Ring.class, "innovation", innovationBonus, innovationLeft);
+		}
 		
 		if (cursed && isEquipped( Dungeon.hero )) {
 			desc += "\n\n" + Messages.get(Ring.class, "cursed_worn");
@@ -262,16 +270,49 @@ public class Ring extends KindofMisc {
 
 	private static final String LEVELS_TO_ID    = "levels_to_ID";
 
+	public int innovationBonus = 0;
+	public int innovationLeft = 0;
+	private static final String INNOVATION_BONUS	 = "innovation_bonus";
+	private static final String INNOVATION_LEFT 	 = "innovation_left";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( LEVELS_TO_ID, levelsToID );
+
+		bundle.put( INNOVATION_BONUS, innovationBonus );
+		bundle.put( INNOVATION_LEFT, innovationLeft );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		levelsToID = bundle.getFloat( LEVELS_TO_ID );
+
+		innovationBonus = bundle.getInt( INNOVATION_BONUS );
+		innovationLeft = bundle.getInt( INNOVATION_LEFT );
+	}
+
+	public void setInnovation(int bonus, int left) {
+		this.innovationBonus = bonus;
+		this.innovationLeft = left;
+		if (this.level() >= 4){
+			this.innovationBonus--;
+			if (this.level() >= 8){
+				this.innovationBonus--;
+			}
+		}
+		if (this.innovationBonus < 0) this.innovationBonus = 0;
+	}
+
+	@Override
+	public int visiblyUpgraded() {
+		return levelKnown ? level() : 0;
+	}
+
+	@Override
+	public int buffedVisiblyUpgraded() {
+		return levelKnown ? buffedLvl()+innovationBonus : 0;
 	}
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){
@@ -304,17 +345,17 @@ public class Ring extends KindofMisc {
 	
 	public int soloBonus(){
 		if (cursed){
-			return Math.min( 0, Ring.this.level()-2 );
+			return Math.min( 0, Ring.this.level()-2 +innovationBonus );
 		} else {
-			return Ring.this.level()+1;
+			return Ring.this.level()+1 +innovationBonus;
 		}
 	}
 
 	public int soloBuffedBonus(){
 		if (cursed){
-			return Math.min( 0, Ring.this.buffedLvl()-2 );
+			return Math.min( 0, Ring.this.buffedLvl()-2 +innovationBonus );
 		} else {
-			return Ring.this.buffedLvl()+1;
+			return Ring.this.buffedLvl()+1 +innovationBonus;
 		}
 	}
 
@@ -324,7 +365,7 @@ public class Ring extends KindofMisc {
 		public boolean act() {
 			
 			spend( TICK );
-			
+
 			return true;
 		}
 

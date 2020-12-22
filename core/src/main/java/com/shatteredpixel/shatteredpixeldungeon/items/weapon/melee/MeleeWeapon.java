@@ -99,9 +99,7 @@ public class MeleeWeapon extends Weapon {
 		}
 
 		if (innovationBonus != 0){
-			if (innovationLeft == 51){ // for sample output
-				info += "\n\n" + Messages.get(Weapon.class, "innovation_sample", innovationBonus, innovationLeft-1);
-			} else info += "\n\n" + Messages.get(Weapon.class, "innovation", innovationBonus, innovationLeft);
+			info += "\n\n" + Messages.get(Weapon.class, "innovation", innovationBonus, innovationLeft);
 		}
 
 		if (enchantment != null && (cursedKnown || !enchantment.curse())){

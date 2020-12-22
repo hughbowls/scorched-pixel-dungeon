@@ -46,11 +46,6 @@ public class Alchemy extends Blob implements AlchemyScene.AlchemyProvider {
 					if (off[cell] > 0 && Dungeon.level.heroFOV[cell]){
 						Notes.add( Notes.Landmark.ALCHEMY );
 					}
-
-					if (hero.heroClass == HeroClass.ALCHEMIST
-						&& !Dungeon.level.mapped[alchPos]){
-						Dungeon.level.mapped[alchPos] = true;
-					}
 				}
 			}
 		}

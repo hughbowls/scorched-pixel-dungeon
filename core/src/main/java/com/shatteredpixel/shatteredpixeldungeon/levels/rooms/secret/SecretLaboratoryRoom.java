@@ -21,8 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
@@ -43,6 +45,8 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.HashMap;
+
+import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class SecretLaboratoryRoom extends SecretRoom {
 	
@@ -72,6 +76,11 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		Painter.set( level, pot, Terrain.ALCHEMY );
 		
 		Blob.seed( pot.x + level.width() * pot.y, 1+Random.NormalIntRange(20, 30), Alchemy.class, level );
+
+		if (hero.heroClass == HeroClass.ALCHEMIST
+				&& !Dungeon.level.mapped[(pot.x + level.width() * pot.y)]){
+			Dungeon.level.mapped[(pot.x + level.width() * pot.y)] = true;
+		}
 		
 		int n = Random.IntRange( 2, 3 );
 		HashMap<Class<? extends Potion>, Float> chances = new HashMap<>(potionChances);

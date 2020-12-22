@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.InnovationSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -94,7 +95,9 @@ public class WndBag extends WndTabbed {
 		TRANMSUTABLE,
 		ALCHEMY,
 		RECYCLABLE,
-		NOT_EQUIPPED
+		NOT_EQUIPPED,
+
+		INNOVATIONABLE
 	}
 
 	protected static final int COLS_P   = 5;
@@ -452,6 +455,7 @@ public class WndBag extends WndTabbed {
 						mode == Mode.TRANMSUTABLE && ScrollOfTransmutation.canTransmute(item) ||
 						mode == Mode.NOT_EQUIPPED && !item.isEquipped(Dungeon.hero) ||
 						mode == Mode.RECYCLABLE && Recycle.isRecyclable(item) ||
+						mode == Mode.INNOVATIONABLE && InnovationSpell.isInnovationable(item) ||
 						mode == Mode.ALL
 					);
 				}

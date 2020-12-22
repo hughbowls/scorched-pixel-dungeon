@@ -88,6 +88,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
@@ -143,6 +144,8 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+
+import static com.shatteredpixel.shatteredpixeldungeon.items.Item.updateQuickslot;
 
 public class Hero extends Char {
 
@@ -1492,6 +1495,18 @@ public class Hero extends Char {
 		
 		boolean levelUp = false;
 		while (this.exp >= maxExp()) {
+
+			if (belongings.ring != null){
+				if (belongings.ring.innovationBonus != 0){
+					if (belongings.ring.innovationBonus != 0){
+						belongings.ring.innovationLeft--;
+						if (belongings.ring.innovationLeft == 1) GLog.w(Messages.get(Ring.class, "innovation_msg"));
+						if (belongings.ring.innovationLeft <= 0) belongings.ring.innovationBonus = 0;
+						updateQuickslot();
+					}
+				}
+			}
+
 			this.exp -= maxExp();
 			if (lvl < MAX_LEVEL) {
 				lvl++;
@@ -1531,7 +1546,7 @@ public class Hero extends Char {
 				}
 			}
 			
-			Item.updateQuickslot();
+			updateQuickslot();
 			
 			Badges.validateLevelReached();
 		}

@@ -21,17 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
@@ -50,7 +41,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfIc
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
@@ -59,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.ArcaneCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.CurseInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.FeatherFall;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.InnovationSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalInfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.MagicalPorter;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.PhaseShift;
@@ -67,12 +58,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -185,9 +170,9 @@ public abstract class Recipe {
 		new AlchemistsToolkit.upgradeKit(),
 		new Scroll.ScrollToStone(),
 		new StewedMeat.oneMeat(),
-		new Innovation()
+		new InnovationSpell.Recipe()
 	};
-	
+
 	private static Recipe[] twoIngredientRecipes = new Recipe[]{
 		new Blandfruit.CookFruit(),
 		new Bomb.EnhanceBomb(),
@@ -254,104 +239,12 @@ public abstract class Recipe {
 		return null;
 	}
 	
-	public static boolean usableInRecipe(Item item){
-
-		if (Dungeon.hero.subClass == HeroSubClass.INNOVATOR) {
-			if (item instanceof EquipableItem){
-				if (item instanceof MeleeWeapon){
-					if (!item.isIdentified()) return false;
-					if (item.isEquipped(Dungeon.hero)) return false;
-					if (item.cursed && !item.cursedKnown) {
-						if (((MeleeWeapon) item).curseInfusionBonus) {
-							return true;
-						} else return false;
-					}
-				} else if (item instanceof Armor){
-					if (!item.isIdentified()) return false;
-					if (item.isEquipped(Dungeon.hero)) return false;
-					if (item.cursed && !item.cursedKnown) {
-						if (((Armor) item).curseInfusionBonus) {
-							return true;
-						} else return false;
-					}
-				} else if (item instanceof AlchemistsToolkit && item.isIdentified()) return true;
-				else return false;
-			}
-			else if (item instanceof Pistol) return true;
-			else if (item instanceof Wand) return false;
-			else return true;
-		}
-
-			return !item.cursed
-					&& (!(item instanceof EquipableItem)
-					|| item instanceof Pistol
-					|| (item instanceof AlchemistsToolkit && item.isIdentified()))
-					&& !(item instanceof Wand);
-
-	}
-
-	public static class InnovationCounter extends CounterBuff {};
-
-	public static class Innovation extends Recipe {
-
-		@Override
-		public boolean testIngredients(ArrayList<Item> ingredients) {
-			if (Dungeon.hero.subClass != HeroSubClass.INNOVATOR) return false;
-
-			if (ingredients.size() != 1) return false;
-
-			if (!ingredients.get(0).isIdentified())
-				return false;
-			if (ingredients.get(0).isEquipped(Dungeon.hero))
-				return false;
-
-			if (!(ingredients.get(0) instanceof MeleeWeapon
-					|| ingredients.get(0) instanceof Armor))
-				return false;
-
-			return true;
-		}
-
-		@Override
-		public int cost(ArrayList<Item> ingredients) {
-			Innovation.InnovationCounter i = Dungeon.hero.buff(Innovation.InnovationCounter.class);
-			if (i != null) {
-				int adjust = 5 + 5*(int)(i.count());
-				return adjust <= 75 ? adjust : 75;
-			} else return 5;
-		}
-
-		@Override
-		public Item brew(ArrayList<Item> ingredients) {
-			if (!testIngredients(ingredients)) return null;
-			Innovation.InnovationCounter i = Dungeon.hero.buff(Innovation.InnovationCounter.class);
-			if (i == null) Buff.count(Dungeon.hero, Innovation.InnovationCounter.class, 1);
-			else i.countUp(1);
-			Item result = ingredients.get(0);
-
-			if (ingredients.get(0) instanceof MeleeWeapon) {
-				((Weapon)result).setInnovation(3, 50);
-			} if (ingredients.get(0) instanceof Armor) {
-				((Armor)result).setInnovation(3, 50);
-			}
-
-			ingredients.get(0).detach(Dungeon.hero.belongings.backpack);
-			return result;
-		}
-
-		@Override
-		public Item sampleOutput(ArrayList<Item> ingredients) {
-			if (!testIngredients(ingredients)) return null;
-
-			Item sample = ingredients.get(0);
-
-			if (ingredients.get(0) instanceof MeleeWeapon) {
-				((Weapon)sample).setInnovation(3, 51);
-			} if (ingredients.get(0) instanceof Armor) {
-				((Armor)sample).setInnovation(3, 51);
-			}
-			return sample;
-		}
+	public static boolean usableInRecipe(Item item) {
+		return !item.cursed
+				&& (!(item instanceof EquipableItem)
+				|| item instanceof Pistol
+				|| (item instanceof AlchemistsToolkit && item.isIdentified()))
+				&& !(item instanceof Wand);
 	}
 }
 
