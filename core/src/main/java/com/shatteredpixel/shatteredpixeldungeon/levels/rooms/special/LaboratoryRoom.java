@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.AlchemyPage;
@@ -40,8 +39,6 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class LaboratoryRoom extends SpecialRoom {
 
@@ -66,10 +63,6 @@ public class LaboratoryRoom extends SpecialRoom {
 		
 		int chapter = 1 + Dungeon.depth/5;
 		Blob.seed( pot.x + level.width() * pot.y, 1 + chapter*10 + Random.NormalIntRange(0, 10), Alchemy.class, level );
-		if (hero.heroClass == HeroClass.ALCHEMIST
-				&& !Dungeon.level.mapped[(pot.x + level.width() * pot.y)]){
-			Dungeon.level.mapped[(pot.x + level.width() * pot.y)] = true;
-		}
 		
 		int n = Random.NormalIntRange( 1, 3 );
 		for (int i=0; i < n; i++) {

@@ -22,13 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Alchemy extends Blob implements AlchemyScene.AlchemyProvider {
 

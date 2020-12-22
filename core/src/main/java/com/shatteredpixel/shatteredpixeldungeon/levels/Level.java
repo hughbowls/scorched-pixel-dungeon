@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SmokeScreen;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
@@ -653,6 +654,13 @@ public abstract class Level implements Bundlable {
 		if (s != null && s.volume > 0){
 			for (int i=0; i < length(); i++) {
 				losBlocking[i] = losBlocking[i] || s.cur[i] > 0;
+			}
+		}
+
+		Alchemy a = (Alchemy)blobs.get(Alchemy.class);
+		if (a != null && a.volume > 0 && hero.heroClass == HeroClass.ALCHEMIST){
+			for (int i=0; i < length(); i++) {
+				mapped[i] = mapped[i] || a.cur[i] > 0;
 			}
 		}
 
