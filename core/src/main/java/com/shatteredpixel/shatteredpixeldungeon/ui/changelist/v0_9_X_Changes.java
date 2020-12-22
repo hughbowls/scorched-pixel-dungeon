@@ -76,7 +76,8 @@ public class v0_9_X_Changes {
 
 		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed:\n" +
-						"_-_ Alchemy pot in the secret room crash\n" +
+						"_-_ Alchemy pot in the secret room crash (report by Hoto-Mocha)\n" +
+						"_-_ Pistol can infused by elixirs (report by Hoto-Mocha)\n" +
 						"_-_ Innovator related bugs"));
 
 		changes = new ChangeInfo("v0.9.1", true, "");

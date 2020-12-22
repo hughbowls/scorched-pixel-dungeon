@@ -78,6 +78,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.ShockingBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfAdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCorrosiveGas;
@@ -814,9 +815,10 @@ public class Pistol extends Weapon {
 			if (ingredients.get(0) instanceof Pistol) {
 				if (!(ingredients.get(1) instanceof Potion)) {
 					return false;
-				}
+				} else if (ingredients.get(1) instanceof Elixir) return false;
 			} else if (ingredients.get(0) instanceof Potion) {
-				if (ingredients.get(1) instanceof Pistol) {
+				if (ingredients.get(0) instanceof Elixir) return false;
+				else if (ingredients.get(1) instanceof Pistol) {
 					Item temp = ingredients.get(0);
 					ingredients.set(0, ingredients.get(1));
 					ingredients.set(1, temp);
