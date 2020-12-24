@@ -211,7 +211,9 @@ abstract public class Weapon extends KindOfWeapon {
 
 		float DLY = augment.delayFactor(this.DLY);
 
-		DLY *= RingOfFuror.attackDelayMultiplier(owner);
+		if (!(this instanceof Pistol)) {
+			DLY *= RingOfFuror.attackDelayMultiplier(owner);
+		}
 
 		return (encumbrance > 0 ? (float)(DLY * Math.pow( 1.2, encumbrance )) : DLY);
 	}
