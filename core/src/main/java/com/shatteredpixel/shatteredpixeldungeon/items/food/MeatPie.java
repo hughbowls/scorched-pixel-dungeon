@@ -78,8 +78,12 @@ public class MeatPie extends Food {
 		
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			return 	6 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)		//LV1 LV2 NONE
-					? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 3 : 0);
+			if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 1){
+				return 5;
+			} if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 2){
+				return 3;
+			}
+			return 6;
 		}
 		
 		@Override

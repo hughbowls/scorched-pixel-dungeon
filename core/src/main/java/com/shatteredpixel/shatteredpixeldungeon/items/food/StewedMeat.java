@@ -38,14 +38,21 @@ public class StewedMeat extends Food {
 	public int value() {
 		return 8 * quantity;
 	}
+
+	public static int setFood_alchemy() {
+		if (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)){
+			if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 1) return 1;
+			else if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 2) return 3;
+			else return 0;
+		} else return 0;
+	}
 	
 	public static class oneMeat extends Recipe.SimpleRecipe{
 		{
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{1};
 
-			cost = 	2 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)	//LV1 LV2 NONE
-				? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 2 : 0);
+			cost = 2 - setFood_alchemy();
 			
 			output = StewedMeat.class;
 			outQuantity = 1;
@@ -57,8 +64,7 @@ public class StewedMeat extends Food {
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{2};
 
-			cost = 3 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)	    //LV1 LV2 NONE
-				? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 2 : 0);
+			cost = 3 - setFood_alchemy();
 			
 			output = StewedMeat.class;
 			outQuantity = 2;
@@ -73,9 +79,8 @@ public class StewedMeat extends Food {
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{3};
 
-			cost = 4 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)	    //LV1 LV2 NONE
-			 	? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 3 : 0);
-			
+			cost = 4 - setFood_alchemy();
+
 			output = StewedMeat.class;
 			outQuantity = 3;
 		}
