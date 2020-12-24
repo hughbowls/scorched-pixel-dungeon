@@ -104,9 +104,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Flail;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -1124,7 +1126,9 @@ public class Hero extends Char {
 			}
 			break;
 		case BLOODKNIGHT:
-			if (wep instanceof MeleeWeapon && ((MeleeWeapon)wep).hasCurseEnchant()){
+			if ((wep instanceof MeleeWeapon && ((MeleeWeapon)wep).hasCurseEnchant())
+					|| (wep instanceof Dart && belongings.weapon instanceof Crossbow
+						&& ((MeleeWeapon)belongings.weapon).hasCurseEnchant())){
 				if (enemy.isAlive() && Random.Int(3) == 0)
 					Buff.affect(enemy, Bleeding.class).set( Math.round(damage*0.25f) );
 			}

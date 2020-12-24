@@ -40,14 +40,14 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 
 public class ScrollOfUpgrade extends InventoryScroll {
-	
+
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_UPGRADE;
 		mode = WndBag.Mode.UPGRADEABLE;
 
 		unique = true;
 	}
-	
+
 	@Override
 	protected void onItemSelected( Item item ) {
 
@@ -65,12 +65,8 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 			w.upgrade();
 
-			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant()){
-				if (Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
-					// preserve curse
-				} else {
-					removeCurse( Dungeon.hero );
-				}
+			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant() && !curUser.hasTalent(Talent.ENHANCED_CURSE)){
+				removeCurse( Dungeon.hero );
 			} else if (w.cursedKnown && wasCursed && !w.cursed){
 				weakenCurse( Dungeon.hero );
 			}
@@ -86,12 +82,8 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 			a.upgrade();
 
-			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph()){
-				if (Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
-					// preserve curse
-				} else {
-					removeCurse( Dungeon.hero );
-				}
+			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph() && !curUser.hasTalent(Talent.ENHANCED_CURSE)){
+				removeCurse( Dungeon.hero );
 			} else if (a.cursedKnown && wasCursed && !a.cursed){
 				weakenCurse( Dungeon.hero );
 			}
@@ -113,12 +105,12 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		}
 
 		Talent.onUpgradeScrollUsed( Dungeon.hero );
-		
+
 		Badges.validateItemLevelAquired( item );
 		Statistics.upgradesUsed++;
 		Badges.validateMageUnlock();
 	}
-	
+
 	public static void upgrade( Hero hero ) {
 		hero.sprite.emitter().start( Speck.factory( Speck.UP ), 0.2f, 3 );
 	}
@@ -132,7 +124,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		GLog.p( Messages.get(ScrollOfUpgrade.class, "remove_curse") );
 		hero.sprite.emitter().start( ShadowParticle.UP, 0.05f, 10 );
 	}
-	
+
 	@Override
 	public int value() {
 		return isKnown() ? 50 * quantity : super.value();

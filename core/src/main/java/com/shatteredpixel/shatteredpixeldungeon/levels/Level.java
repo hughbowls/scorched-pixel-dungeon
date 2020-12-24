@@ -978,7 +978,7 @@ public abstract class Level implements Bundlable {
 				Door.enter( ch.pos );
 
 				if (ch == hero && hero.heroClass == HeroClass.HERETIC){
-					Buff.prolong(hero, Bulk.HereticBulkProc.class, hero.speed()*2);
+					Buff.affect(hero, Bulk.HereticBulkProc.class, 1+(hero.speed()*2));
 				}
 			}
 		}

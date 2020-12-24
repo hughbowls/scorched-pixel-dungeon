@@ -863,7 +863,7 @@ public abstract class Char extends Actor {
 			Door.leave( pos );
 
 			if (this == Dungeon.hero && Dungeon.hero.heroClass == HeroClass.HERETIC){
-				Buff.prolong(hero, Bulk.HereticBulkProc.class, Dungeon.hero.speed());
+				Buff.affect(hero, Bulk.HereticBulkProc.class, 1+(Dungeon.hero.speed())*2);
 			}
 		}
 

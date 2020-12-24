@@ -67,7 +67,9 @@ public class Overgrowth extends Armor.Glyph {
 			if (hero.heroClass == HeroClass.HERETIC){
 				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
 					float pow = 5f + Random.NormalFloat(armor.buffedLvl()*0.5f, armor.buffedLvl()*1.5f);
-					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+					if (mob.alignment != Char.Alignment.ALLY
+							&& mob.alignment != Char.Alignment.NEUTRAL
+							&& Dungeon.level.heroFOV[mob.pos]) {
 						Buff.affect(mob, Roots.class, pow);
 						CellEmitter.get( mob.pos ).burst( LeafParticle.LEVEL_SPECIFIC, 10 );
 					}

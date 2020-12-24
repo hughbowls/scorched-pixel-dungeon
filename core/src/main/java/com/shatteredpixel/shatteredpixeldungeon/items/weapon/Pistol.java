@@ -572,6 +572,11 @@ public class Pistol extends Weapon {
 				}
 			}
 
+			if (curUser.subClass == HeroSubClass.TRAILBLAZER
+					&& defender.HP <= damage){
+				Buff.affect(curUser, Reaction.class);
+			}
+
 			return Pistol.this.proc(attacker, defender, damage);
 		}
 

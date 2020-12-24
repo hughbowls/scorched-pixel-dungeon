@@ -48,7 +48,9 @@ public class Polarized extends Weapon.Enchantment {
 			if (hero.heroClass == HeroClass.HERETIC){
 				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
 					float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
-					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+					if (mob.alignment != Char.Alignment.ALLY
+							&& mob.alignment != Char.Alignment.NEUTRAL
+							&& Dungeon.level.heroFOV[mob.pos]) {
 						Buff.affect(mob, Vulnerable.class, pow);
 						mob.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
 					}
