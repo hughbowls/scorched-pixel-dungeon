@@ -483,7 +483,7 @@ public class Hero extends Char {
 			if (belongings.armor != null && (belongings.armor.cursed
 					|| ((Armor)belongings.armor).hasCurseGlyph()))
 				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dr += 1;
-				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dr += 3;
+				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dr += 2;
 		}
 		
 		return dr;
@@ -1198,7 +1198,7 @@ public class Hero extends Char {
 				if (belongings.armor != null && (belongings.armor.cursed
 						|| ((Armor)belongings.armor).hasCurseGlyph()))
 					if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dmg -= 1;
-				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dmg -= 3;
+				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dmg -= 2;
 			}
 		}
 
@@ -1502,6 +1502,16 @@ public class Hero extends Char {
 						belongings.ring.innovationLeft--;
 						if (belongings.ring.innovationLeft == 1) GLog.w(Messages.get(Ring.class, "innovation_msg"));
 						if (belongings.ring.innovationLeft <= 0) belongings.ring.innovationBonus = 0;
+						updateQuickslot();
+					}
+				}
+			}
+			if (belongings.misc != null){
+				if (((Ring)belongings.misc).innovationBonus != 0){
+					if (((Ring)belongings.misc).innovationBonus != 0){
+						((Ring)belongings.misc).innovationLeft--;
+						if (((Ring)belongings.misc).innovationLeft == 1) GLog.w(Messages.get(Ring.class, "innovation_msg"));
+						if (((Ring)belongings.misc).innovationLeft <= 0) ((Ring)belongings.misc).innovationBonus = 0;
 						updateQuickslot();
 					}
 				}

@@ -44,7 +44,8 @@ public class StewedMeat extends Food {
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{1};
 
-			cost = Math.max(0, 2-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
+			cost = 	2 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)	//LV1 LV2 NONE
+				? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 2 : 0);
 			
 			output = StewedMeat.class;
 			outQuantity = 1;
@@ -56,7 +57,8 @@ public class StewedMeat extends Food {
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{2};
 
-			cost = Math.max(0, 3-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
+			cost = 3 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)	    //LV1 LV2 NONE
+				? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 2 : 0);
 			
 			output = StewedMeat.class;
 			outQuantity = 2;
@@ -71,7 +73,8 @@ public class StewedMeat extends Food {
 			inputs =  new Class[]{MysteryMeat.class};
 			inQuantity = new int[]{3};
 
-			cost = Math.max(0, 4-Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY));
+			cost = 4 - (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)	    //LV1 LV2 NONE
+			 	? (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY)) == 2 ? 1 : 3 : 0);
 			
 			output = StewedMeat.class;
 			outQuantity = 3;

@@ -546,7 +546,7 @@ public class Pistol extends Weapon {
 				else if (Pistol.this.potionAttrib instanceof PotionOfStamina)
 					damage -= damage * 0.333f;
 				else if (Pistol.this.potionAttrib instanceof PotionOfCleansing)
-					PotionOfPurity.purify(curUser.pos);
+					PotionOfPurity.purify(attacker.pos);
 				else if (Pistol.this.potionAttrib instanceof PotionOfStormClouds) {
 					ArrayList<Char> affected = new ArrayList<>();
 					ArrayList<Lightning.Arc> arcs = new ArrayList<>();

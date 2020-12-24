@@ -172,10 +172,6 @@ public class Bomb extends Item {
 				}
 			}
 
-			if (curUser.hasTalent(Talent.GRENADIER)) {
-				Dungeon.level.drop(new Bomb.Grenade(), cell).sprite.drop();
-			}
-			
 			for (Char ch : affected){
 
 				//if they have already been killed by another bomb
@@ -410,7 +406,38 @@ public class Bomb extends Item {
 
 		@Override
 		public int value() {
-			return 5 * quantity;
+			return 0;
+		}
+
+		public static class GrenadeRecipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe {
+
+			@Override
+			public boolean testIngredients(ArrayList<Item> ingredients) {
+				if (!Dungeon.hero.hasTalent(Talent.GRENADIER)) return false;
+				for (Item ingredient : ingredients){
+					if (ingredient.quantity() != 1) {
+						return false;
+					} else if (ingredient instanceof Bomb) {
+						return true;
+					} else return false;
+				} return false;
+			}
+
+			@Override
+			public int cost(ArrayList<Item> ingredients) { return 	0; }
+
+			@Override
+			public Item brew(ArrayList<Item> ingredients) {
+				if (!testIngredients(ingredients)) return null;
+				for (Item ingredient : ingredients)
+					ingredient.quantity(ingredient.quantity() - 1);
+				return sampleOutput(null);
+			}
+
+			@Override
+			public Item sampleOutput(ArrayList<Item> ingredients) {
+				return new Grenade().quantity(3);
+			}
 		}
 	}
 	

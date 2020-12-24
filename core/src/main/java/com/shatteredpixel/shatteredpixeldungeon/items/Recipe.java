@@ -170,7 +170,8 @@ public abstract class Recipe {
 		new AlchemistsToolkit.upgradeKit(),
 		new Scroll.ScrollToStone(),
 		new StewedMeat.oneMeat(),
-		new InnovationSpell.Recipe()
+		new InnovationSpell.Recipe(),
+		new Bomb.Grenade.GrenadeRecipe()
 	};
 
 	private static Recipe[] twoIngredientRecipes = new Recipe[]{
