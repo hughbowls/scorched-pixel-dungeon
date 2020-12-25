@@ -1510,7 +1510,7 @@ public class Hero extends Char {
 					}
 				}
 			}
-			if (belongings.misc != null){
+			if (belongings.misc != null && belongings.misc instanceof Ring){
 				if (((Ring)belongings.misc).innovationBonus != 0){
 					if (((Ring)belongings.misc).innovationBonus != 0){
 						((Ring)belongings.misc).innovationLeft--;
