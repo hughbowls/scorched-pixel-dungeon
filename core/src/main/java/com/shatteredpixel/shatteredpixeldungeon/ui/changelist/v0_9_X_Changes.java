@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Displacement;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
@@ -74,11 +75,35 @@ public class v0_9_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
+		changes.addButton( new ChangeButton(new Image(Assets.Sprites.ALCHEMIST, 0, 90, 12, 15), "Buff Trailblazer",
+				"Now also gain Reaction when defeat enemies by his pistol."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 112, 80, 16, 16), Talent.GRENADIER.title(),
+				"Alchemist's _Grenadier_ is now unlock recipe to convert 1 bomb into 3 grenades. 66% Explosion resistance is still on lv2."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 48, 64, 16, 16), Talent.MALEVOLENT_ARMOR.title(),
+				"Heretic's _Malevolent Armor_ lv2 will give less DR, down to +2 from +3."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 128, 64, 16, 16), Talent.WRAITH_DECEPTION.title(),
+				"Heretic's _Wraith Deception_ is now grant ability to corrupt wraith when the heretic defeats it. Also, lv2 effect is changed into shielding his wraith."));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARMOR_MAIL, new Displacement().glowing()), "Heretic's Displacement Armor",
+				"Now works like glyph of entanglement, you can nullify its effect by move other tile."));
+
 		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed:\n" +
 						"_-_ Alchemy pot in the secret room crash (report by Hoto-Mocha)\n" +
 						"_-_ Pistol can infused by elixirs (report by Hoto-Mocha)\n" +
-						"_-_ Innovator related bugs"));
+						"_-_ Innovator related bugs\n" +
+						"_-_ Bloodknight related bugs\n" +
+						"_-_ Wands of bugs (report by Hoto-Mocha, alphapsu)\n" +
+						"_-_ Misc slot causing crash (report by dubjei, jjp8000)\n" +
+						"_-_ Alchemy pot contains bugs (report by Bowuigi, Hoto-Mocha)\n" +
+						"_-_ Alchemist's Food Alchemy bug (report by Citro3)\n" +
+						"_-_ Heretic's curse affects natural actors (report by Hoto-Mocha)\n" +
+						"_-_ Heretic's Curse Mastery bug (report by Hoto-Mocha)\n" +
+						"_-_ Alchemist can't ends game by escape to surface (report by Hoto-Mocha)\n" +
+						"\nAlways, Thanks to reports!"));
 
 		changes = new ChangeInfo("v0.9.1", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
