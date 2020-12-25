@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ParalyticGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Regrowth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -259,6 +260,9 @@ public class CursedWand {
 
 			//shock and recharge
 			case 3:
+				if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2){
+					Buff.affect(user, Barrier.class).setShield((2+Dungeon.depth)*2);
+				}
 				new ShockingTrap().set( user.pos ).activate();
 				Buff.prolong(user, Recharging.class, Recharging.DURATION);
 				ScrollOfRecharging.charge(user);

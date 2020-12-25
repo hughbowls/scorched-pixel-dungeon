@@ -84,6 +84,9 @@ public class v0_9_X_Changes {
 		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 48, 64, 16, 16), Talent.MALEVOLENT_ARMOR.title(),
 				"Heretic's _Malevolent Armor_ lv2 will give less DR, down to +2 from +3."));
 
+		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 112, 64, 16, 16), Talent.CHAOS_ADEPT.title(),
+				"Heretic's _Chaos Adept_ lv2 will grant barrier when it cause 'electric storm of recharging'."));
+
 		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 128, 64, 16, 16), Talent.WRAITH_DECEPTION.title(),
 				"Heretic's _Wraith Deception_ is now grant ability to corrupt wraith when the heretic defeats it. Also, lv2 effect is changed into shielding his wraith."));
 

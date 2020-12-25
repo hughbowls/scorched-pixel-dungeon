@@ -108,6 +108,7 @@ public class BloodKnightTrigger extends Buff implements ActionIndicator.Action {
 			if (cell == null) return;
 			final Char enemy = Actor.findChar( cell );
 			if (enemy == null
+					|| enemy == Dungeon.hero
 					|| !Dungeon.level.heroFOV[cell]
 					|| enemy.buff(Bleeding.class) == null
 					|| enemy.isInvulnerable(target.getClass())){
