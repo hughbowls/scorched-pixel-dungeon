@@ -131,7 +131,7 @@ public class Wraith extends Mob {
 	@Override
 	public int defenseProc(Char enemy, int damage) {
 
-		if (((Hero)enemy).hasTalent(Talent.WRAITH_DECEPTION)){
+		if (enemy instanceof Hero && ((Hero)enemy).hasTalent(Talent.WRAITH_DECEPTION)){
 			Buff.affect(this, Corruption.class);
 			if (((Hero)enemy).pointsInTalent(Talent.WRAITH_DECEPTION) == 2){
 				Buff.affect(this, Barrier.class).setShield(1 + (int)(Dungeon.depth * 0.75f));
