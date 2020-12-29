@@ -227,9 +227,6 @@ public enum HeroClass {
 
 		new ScrollOfRemoveCurse().identify();
 		new PotionOfPurity().identify();
-
-		new ArmorKit().collect();
-		new PotionOfExperience().quantity(12).collect();
 	}
 
 	private static void initAlchemist(Hero hero ) {
