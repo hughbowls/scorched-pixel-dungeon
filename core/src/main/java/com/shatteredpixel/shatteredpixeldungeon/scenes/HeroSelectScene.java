@@ -392,6 +392,12 @@ public class HeroSelectScene extends PixelScene {
 							new ItemSprite(ItemSpriteSheet.ARTIFACT_TOOLKIT, null)
 					};
 					break;
+				case ELEMENTALIST:
+					tabIcons = new Image[]{
+							Icons.get(Icons.ELEMENTALIST),
+							new ItemSprite(ItemSpriteSheet.ARMOR_ELEMENTALIST_BASIC, null)
+					};
+					break;
 			}
 
 			tab = new IconTab( tabIcons[0] ){

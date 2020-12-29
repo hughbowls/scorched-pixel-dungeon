@@ -25,11 +25,13 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.ArmorKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.MailArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
@@ -48,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
@@ -72,7 +75,8 @@ public enum HeroClass {
 	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	HERETIC("heretic", HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT),
-	ALCHEMIST("alchemist", HeroSubClass.TRAILBLAZER, HeroSubClass.INNOVATOR);
+	ALCHEMIST("alchemist", HeroSubClass.TRAILBLAZER, HeroSubClass.INNOVATOR),
+	ELEMENTALIST("elementalist", HeroSubClass.SPELLWEAVER, HeroSubClass.TEMPEST);
 
 	private String title;
 	private HeroSubClass[] subClasses;
@@ -112,6 +116,10 @@ public enum HeroClass {
 
 			case ALCHEMIST:
 				initAlchemist( hero );
+				break;
+
+			case ELEMENTALIST:
+				initElementalist( hero );
 				break;
 		}
 
@@ -250,6 +258,22 @@ public enum HeroClass {
 		new PotionOfStrength().identify();
 	}
 
+	private static void initElementalist(Hero hero ) {
+
+		new PotionBandolier().collect();
+		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
+		new ScrollHolder().collect();
+		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+
+		new LeatherArmor().identify().collect();
+		new MailArmor().identify().collect();
+		new ScaleArmor().identify().collect();
+		new PlateArmor().identify().collect();
+
+		new ScrollOfTeleportation().identify();
+		new PotionOfExperience().identify();
+	}
+
 	public String title() {
 		return Messages.get(HeroClass.class, title);
 	}
@@ -272,6 +296,8 @@ public enum HeroClass {
 				return Assets.Sprites.HERETIC;
 			case ALCHEMIST:
 				return Assets.Sprites.ALCHEMIST;
+			case ELEMENTALIST:
+				return Assets.Sprites.ELEMENTALIST;
 		}
 	}
 
@@ -289,6 +315,8 @@ public enum HeroClass {
 				return Assets.Splashes.HERETIC;
 			case ALCHEMIST:
 				return Assets.Splashes.ALCHEMIST;
+			case ELEMENTALIST:
+				return Assets.Splashes.ELEMENTALIST;
 		}
 	}
 	
@@ -341,6 +369,14 @@ public enum HeroClass {
 						Messages.get(HeroClass.class, "alchemist_perk3"),
 						Messages.get(HeroClass.class, "alchemist_perk4"),
 						Messages.get(HeroClass.class, "alchemist_perk5"),
+				};
+			case ELEMENTALIST:
+				return new String[]{
+						Messages.get(HeroClass.class, "elementalist_perk1"),
+						Messages.get(HeroClass.class, "elementalist_perk2"),
+						Messages.get(HeroClass.class, "elementalist_perk3"),
+						Messages.get(HeroClass.class, "elementalist_perk4"),
+						Messages.get(HeroClass.class, "elementalist_perk5"),
 				};
 		}
 	}

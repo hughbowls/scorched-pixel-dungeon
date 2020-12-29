@@ -66,6 +66,7 @@ public enum Icons {
 	HUNTRESS,
 	HERETIC,
 	ALCHEMIST,
+	ELEMENTALIST,
 
 	//main menu icons
 	ENTER,
@@ -195,6 +196,9 @@ public enum Icons {
 		case ALCHEMIST:
 			icon.frame( icon.texture.uvRect( 92, 48, 99, 63 ) );
 			break;
+		case ELEMENTALIST:
+			icon.frame( icon.texture.uvRect( 81, 56, 88, 65 ) );
+			break;
 		
 		case ENTER:
 			icon.frame( icon.texture.uvRect( 0, 64, 16, 80 ) );
@@ -268,6 +272,8 @@ public enum Icons {
 			return get( HERETIC );
 		case ALCHEMIST:
 			return get( ALCHEMIST );
+		case ELEMENTALIST:
+			return get( ELEMENTALIST );
 		default:
 			return null;
 		}

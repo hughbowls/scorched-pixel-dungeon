@@ -44,7 +44,10 @@ public enum HeroSubClass {
 	BLOODKNIGHT("bloodknight"),
 
 	TRAILBLAZER("trailblazer"),
-	INNOVATOR("innovator");
+	INNOVATOR("innovator"),
+
+	SPELLWEAVER("spellweaver"),
+	TEMPEST("tempest");
 	
 	private String title;
 	

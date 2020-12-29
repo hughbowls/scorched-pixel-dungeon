@@ -209,6 +209,7 @@ public class Assets {
 		public static final String HUNTRESS	= "splashes/huntress.jpg";
 		public static final String HERETIC	= "splashes/heretic.jpg";
 		public static final String ALCHEMIST	= "splashes/alchemist.jpg";
+		public static final String ELEMENTALIST	= "splashes/elementalist.jpg";
 	}
 
 	public static class Sprites {
@@ -278,6 +279,6 @@ public class Assets {
 		public static final String HERETIC  = "sprites/heretic.png";
 		public static final String HERETIC_SUMMON  	= "sprites/heretic_summon.png";
 		public static final String ALCHEMIST  		= "sprites/alchemist.png";
-		public static final String ARTIFICER_FIELD  = "sprites/artificer_field.png";
+		public static final String ELEMENTALIST  	= "sprites/elementalist.png";
 	}
 }
