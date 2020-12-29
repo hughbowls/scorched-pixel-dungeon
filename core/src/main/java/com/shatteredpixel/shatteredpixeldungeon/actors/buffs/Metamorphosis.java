@@ -117,11 +117,13 @@ public class Metamorphosis extends Buff {
             }
             enemy.damage( dmg, target );
 
-            target.hitSound(Random.Float(0.87f, 1.15f));
-            enemy.sprite.bloodBurstA( target.sprite.center(), dmg );
-            enemy.sprite.flash();
+            if (enemy.isAlive()) {
+                target.hitSound(Random.Float(0.87f, 1.15f));
+                enemy.sprite.bloodBurstA( target.sprite.center(), dmg );
+                enemy.sprite.flash();
 
-            ((Hero)target).spendAndNext( 0f);
+                ((Hero) target).spendAndNext(0f);
+            }
         }
     }
 

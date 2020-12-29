@@ -461,6 +461,7 @@ public enum Talent {
 				&& hero.belongings.weapon instanceof MeleeWeapon
 				&& ((MeleeWeapon)hero.belongings.weapon).hasCurseEnchant()
 				&& hero.buff(TransferHarmCooldown.class) == null
+				&& enemy.buff(TransferHarmTracker.class) == null
 				&& (hero.buff(Poison.class) != null || hero.buff(Cripple.class) != null
 				|| hero.buff(Weakness.class) != null || hero.buff(Vulnerable.class) != null
 				|| hero.buff(Hex.class) != null || hero.buff(Bleeding.class) != null
@@ -470,7 +471,8 @@ public enum Talent {
 				|| hero.buff(Blindness.class) != null)){
 
 			enemy.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-			Buff.affect(hero, Talent.TransferHarmCooldown.class, 15f);
+			Buff.affect(hero, TransferHarmCooldown.class, 15f);
+			Buff.affect(enemy, TransferHarmTracker.class);
 
 			if (hero.buff(Poison.class) != null) {
 				Buff.affect(enemy, Poison.class).set(Math.round(dmg * 0.6f));
@@ -518,6 +520,7 @@ public enum Talent {
 
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends Buff{};
+	public static class TransferHarmTracker extends Buff{};
 	public static class PreemptiveFireTracker extends Buff{};
 
 	public static final int MAX_TALENT_TIERS = 2;

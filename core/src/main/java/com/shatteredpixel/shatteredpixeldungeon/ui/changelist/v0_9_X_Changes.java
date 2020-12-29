@@ -26,9 +26,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Displacement;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Metabolism;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -49,7 +51,29 @@ public class v0_9_X_Changes {
 
 	public static void add_v0_9_0_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		ChangeInfo changes = new ChangeInfo("v0.9.1 base", true, "");
+		ChangeInfo changes = new ChangeInfo("v0.9.1-stable", true, "");
+		changes.hardlight(0xD06300);
+		changeInfos.add(changes);
+
+		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 80, 64, 16, 16), Talent.TRANSFER_HARM.title(),
+				"Heretic's _Transfer Harm_ now only affects at once at same target."));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.SHORTSWORD, new Displacing().glowing()), "Heretic's cursed weapons",
+				"_-_ Displacing will apply mind vision on target when it activates.\n" +
+						"\n_-_ Sacrificial will cause bleeding to enemy depending on its upgrades."));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARMOR_MAIL, new Metabolism().glowing()), "Heretic's Metabolism armor",
+				"No longer increase healing amount when it activates, now it will stack damage from starving, which fades away when you satisfy yourself.\n" +
+						"\nThese 'stock' of starvation damage can be released by your attack, then heals you as same amount of stock."));
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed:\n" +
+						"_-_ Some typo about new talents\n" +
+						"_-_ New heretic's displacement armor effect doesn't work\n" +
+						"_-_ Freezing when enemy killed by the heretic on metamorphosis\n" +
+						"\nAlways, Thanks to reports!"));
+
+		changes = new ChangeInfo("v0.9.1-pre", true, "");
 		changes.hardlight(0xD06300);
 		changeInfos.add(changes);
 

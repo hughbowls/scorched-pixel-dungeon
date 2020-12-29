@@ -24,11 +24,14 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Metabolism;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Annoying;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
@@ -115,6 +118,17 @@ abstract public class Weapon extends KindOfWeapon {
 				identify();
 				GLog.p( Messages.get(Weapon.class, "identify") );
 				Badges.validateItemLevelAquired( this );
+			}
+		}
+
+		if (attacker == Dungeon.hero && attacker.isAlive()
+				&& Dungeon.hero.belongings.armor.glyph != null
+				&& Dungeon.hero.belongings.armor.glyph instanceof Metabolism
+				&& Dungeon.hero.heroClass == HeroClass.HERETIC) {
+
+			Metabolism.HereticMetabolismProc m = Dungeon.hero.buff(Metabolism.HereticMetabolismProc.class);
+			if (m != null){
+				m.activate(Dungeon.hero);
 			}
 		}
 

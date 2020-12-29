@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -33,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -65,6 +65,7 @@ public class Displacement extends Armor.Glyph {
 		private static final float STEP = 1f;
 		private int pos;
 		private float pow;
+		private int count;
 
 		{
 			type = buffType.POSITIVE;
@@ -74,11 +75,18 @@ public class Displacement extends Armor.Glyph {
 		@Override
 		public boolean attachTo( Char target ) {
 			pos = target.pos;
+			count = 1;
 			return super.attachTo( target );
 		}
 
 		@Override
 		public boolean act() {
+			if (count > 0){
+				count = 0;
+				spend( TICK );
+				return true;
+			}
+
 			if (target.pos == pos) {
 				Buff.affect(hero, Invisibility.class, pow);
 				ScrollOfTeleportation.teleportHero(Dungeon.hero);
@@ -99,26 +107,34 @@ public class Displacement extends Armor.Glyph {
 		}
 
 		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(1f, 0, 0);
+		}
+
+		@Override
 		public String toString() {
 			return Messages.get(Displacement.class, "heretic_buff_name");
 		}
 
 		@Override
-		public String desc() { return Messages.get(Displacement.class, "heretic_buff_desc"); }
+		public String desc() { return Messages.get(Displacement.class, "heretic_buff_desc", pow); }
 
 		private static final String POS		= "pos";
 		private static final String POW		= "pow";
+		private static final String COUNT	= "count";
 		@Override
 		public void storeInBundle( Bundle bundle ) {
 			super.storeInBundle( bundle );
 			bundle.put( POS, pos );
 			bundle.put( POW, pow );
+			bundle.put( COUNT, count );
 		}
 		@Override
 		public void restoreFromBundle( Bundle bundle ) {
 			super.restoreFromBundle( bundle );
 			pos = bundle.getInt( POS );
 			pow = bundle.getFloat( POW );
+			count = bundle.getInt( COUNT );
 		}
 	}
 

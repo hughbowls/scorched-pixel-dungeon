@@ -144,7 +144,7 @@ public abstract class HereticSummon extends NPC {
 
 	protected boolean doAttack( Char enemy ) {
 
-		if (Dungeon.level.adjacent( pos, enemy.pos ) || rangedCooldown > 0 || !canzap) {
+		if (Dungeon.level.adjacent( pos, enemy.pos ) || rangedCooldown > 0 || canzap) {
 
 			return super.doAttack( enemy );
 

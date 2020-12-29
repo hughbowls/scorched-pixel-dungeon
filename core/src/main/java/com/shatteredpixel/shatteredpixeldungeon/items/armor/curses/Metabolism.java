@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
@@ -29,9 +30,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor.Glyph;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite.Glowing;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
@@ -55,11 +60,6 @@ public class Metabolism extends Glyph {
 				if (!hunger.isStarving()) {
 					
 					hunger.affectHunger( healing * -10 );
-
-					if (hero.heroClass == HeroClass.HERETIC){
-						int pow = (int)(armor.buffedLvl()*0.5f);
-						healing = Math.max( healing, Random.NormalIntRange(healing*pow+1, healing*(pow+1)*2));
-					}
 					
 					defender.HP = Math.min(defender.HT, defender.HP+=healing);
 					defender.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
@@ -70,6 +70,88 @@ public class Metabolism extends Glyph {
 		}
 		
 		return damage;
+	}
+
+	public static class HereticMetabolismProc extends Buff {
+
+		{
+			type = buffType.POSITIVE;
+		}
+
+		@Override
+		public boolean act() {
+			if (target.isAlive()) {
+				spend( TICK );
+				if (dmgBoost <= 0) {
+					detach();
+				}
+				if (((Hero)target).belongings.armor == null
+						|| ((Hero)target).belongings.armor.glyph == null
+						|| !(((Hero)target).belongings.armor.glyph instanceof Metabolism)) {
+					detach();
+				}
+
+			} else {
+				detach();
+			}
+
+			return true;
+		}
+
+		@Override
+		public int icon() {
+			return BuffIndicator.HERB_HEALING;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(1f, 0, 0);
+		}
+
+		@Override
+		public String toString() {
+			return Messages.get(Metabolism.class, "heretic_buff_name");
+		}
+
+		@Override
+		public String desc() {
+			return Messages.get(Metabolism.class, "heretic_buff_desc", dmgBoost, pow);
+		}
+
+		public int dmgBoost = 0;
+		public int pow = 0;
+
+		public void set(int dmg, int armor){
+			pow = 10 + (armor*5);
+			dmgBoost = Math.min(dmgBoost+dmg, pow);
+		}
+
+		public void activate(Char ch){
+			ch.HP = Math.min(target.HP+dmgBoost, target.HT);
+			ch.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			ch.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( dmgBoost ) );
+
+			dmgBoost = 0;
+			pow = 0;
+			detach();
+		}
+
+		private static final String BOOST = "boost";
+		private static final String POW = "pow";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put( BOOST, dmgBoost );
+			bundle.put( POW, pow );
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			dmgBoost = bundle.getInt( BOOST );
+			pow = bundle.getInt( POW );
+		}
 	}
 
 	@Override

@@ -42,8 +42,9 @@ public class Sacrificial extends Weapon.Enchantment {
 			Buff.affect(attacker, Bleeding.class).set(Math.max(1, attacker.HP/6));
 
 			if (hero.heroClass == HeroClass.HERETIC){
-				int pow = (int) (Random.NormalFloat(weapon.buffedLvl()*0.25f, weapon.buffedLvl()*0.75f));
-				damage += Math.max(1, attacker.HP/6)*pow;
+				int pow = Math.max(1, attacker.HP/6)
+						+ (int) (Random.NormalFloat(weapon.buffedLvl()*0.2f, weapon.buffedLvl()*0.5f));
+				Buff.affect(defender, Bleeding.class).set(Math.max(1, pow));
 			}
 		}
 

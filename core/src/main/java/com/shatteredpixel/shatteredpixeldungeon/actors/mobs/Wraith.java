@@ -29,6 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
@@ -132,6 +134,17 @@ public class Wraith extends Mob {
 	public int defenseProc(Char enemy, int damage) {
 
 		if (enemy instanceof Hero && ((Hero)enemy).hasTalent(Talent.WRAITH_DECEPTION)){
+
+			enemy.HP = enemy.HT;
+			for (Buff buff : enemy.buffs()) {
+				if (buff.type == Buff.buffType.NEGATIVE
+						&& !(buff instanceof SoulMark)) {
+					buff.detach();
+				} else if (buff instanceof PinCushion){
+					buff.detach();
+				}
+			}
+
 			Buff.affect(this, Corruption.class);
 			if (((Hero)enemy).pointsInTalent(Talent.WRAITH_DECEPTION) == 2){
 				Buff.affect(this, Barrier.class).setShield(1 + (int)(Dungeon.depth * 0.75f));

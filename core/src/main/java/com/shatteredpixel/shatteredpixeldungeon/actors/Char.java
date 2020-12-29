@@ -679,7 +679,7 @@ public abstract class Char extends Actor {
 						}
 					}
 					else if (buff(Cripple.class) != null
-							|| buff(Paralysis.class) != null) {
+							|| paralysed > 0) {
 						if (!found) {
 							HereticSummon.EarthSummon summon = new HereticSummon.EarthSummon();
 							summon.pos = summmonPos;

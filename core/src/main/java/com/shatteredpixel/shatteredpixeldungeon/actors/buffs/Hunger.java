@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Metabolism;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -75,6 +77,14 @@ public class Hunger extends Buff implements Hero.Doom {
 				partialDamage += STEP * target.HT/1000f;
 
 				if (partialDamage > 1){
+
+					if (hero.isAlive() && hero.belongings.armor.glyph != null
+							&& hero.belongings.armor.glyph instanceof Metabolism
+							&& hero.heroClass == HeroClass.HERETIC) {
+						Buff.affect(hero, Metabolism.HereticMetabolismProc.class).set(
+								(int)partialDamage, hero.belongings.armor.level());
+					}
+
 					target.damage( (int)partialDamage, this);
 					partialDamage -= (int)partialDamage;
 				}
@@ -116,6 +126,11 @@ public class Hunger extends Buff implements Hero.Doom {
 		if (buff != null && buff.isCursed()){
 			energy *= 0.67f;
 			GLog.n( Messages.get(this, "cursedhorn") );
+		}
+
+		Metabolism.HereticMetabolismProc m = target.buff( Metabolism.HereticMetabolismProc.class );
+		if (buff != null && buff.isCursed()){
+			m.detach();
 		}
 
 		affectHunger( energy, false );
