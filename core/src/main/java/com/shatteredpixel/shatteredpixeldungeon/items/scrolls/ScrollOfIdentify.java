@@ -22,12 +22,17 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Identification;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class ScrollOfIdentify extends InventoryScroll {
 
@@ -47,7 +52,37 @@ public class ScrollOfIdentify extends InventoryScroll {
 		GLog.i( Messages.get(this, "it_is", item) );
 		
 		Badges.validateItemLevelAquired( item );
+
+		if (curUser.hasTalent(Talent.PYTHONESS_INTUITION)){
+			ArrayList<Item> unId = new ArrayList<>();
+			for (Item i : curUser.belongings)
+				if (!i.isIdentified()) unId.add(i);
+
+			if (!unId.isEmpty()){
+				if (curUser.pointsInTalent(Talent.PYTHONESS_INTUITION) == 1){
+					Item toId = Random.element(unId);
+					toId.identify();
+					GLog.p(Messages.get(ScrollOfIdentify.class,
+							"pythoness_it_is", toId));
+					Badges.validateItemLevelAquired( item );
+				} if (curUser.pointsInTalent(Talent.PYTHONESS_INTUITION) == 2) {
+					GameScene.selectItem(pythoness_Selector, WndBag.Mode.UNIDENTIFED,
+							Messages.get(ScrollOfIdentify.class, "inv_title"));
+				}
+			}
+		}
 	}
+
+	private static WndBag.Listener pythoness_Selector = new WndBag.Listener() {
+		@Override
+		public void onSelect( Item item ) {
+			if (item != null) {
+				item.identify();
+				GLog.p( Messages.get(ScrollOfIdentify.class, "pythoness_it_is", item) );
+				Badges.validateItemLevelAquired( item );
+			}
+		}
+	};
 	
 	@Override
 	public int value() {

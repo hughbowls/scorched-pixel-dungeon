@@ -86,7 +86,9 @@ public abstract class TargetedSpell extends Spell {
 				curSpell.fx(shot, new Callback() {
 					public void call() {
 						curSpell.affectTarget(shot, curUser);
-						curSpell.detach( curUser.belongings.backpack );
+						if (!(curSpell instanceof ElementalSpell)) {
+							curSpell.detach(curUser.belongings.backpack);
+						}
 						Invisibility.dispel();
 						curSpell.updateQuickslot();
 						curUser.spendAndNext( 1f );

@@ -78,6 +78,9 @@ abstract public class ClassArmor extends Armor {
 		case ALCHEMIST:
 			classArmor = new AlchemistArmor();
 			break;
+		case ELEMENTALIST:
+			// works different way
+			break;
 		}
 		
 		classArmor.level(armor.level() - (armor.curseInfusionBonus ? 1 : 0));

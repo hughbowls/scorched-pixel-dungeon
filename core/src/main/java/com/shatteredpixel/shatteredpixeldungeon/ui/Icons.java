@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
 
 public enum Icons {
@@ -194,10 +195,14 @@ public enum Icons {
 			icon.frame( icon.texture.uvRect( 80, 48, 92, 56 ) );
 			break;
 		case ALCHEMIST:
-			icon.frame( icon.texture.uvRect( 92, 48, 99, 63 ) );
+			Image alchemist = new Image(Assets.Sprites.ITEMS);
+			alchemist.frame( alchemist.texture.uvRect( 48, 96, 61, 111) );
+			icon = alchemist;
 			break;
 		case ELEMENTALIST:
-			icon.frame( icon.texture.uvRect( 81, 56, 88, 65 ) );
+			Image elementalist = new Image(Assets.Sprites.ITEMS);
+			elementalist.frame( elementalist.texture.uvRect( 0, 496, 16, 512) );
+			icon = elementalist;
 			break;
 		
 		case ENTER:

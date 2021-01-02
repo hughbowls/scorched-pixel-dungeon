@@ -51,8 +51,22 @@ public class v0_9_X_Changes {
 
 	public static void add_v0_9_0_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		ChangeInfo changes = new ChangeInfo("v0.9.1-stable", true, "");
+		ChangeInfo changes = new ChangeInfo("v0.9.1-v0.2", true, "");
 		changes.hardlight(0xD06300);
+		changeInfos.add(changes);
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new_scorched"), false, null);
+		changes.hardlight(0xD06300);
+		changeInfos.add(changes);
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.ELEMENTALIST, 0, 15, 12, 15), "New Class: the Elementalist",
+				"The _Elementalist_, the innate spellcaster of elements is added:\n\n" +
+						"- Starts with unique garment instead of cloth armor, but unable to wear other armor.\n\n" +
+						"- Without starting weapons... but she can cast three kinds of element, which heavily related to environment effects.\n\n" +
+						"- Including tier-1 and tier-2 talents, subclasses, and unique armor-kit interaction replaced legendary armor."));
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
 		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 80, 64, 16, 16), Talent.TRANSFER_HARM.title(),
@@ -71,9 +85,10 @@ public class v0_9_X_Changes {
 						"_-_ Some typo about new talents\n" +
 						"_-_ New heretic's displacement armor effect doesn't work\n" +
 						"_-_ Freezing when enemy killed by the heretic on metamorphosis\n" +
+						"_-_ Grenade can be used to making grenades\n" +
 						"\nAlways, Thanks to reports!"));
 
-		changes = new ChangeInfo("v0.9.1-pre", true, "");
+		changes = new ChangeInfo("v0.9.1-v0.1", true, "");
 		changes.hardlight(0xD06300);
 		changeInfos.add(changes);
 

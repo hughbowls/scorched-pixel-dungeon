@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
@@ -38,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
@@ -144,7 +146,17 @@ public enum Talent {
 	RELOADING_UPGRADE(85),
 	ELIXIR_FORMULA(86),
 	GRENADIER(87),
-	GASEOUS_WARFARE(88);
+	GASEOUS_WARFARE(88),
+
+	SHIELDING_MEAL(96),
+	PYTHONESS_INTUITION(97),
+	EXTENDED_FOCUS(98),
+	ELEMENTAL_SHIELD(99),
+	PENETRATING_MEAL(100),
+	HYDROMANCER(101),
+	ICEMAIL(102),
+	CHAIN_LIGHTNING(103),
+	WILDFIRE(104);
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
@@ -273,6 +285,15 @@ public enum Talent {
 		if (hero.hasTalent(FRESH_MEAL)){
 			//5/8 turns of blob immunity
 			Buff.affect( hero, BlobImmunity.class, 2 + 3*(hero.pointsInTalent(FRESH_MEAL)));
+		}
+		if (hero.hasTalent(SHIELDING_MEAL)){
+			//grants 5/8 shielding
+			Buff.affect(Dungeon.hero, Barrier.class).setShield(2 + 3*hero.pointsInTalent(Talent.SHIELDING_MEAL));
+		}
+		if (hero.hasTalent(PENETRATING_MEAL)){
+			//3/5 turns of magical sight
+			Buff.affect(Dungeon.hero, MagicalSight.class, 1 + 2*hero.pointsInTalent(Talent.PENETRATING_MEAL));
+			Dungeon.observe();
 		}
 	}
 
@@ -556,6 +577,9 @@ public enum Talent {
 			case ALCHEMIST:
 				Collections.addAll(tierTalents, FOOD_ALCHEMY, INVENTORS_INTUITION, PREEMPTIVE_FIRE, EXPERIMENTAL_BARRIER);
 				break;
+			case ELEMENTALIST:
+				Collections.addAll(tierTalents, SHIELDING_MEAL, PYTHONESS_INTUITION, EXTENDED_FOCUS, ELEMENTAL_SHIELD);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			talents.get(0).put(talent, 0);
@@ -581,6 +605,9 @@ public enum Talent {
 				break;
 			case ALCHEMIST:
 				Collections.addAll(tierTalents, FRESH_MEAL, RELOADING_UPGRADE, ELIXIR_FORMULA, GRENADIER, GASEOUS_WARFARE);
+				break;
+			case ELEMENTALIST:
+				Collections.addAll(tierTalents, PENETRATING_MEAL, HYDROMANCER, ICEMAIL, CHAIN_LIGHTNING, WILDFIRE);
 				break;
 		}
 		for (Talent talent : tierTalents){

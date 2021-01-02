@@ -86,6 +86,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfSna
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfElements;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
@@ -963,13 +964,13 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(Bleeding.class, ToxicGas.class, Poison.class) )),
 		BLOB_IMMUNE ( new HashSet<Class>(),
 				new HashSet<Class>( Arrays.asList(Blob.class) )),
-		FIERY ( new HashSet<Class>( Arrays.asList(WandOfFireblast.class, Elemental.FireElemental.class)),
+		FIERY ( new HashSet<Class>( Arrays.asList(WandOfFireblast.class, Elemental.FireElemental.class, ElementalSpell.ElementalSpellFire.class)),
 				new HashSet<Class>( Arrays.asList(Burning.class, Blazing.class))),
-		ICY ( new HashSet<Class>( Arrays.asList(WandOfFrost.class, Elemental.FrostElemental.class)),
+		ICY ( new HashSet<Class>( Arrays.asList(WandOfFrost.class, Elemental.FrostElemental.class, ElementalSpell.ElementalSpellIce.class)),
 				new HashSet<Class>( Arrays.asList(Frost.class, Chill.class))),
 		ACIDIC ( new HashSet<Class>( Arrays.asList(Corrosion.class)),
 				new HashSet<Class>( Arrays.asList(Ooze.class))),
-		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
+		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class, ElementalSpell.ElementalSpellElec.class )),
 				new HashSet<Class>()),
 		LARGE,
 		IMMOVABLE;

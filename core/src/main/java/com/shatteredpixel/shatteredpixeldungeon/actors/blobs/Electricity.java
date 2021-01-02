@@ -26,10 +26,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -45,7 +47,7 @@ public class Electricity extends Blob {
 	}
 	
 	private boolean[] water;
-	
+
 	@Override
 	protected void evolve() {
 		
@@ -70,9 +72,19 @@ public class Electricity extends Blob {
 				if (cur[cell] > 0) {
 					Char ch = Actor.findChar( cell );
 					if (ch != null && !ch.isImmune(this.getClass())) {
-						Buff.prolong( ch, Paralysis.class, 1f);
+
+						if (ch == Dungeon.hero && ((Hero)ch).belongings.armor
+								instanceof ElementalArmor.ElementalArmorElec) {
+							// immune
+						} else Buff.prolong( ch, Paralysis.class, 1f);
+
 						if (cur[cell] % 2 == 1) {
-							ch.damage(Math.round(Random.Float(2 + Dungeon.depth / 5f)), this);
+
+							if (ch == Dungeon.hero && ((Hero)ch).belongings.armor
+									instanceof ElementalArmor.ElementalArmorElec) {
+								// immune
+							} else ch.damage(Math.round(Random.Float(2 + Dungeon.depth / 5f)), this);
+
 							if (!ch.isAlive() && ch == Dungeon.hero){
 								Dungeon.fail( getClass() );
 								GLog.n( Messages.get(this, "ondeath") );
@@ -105,10 +117,12 @@ public class Electricity extends Blob {
 			area.union(cell % Dungeon.level.width(), cell / Dungeon.level.width());
 		}
 		cur[cell] = Math.max(cur[cell], power);
-		
+
 		for (int c : PathFinder.NEIGHBOURS4){
 			if (water[cell + c] && cur[cell + c] < power){
-				spreadFromCell(cell + c, power);
+				if (!(Dungeon.hero.isAlive() && Dungeon.hero.belongings.armor != null
+						&& Dungeon.hero.belongings.armor instanceof ElementalArmor.ElementalArmorElec))
+					spreadFromCell(cell + c, power);
 			}
 		}
 	}

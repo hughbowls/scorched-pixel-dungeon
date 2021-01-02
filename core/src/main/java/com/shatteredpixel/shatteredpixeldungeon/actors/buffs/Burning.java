@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -77,6 +78,11 @@ public class Burning extends Buff implements Hero.Doom {
 
 	@Override
 	public boolean attachTo(Char target) {
+		if (target == Dungeon.hero &&
+				((Hero)target).belongings.armor instanceof ElementalArmor.ElementalArmorFire) {
+			return false;
+		}
+
 		Buff.detach( target, Chill.class);
 
 		return super.attachTo(target);
@@ -168,6 +174,8 @@ public class Burning extends Buff implements Hero.Doom {
 	public void reignite( Char ch, float duration ) {
 		left = duration;
 	}
+
+	public float getLeft() { return left; }
 	
 	@Override
 	public int icon() {

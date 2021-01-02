@@ -25,13 +25,13 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.ArmorKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.TomeOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.MailArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
@@ -53,6 +53,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurs
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.CurseInfusion;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
@@ -126,10 +129,12 @@ public enum HeroClass {
 	}
 
 	private static void initCommon( Hero hero ) {
-		Item i = new ClothArmor().identify();
-		if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor)i;
+		if (hero.heroClass != ELEMENTALIST) {
+			Item i = new ClothArmor().identify();
+			if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor) i;
+		}
 
-		i = new Food();
+		Item i = new Food();
 		if (!Challenges.isItemBlocked(i)) i.collect();
 
 		new ScrollOfIdentify().identify();
@@ -259,19 +264,32 @@ public enum HeroClass {
 	}
 
 	private static void initElementalist(Hero hero ) {
+		ElementalArmor garment;
+		garment = new ElementalArmor();
+		(hero.belongings.armor = garment).identify();
+
+		ElementalSpell.ElementalSpellFire fire = new ElementalSpell.ElementalSpellFire();
+		fire.collect(); Dungeon.quickslot.setSlot(0, fire);
+		ElementalSpell.ElementalSpellIce ice = new ElementalSpell.ElementalSpellIce();
+		ice.collect(); Dungeon.quickslot.setSlot(1, ice);
+		ElementalSpell.ElementalSpellElec elec = new ElementalSpell.ElementalSpellElec();
+		elec.collect(); Dungeon.quickslot.setSlot(2, elec);
+		Dungeon.quickslot.setSlot(3, garment);
 
 		new PotionBandolier().collect();
 		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
 		new ScrollHolder().collect();
 		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
 
-		new LeatherArmor().identify().collect();
-		new MailArmor().identify().collect();
-		new ScaleArmor().identify().collect();
-		new PlateArmor().identify().collect();
-
 		new ScrollOfTeleportation().identify();
 		new PotionOfExperience().identify();
+
+		new TomeOfMastery().collect();
+		new ArmorKit().collect();
+		new StoneOfAugmentation().quantity(15).collect();
+		new Stylus().quantity(15).collect();
+		new ScrollOfUpgrade().quantity(15).identify().collect();
+		new CurseInfusion().quantity(3).collect();
 	}
 
 	public String title() {

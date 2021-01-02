@@ -23,7 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.AlchemistArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.HereticArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.HuntressArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.MageArmor;
@@ -93,6 +95,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.AssassinsBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BoneBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dirk;
@@ -156,6 +159,7 @@ public enum Catalog {
 		WEAPONS.seen.put( Gloves.class,                     false);
 		WEAPONS.seen.put( Dagger.class,                     false);
 		WEAPONS.seen.put( MagesStaff.class,                 false);
+		WEAPONS.seen.put( BoneBlade.class,                  false);
 		WEAPONS.seen.put( Shortsword.class,                 false);
 		WEAPONS.seen.put( HandAxe.class,                    false);
 		WEAPONS.seen.put( Spear.class,                      false);
@@ -189,7 +193,9 @@ public enum Catalog {
 		ARMOR.seen.put( MageArmor.class,                    false);
 		ARMOR.seen.put( RogueArmor.class,                   false);
 		ARMOR.seen.put( HuntressArmor.class,                false);
-	
+		ARMOR.seen.put( HereticArmor.class,                false);
+		ARMOR.seen.put( AlchemistArmor.class,                false);
+
 		WANDS.seen.put( WandOfMagicMissile.class,           false);
 		WANDS.seen.put( WandOfLightning.class,              false);
 		WANDS.seen.put( WandOfDisintegration.class,         false);

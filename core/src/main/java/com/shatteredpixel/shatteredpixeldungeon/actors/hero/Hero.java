@@ -31,6 +31,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Freezing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
@@ -41,9 +45,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BloodKnightTrigger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Fury;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
@@ -68,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.HereticArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
@@ -382,11 +389,17 @@ public class Hero extends Char {
 	}
 	
 	public int tier() {
-		Metamorphosis morph = this.buff(Metamorphosis.class);
-		if (morph != null && belongings.armor != null
-				&& belongings.armor instanceof HereticArmor)
-			return 7;
-		else return belongings.armor == null ? 0 : belongings.armor.tier;
+		if (belongings.armor != null) {
+			Metamorphosis morph = this.buff(Metamorphosis.class);
+			if (morph != null && belongings.armor instanceof HereticArmor) return 7;
+			if (belongings.armor instanceof ElementalArmor.ElementalArmorIce) return 2;
+			if (belongings.armor instanceof ElementalArmor.ElementalArmorFire) return 3;
+			if (belongings.armor instanceof ElementalArmor.ElementalArmorElec) return 4;
+			if (belongings.armor instanceof ElementalArmor) {
+				return ((ElementalArmor)belongings.armor).kitUsed == false ? 1 : 6;
+			}
+		}
+		return belongings.armor == null ? 0 : belongings.armor.tier;
 	}
 	
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
@@ -625,6 +638,28 @@ public class Hero extends Char {
 					&& subClass == HeroSubClass.BLOODKNIGHT){
 				if (buff(BloodKnightTrigger.class) == null)
 					Buff.affect(this, BloodKnightTrigger.class).set();
+			}
+		}
+
+		if (Dungeon.hero.belongings.armor instanceof ElementalArmor.ElementalArmorFire){
+			for (int i : PathFinder.NEIGHBOURS9) {
+				int vol = Fire.volumeAt(pos+i, Fire.class);
+				if (vol < 4 && !Dungeon.level.solid[pos + i])
+					GameScene.add( Blob.seed( pos + i, 2 - vol, Fire.class ) );
+			}
+		}
+		if (Dungeon.hero.belongings.armor instanceof ElementalArmor.ElementalArmorIce){
+			for (int i : PathFinder.NEIGHBOURS9) {
+				int vol = Freezing.volumeAt(pos+i, Freezing.class);
+				if (vol < 4 && !Dungeon.level.solid[pos + i])
+					GameScene.add( Blob.seed( pos + i, 2 - vol, Freezing.class ) );
+			}
+		}
+		if (Dungeon.hero.belongings.armor instanceof ElementalArmor.ElementalArmorElec){
+			for (int i : PathFinder.NEIGHBOURS9) {
+				int vol = Electricity.volumeAt(pos+i, Electricity.class);
+				if (vol < 4 && !Dungeon.level.solid[pos + i])
+					GameScene.add( Blob.seed( pos + i, 2 - vol, Electricity.class ) );
 			}
 		}
 
@@ -1204,6 +1239,20 @@ public class Hero extends Char {
 					if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dmg -= 1;
 				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dmg -= 2;
 			}
+		}
+
+		if (buff(Talent.WarriorFoodImmunity.class) != null){
+			if (pointsInTalent(Talent.IRON_STOMACH) == 1)       dmg = Math.round(dmg*0.25f);
+			else if (pointsInTalent(Talent.IRON_STOMACH) == 2)  dmg = Math.round(dmg*0.00f);
+		}
+
+		if (hasTalent(Talent.ICEMAIL)) {
+			if (buff(Frost.class) != null)
+				dmg = Math.round(dmg*0.05f*(2-pointsInTalent(Talent.ICEMAIL)));
+			else if (pointsInTalent(Talent.ICEMAIL) == 2)
+				if (buff(Chill.class) != null || belongings.armor
+						instanceof ElementalArmor.ElementalArmorIce)
+					dmg = Math.round(dmg*0.5f);
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){

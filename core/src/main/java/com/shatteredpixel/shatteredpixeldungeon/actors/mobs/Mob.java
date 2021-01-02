@@ -80,6 +80,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourg
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
@@ -707,7 +708,13 @@ public abstract class Mob extends Char {
 			if (cause == Dungeon.hero
 					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)
 					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM)){
-				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 1f);
+				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 2f);
+			}
+
+			if ((cause == Burning.class || cause == ElementalSpell.ElementalSpellFire.class)
+					&& Dungeon.hero.hasTalent(Talent.WILDFIRE)
+					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)){
+				Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero);
 			}
 		}
 		

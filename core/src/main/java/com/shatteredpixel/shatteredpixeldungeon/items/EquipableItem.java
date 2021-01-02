@@ -58,6 +58,11 @@ public abstract class EquipableItem extends Item {
 				&& !(this instanceof MissileWeapon)) {
 			actions.add( AC_CURSE );
 		}
+		if (hero.heroClass == HeroClass.ELEMENTALIST
+				&& this instanceof Armor) {
+			actions.remove(AC_EQUIP);
+			actions.remove(AC_UNEQUIP);
+		}
 		return actions;
 	}
 

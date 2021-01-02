@@ -39,6 +39,17 @@ public class RainbowParticle extends PixelParticle {
 		}
 	};
 
+	public static final Emitter.Factory ATTRACTING = new Emitter.Factory() {
+		@Override
+		public void emit( Emitter emitter, int index, float x, float y ) {
+			((RainbowParticle)emitter.recycle( RainbowParticle.class )).resetAttract( x, y );
+		}
+		@Override
+		public boolean lightMode() {
+			return true;
+		}
+	};
+
 
 	public RainbowParticle() {
 		super();
@@ -67,6 +78,17 @@ public class RainbowParticle extends PixelParticle {
 		speed.polar( Random.Float( PointF.PI2 ), Random.Float( 16, 32 ) );
 
 		left = lifespan;
+	}
+
+	public void resetAttract( float x, float y) {
+		revive();
+
+		//size = 8;
+		left = lifespan;
+
+		speed.polar( Random.Float( PointF.PI2 ), Random.Float( 16, 32 ) );
+		this.x = x - speed.x * lifespan;
+		this.y = y - speed.y * lifespan;
 	}
 
 	@Override

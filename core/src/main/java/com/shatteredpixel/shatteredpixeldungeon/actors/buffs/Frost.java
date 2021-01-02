@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -50,6 +51,10 @@ public class Frost extends FlavourBuff {
 	@Override
 	public boolean attachTo( Char target ) {
 		Buff.detach( target, Burning.class );
+		if (target == Dungeon.hero &&
+				((Hero)target).belongings.armor instanceof ElementalArmor.ElementalArmorIce) {
+			return false;
+		}
 
 		if (super.attachTo( target )) {
 			

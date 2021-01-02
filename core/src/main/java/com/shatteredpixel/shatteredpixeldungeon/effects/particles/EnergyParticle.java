@@ -39,6 +39,16 @@ public class EnergyParticle extends PixelParticle {
 			return true;
 		}
 	};
+	public static final Emitter.Factory BURST = new Factory() {
+		@Override
+		public void emit( Emitter emitter, int index, float x, float y ) {
+			((EnergyParticle)emitter.recycle( EnergyParticle.class )).resetburst( x, y );
+		}
+		@Override
+		public boolean lightMode() {
+			return true;
+		}
+	};
 	
 	public EnergyParticle() {
 		super();
@@ -56,6 +66,15 @@ public class EnergyParticle extends PixelParticle {
 		
 		this.x = x - speed.x * lifespan;
 		this.y = y - speed.y * lifespan;
+	}
+
+	public void resetburst( float x, float y ) {
+		revive();
+
+		left = lifespan;
+
+		this.x = x;
+		this.y = y;
 	}
 	
 	@Override

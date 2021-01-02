@@ -97,6 +97,14 @@ public class BuffIndicator extends Component {
 	public static final int PINCUSHION  = 49;
 	public static final int UPGRADE     = 50;
 
+	// Scorched only
+	public static final int SC_CLOCK    = 90;
+	public static final int SC_FORM     = 91;
+	public static final int SC_FIRE     = 92;
+	public static final int SC_ICE      = 93;
+	public static final int SC_ELEC     = 94;
+	public static final int SC_CHAOS    = 95;
+
 	public static final int SIZE	= 7;
 	
 	private static BuffIndicator heroInstance;

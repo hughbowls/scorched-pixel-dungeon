@@ -245,7 +245,7 @@ public abstract class Recipe {
 				&& (!(item instanceof EquipableItem)
 				|| item instanceof Pistol
 				|| (item instanceof AlchemistsToolkit && item.isIdentified()))
-				&& !(item instanceof Wand);
+				&& !(item instanceof Wand) && !(item instanceof Bomb.Grenade);
 	}
 }
 

@@ -695,6 +695,19 @@ public class ItemSpriteSheet {
 		assignItemRect(HOLSTER,     15, 16);
 	}
 
+	// for Elementalist
+	private static final int ELEMENT =                                   xy(1, 32);  //16 slots
+	public static final int ELEMENT_FIRE   = ELEMENT +0;
+	public static final int ELEMENT_ICE    = ELEMENT +1;
+	public static final int ELEMENT_ELEC   = ELEMENT +2;
+	public static final int ELEMENT_CHAOS  = ELEMENT +3;
+	static{
+		assignItemRect(ELEMENT_FIRE, 16, 16);
+		assignItemRect(ELEMENT_ICE,  16, 16);
+		assignItemRect(ELEMENT_ELEC, 16, 16);
+		assignItemRect(ELEMENT_CHAOS,16, 16);
+	}
+
 	                                                                                    //16 free slots
 
 	//for smaller 8x8 icons that often accompany an item sprite

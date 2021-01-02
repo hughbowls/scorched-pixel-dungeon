@@ -68,7 +68,9 @@ public class Speck extends Image {
 	public static final int STORM       = 117;
 	public static final int INFERNO     = 118;
 	public static final int BLIZZARD    = 119;
-	
+
+	public static final int STEAM_BLAST    = 120;
+
 	private static final int SIZE = 7;
 	
 	private int type;
@@ -135,6 +137,7 @@ public class Speck extends Image {
 		case SMOKE:
 		case BLIZZARD:
 		case INFERNO:
+		case STEAM_BLAST:
 			frame( film.get( STEAM ) );
 			break;
 		case CALM:
@@ -376,6 +379,12 @@ public class Speck extends Image {
 			acc.y = 256;
 			lifespan = -speed.y / acc.y * 2;
 			break;
+
+		case STEAM_BLAST:
+			angle = Random.Float( 360 );
+			speed.polar( Random.Float( 2 * 3.1415926f ), Random.Float( 16, 48 ) );
+			lifespan = 0.5f;
+			break;
 		}
 		
 		left = lifespan;
@@ -477,6 +486,7 @@ public class Speck extends Image {
 			case BLIZZARD:
 			case INFERNO:
 			case DUST:
+			case STEAM_BLAST:
 				am = (float)Math.sqrt( (p < 0.5f ? p : 1 - p) * 0.5f );
 				scale.set( 1 + p );
 				break;

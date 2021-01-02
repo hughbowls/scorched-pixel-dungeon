@@ -23,9 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -65,7 +67,11 @@ public class ArmorKit extends Item {
 		if (action.equals(AC_APPLY)) {
 
 			curUser = hero;
-			GameScene.selectItem( itemSelector, WndBag.Mode.ARMOR, Messages.get(this, "prompt") );
+			if (curUser.heroClass == HeroClass.ELEMENTALIST) {
+				ElementalArmor.doArmorKit(curUser.belongings.armor);
+				detach( curUser.belongings.backpack );
+
+			} else GameScene.selectItem( itemSelector, WndBag.Mode.ARMOR, Messages.get(this, "prompt") );
 			
 		}
 	}
@@ -89,19 +95,19 @@ public class ArmorKit extends Item {
 		curUser.busy();
 		
 		GLog.w( Messages.get(this, "upgraded", armor.name()) );
-		
+
 		ClassArmor classArmor = ClassArmor.upgrade( curUser, armor );
 		if (curUser.belongings.armor == armor) {
-			
+
 			curUser.belongings.armor = classArmor;
 			((HeroSprite)curUser.sprite).updateArmor();
 			classArmor.activate(curUser);
-			
+
 		} else {
-			
+
 			armor.detach( curUser.belongings.backpack );
 			classArmor.collect( curUser.belongings.backpack );
-			
+
 		}
 		
 		curUser.sprite.operate( curUser.pos );
