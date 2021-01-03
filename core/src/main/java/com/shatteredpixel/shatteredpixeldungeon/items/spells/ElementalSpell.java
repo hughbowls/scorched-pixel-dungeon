@@ -187,7 +187,7 @@ public class ElementalSpell extends TargetedSpell {
 								if (ch != null) {
 									Ballistica trajectory = new Ballistica(target.pos, ch.pos, Ballistica.STOP_TARGET);
 									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
-									WandOfBlastWave.throwChar(ch, trajectory, 2, true, false);
+									WandOfBlastWave.throwChar(ch, trajectory, 2, true, true);
 								}
 							}
 
@@ -291,7 +291,7 @@ public class ElementalSpell extends TargetedSpell {
 								if (ch != null) {
 									Ballistica trajectory = new Ballistica(target.pos, ch.pos, Ballistica.STOP_TARGET);
 									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
-									WandOfBlastWave.throwChar(ch, trajectory, 2, true, false);
+									WandOfBlastWave.throwChar(ch, trajectory, 2, true, true);
 								}
 							}
 
