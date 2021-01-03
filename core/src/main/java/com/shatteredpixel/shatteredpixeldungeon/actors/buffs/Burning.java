@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -35,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -130,6 +132,11 @@ public class Burning extends Buff implements Hero.Doom {
 				
 			} else {
 				target.damage( damage, this );
+				if (!target.isAlive() && Dungeon.hero.hasTalent(Talent.WILDFIRE)
+						&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)) {
+					float extend = 3f + Dungeon.hero.pointsInTalent(Talent.WILDFIRE);
+					Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero, extend);
+				}
 			}
 
 			if (target instanceof Thief && ((Thief) target).item != null) {

@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
@@ -176,17 +177,17 @@ public class ElementalSpell extends TargetedSpell {
 					Buff.detach(target, IceFocus.class);
 					Buff.detach(target, FireFocus.class);
 					Splash.at(target.pos, 0x00AAFF, 10);
-					for (int i : PathFinder.NEIGHBOURS9) {
+					for (int i : PathFinder.NEIGHBOURS8) {
 						if (Dungeon.hero.hasTalent(Talent.HYDROMANCER)) {
 							Dungeon.level.setCellToWater(false, target.pos + i);
 
 							if (Dungeon.hero.pointsInTalent(Talent.HYDROMANCER) == 2) {
-								CellEmitter.center(target.pos).burst(Speck.factory(Speck.STEAM_BLAST), 10);
-								Char ch = Actor.findChar(i);
-								if (ch != null && ch != target) {
-									int push = ch.pos + (ch.pos - target.pos);
-									Ballistica trajectory = new Ballistica(ch.pos, push, Ballistica.MAGIC_BOLT);
-									WandOfBlastWave.throwChar(ch, trajectory, 1, true);
+								CellEmitter.center(target.pos).burst(Speck.factory(Speck.STEAM_BLAST), 2);
+								Char ch = Actor.findChar(target.pos+i);
+								if (ch != null) {
+									Ballistica trajectory = new Ballistica(target.pos, ch.pos, Ballistica.STOP_TARGET);
+									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
+									WandOfBlastWave.throwChar(ch, trajectory, 2, true, false);
 								}
 							}
 
@@ -280,19 +281,20 @@ public class ElementalSpell extends TargetedSpell {
 					Buff.detach(target, FireFocus.class);
 
 					Splash.at(target.pos, 0x00AAFF, 10);
-					for (int i : PathFinder.NEIGHBOURS9) {
+					for (int i : PathFinder.NEIGHBOURS8) {
 						if (Dungeon.hero.hasTalent(Talent.HYDROMANCER)) {
 							Dungeon.level.setCellToWater(false, target.pos + i);
 
 							if (Dungeon.hero.pointsInTalent(Talent.HYDROMANCER) == 2) {
-								CellEmitter.center(target.pos).burst(Speck.factory(Speck.STEAM_BLAST), 10);
-								Char ch = Actor.findChar(i);
-								if (ch != null && ch != target) {
-									int push = ch.pos + (ch.pos - target.pos);
-									Ballistica trajectory = new Ballistica(ch.pos, push, Ballistica.MAGIC_BOLT);
-									WandOfBlastWave.throwChar(ch, trajectory, 1, true);
+								CellEmitter.center(target.pos).burst(Speck.factory(Speck.STEAM_BLAST), 2);
+								Char ch = Actor.findChar(target.pos+i);
+								if (ch != null) {
+									Ballistica trajectory = new Ballistica(target.pos, ch.pos, Ballistica.STOP_TARGET);
+									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
+									WandOfBlastWave.throwChar(ch, trajectory, 2, true, false);
 								}
 							}
+
 						} else Dungeon.level.setCellToWater(false, target.pos);
 					}
 				}
@@ -546,8 +548,16 @@ public class ElementalSpell extends TargetedSpell {
 					} else {
 						Buff.affect(target, Burning.class).reignite(target);
 						target.damage(damageRoll(), this);
+						if (!target.isAlive() && Dungeon.hero.hasTalent(Talent.WILDFIRE)
+								&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)) {
+							float extend = 3f + Dungeon.hero.pointsInTalent(Talent.WILDFIRE);
+							Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero, extend);
+						}
 					}
 				} else GameScene.add(Blob.seed(cell, 2, Fire.class));
+		}
+		@Override public String desc() {
+			return Messages.get(this, "desc", (2+Dungeon.hero.lvl/5), (4+(int)(Dungeon.hero.lvl/2.5f)) );
 		}
 	}
 
@@ -645,6 +655,10 @@ public class ElementalSpell extends TargetedSpell {
 					}
 				}
 			}
+		}
+
+		@Override public String desc() {
+			return Messages.get(this, "desc", (1+Dungeon.hero.lvl/6), (3+Dungeon.hero.lvl/3));
 		}
 	}
 
@@ -776,6 +790,10 @@ public class ElementalSpell extends TargetedSpell {
 			curUser.sprite.parent.addToFront( new Lightning( arcs, null ) );
 			Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 			callback.call();
+		}
+
+		@Override public String desc() {
+			return Messages.get(this, "desc", (3+Dungeon.hero.lvl/4), (8+Dungeon.hero.lvl/2));
 		}
 	}
 

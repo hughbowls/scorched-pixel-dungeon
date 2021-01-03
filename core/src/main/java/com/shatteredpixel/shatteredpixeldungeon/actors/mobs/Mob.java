@@ -710,12 +710,6 @@ public abstract class Mob extends Char {
 					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM)){
 				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 2f);
 			}
-
-			if ((cause == Burning.class || cause == ElementalSpell.ElementalSpellFire.class)
-					&& Dungeon.hero.hasTalent(Talent.WILDFIRE)
-					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)){
-				Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero);
-			}
 		}
 		
 		if (Dungeon.hero.isAlive() && !Dungeon.level.heroFOV[pos]) {

@@ -86,6 +86,7 @@ public class v0_9_X_Changes {
 						"_-_ New heretic's displacement armor effect doesn't work\n" +
 						"_-_ Freezing when enemy killed by the heretic on metamorphosis\n" +
 						"_-_ Grenade can be used to making grenades\n" +
+						"_-_ Some of the Elementalist's tier-2 talents doesn't work\n" +
 						"\nAlways, Thanks to reports!"));
 
 		changes = new ChangeInfo("v0.9.1-v0.1", true, "");
