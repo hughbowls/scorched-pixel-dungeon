@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Yog;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
@@ -86,6 +87,11 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( Yog.BurningFist.DarkBolt.class );
 		RESISTS.add( YogFist.BrightFist.LightBeam.class );
 		RESISTS.add( YogFist.DarkFist.DarkBolt.class );
+
+		RESISTS.add(ElementalSpell.ElementalSpellFire.class);
+		RESISTS.add(ElementalSpell.ElementalSpellIce.class);
+		RESISTS.add(ElementalSpell.ElementalSpellElec.class);
+		RESISTS.add(ElementalSpell.ElementalSpellChaos.class);
 	}
 	
 	@Override

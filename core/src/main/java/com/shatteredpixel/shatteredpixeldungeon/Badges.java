@@ -147,7 +147,12 @@ public class Badges {
 		//diamond
 		GAMES_PLAYED_4              ( 112, true ),
 		CHAMPION_2                  ( 113, true ),
-		CHAMPION_3                  ( 114, true );
+		CHAMPION_3                  ( 114, true ),
+
+		//scorched
+		UNLOCK_HERETIC        		( 128 ),
+		UNLOCK_ALCHEMIST			( 129 ),
+		UNLOCK_ELEMENTALIST         ( 130 );
 
 		public boolean meta;
 
@@ -712,6 +717,30 @@ public class Badges {
 		if (Statistics.thrownAssists >= 15 && !global.contains(Badge.UNLOCK_HUNTRESS)){
 			displayBadge( Badge.UNLOCK_HUNTRESS );
 		}
+	}
+
+	public static void validateHereticUnlock(){
+		if (Statistics.ankhsUsed > 0 && !global.contains(Badge.UNLOCK_HERETIC)){
+			displayBadge( Badge.UNLOCK_HERETIC );
+		}
+	}
+
+	public static void validateAlchemistUnlock(){
+		if (Statistics.alchemyEnergyUsed >= 12 && !global.contains(Badge.UNLOCK_ALCHEMIST)){
+			displayBadge( Badge.UNLOCK_ALCHEMIST );
+		}
+	}
+
+	public static void validateElementalistUnlock(){
+		if (Statistics.emberblood && !global.contains(Badge.UNLOCK_ELEMENTALIST)){
+			displayBadge( Badge.UNLOCK_ELEMENTALIST );
+		}
+	}
+
+	public static void unlockScorchedAll(){
+		if (!global.contains(Badge.UNLOCK_HERETIC)) displayBadge( Badge.UNLOCK_HERETIC );
+		if (!global.contains(Badge.UNLOCK_ALCHEMIST)) displayBadge( Badge.UNLOCK_ALCHEMIST );
+		if (!global.contains(Badge.UNLOCK_ELEMENTALIST)) displayBadge( Badge.UNLOCK_ELEMENTALIST );
 	}
 	
 	public static void validateMasteryCombo( int n ) {

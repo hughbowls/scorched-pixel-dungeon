@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
@@ -409,6 +410,8 @@ public class AlchemyScene extends PixelScene {
 				Buff.affect(Dungeon.hero, Barrier.class).setShield(2+2*Dungeon.hero.pointsInTalent(Talent.EXPERIMENTAL_BARRIER));
 			}
 
+			Statistics.alchemyEnergyUsed += recipe.cost(ingredients);
+			Badges.validateAlchemistUnlock();
 		}
 		
 		if (result != null){

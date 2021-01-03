@@ -37,6 +37,9 @@ public class Statistics {
 	public static int upgradesUsed;
 	public static int sneakAttacks;
 	public static int thrownAssists;
+	//...and also for scorched
+	public static boolean emberblood = false;
+	public static int alchemyEnergyUsed;
 
 	public static int spawnersAlive;
 	
@@ -68,6 +71,10 @@ public class Statistics {
 		qualifiedForNoKilling = false;
 		
 		amuletObtained = false;
+
+		//scorched
+		emberblood = false;
+		alchemyEnergyUsed = 0;
 		
 	}
 	
@@ -88,7 +95,11 @@ public class Statistics {
 	private static final String DURATION	= "duration";
 	
 	private static final String AMULET		= "amuletObtained";
-	
+
+	//scorched
+	private static final String EMBERBLOOD	= "emberblood";
+	private static final String ENERGY  	= "alchemyEnergyUsed";
+
 	public static void storeInBundle( Bundle bundle ) {
 		bundle.put( GOLD,		goldCollected );
 		bundle.put( DEEPEST,	deepestFloor );
@@ -107,6 +118,10 @@ public class Statistics {
 		bundle.put( DURATION,	duration );
 		
 		bundle.put( AMULET,		amuletObtained );
+
+		//scorched
+		bundle.put( EMBERBLOOD,	emberblood );
+		bundle.put( ENERGY,	alchemyEnergyUsed );
 	}
 	
 	public static void restoreFromBundle( Bundle bundle ) {
@@ -127,6 +142,10 @@ public class Statistics {
 		duration		= bundle.getFloat( DURATION );
 		
 		amuletObtained	= bundle.getBoolean( AMULET );
+
+		//scorched
+		emberblood		= bundle.getBoolean( EMBERBLOOD );
+		alchemyEnergyUsed = bundle.getInt( ENERGY );
 	}
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ){

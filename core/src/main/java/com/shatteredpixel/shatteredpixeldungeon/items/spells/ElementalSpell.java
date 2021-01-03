@@ -210,7 +210,7 @@ public class ElementalSpell extends TargetedSpell {
 			return Messages.get(this, "name");
 		}
 		@Override public String desc() {
-			return Messages.get(this, "desc", left, (2+Dungeon.hero.lvl/5), (4+(int)(Dungeon.hero.lvl/2.5f)) );
+			return Messages.get(this, "desc", left, ElementalSpellFire.min(), ElementalSpellFire.max() );
 		}
 
 	};
@@ -310,7 +310,7 @@ public class ElementalSpell extends TargetedSpell {
 			return Messages.get(this, "name");
 		}
 		@Override public String desc() {
-			return Messages.get(this, "desc", left, (1+Dungeon.hero.lvl/6), (3+Dungeon.hero.lvl/3));
+			return Messages.get(this, "desc", left, ElementalSpellIce.min(), ElementalSpellIce.max());
 		}
 
 	};
@@ -375,7 +375,7 @@ public class ElementalSpell extends TargetedSpell {
 		@Override public int icon() { return BuffIndicator.SC_ELEC; }
 		@Override public String toString() { return Messages.get(this, "name"); }
 		@Override public String desc() {
-			return Messages.get(this, "desc", left, (3+Dungeon.hero.lvl/4), (8+Dungeon.hero.lvl/2));
+			return Messages.get(this, "desc", left, ElementalSpellElec.min(), ElementalSpellElec.max());
 		}
 	};
 
@@ -458,13 +458,13 @@ public class ElementalSpell extends TargetedSpell {
 
 			if (state == FocusType.FIRE){
 				desc = Messages.get(FireFocus.class, "desc", left,
-						(2+Dungeon.hero.lvl/5), (4+(int)(Dungeon.hero.lvl/2.5f)) );
+						ElementalSpellFire.min(), ElementalSpellFire.max() );
 			} else if (state == FocusType.ICE){
 				desc = Messages.get(IceFocus.class, "desc", left,
-						(1+Dungeon.hero.lvl/6), (3+Dungeon.hero.lvl/3));
+						ElementalSpellIce.min(), ElementalSpellIce.max() );
 			} else if (state == FocusType.ELEC){
 				desc = Messages.get(ElecFocus.class, "desc", left,
-						(3+Dungeon.hero.lvl/4), (8+Dungeon.hero.lvl/2));
+						ElementalSpellElec.min(), ElementalSpellElec.max() );
 			}
 
 			return desc;
@@ -557,7 +557,7 @@ public class ElementalSpell extends TargetedSpell {
 				} else GameScene.add(Blob.seed(cell, 2, Fire.class));
 		}
 		@Override public String desc() {
-			return Messages.get(this, "desc", (2+Dungeon.hero.lvl/5), (4+(int)(Dungeon.hero.lvl/2.5f)) );
+			return Messages.get(this, "desc", ElementalSpellFire.min(), ElementalSpellFire.max());
 		}
 	}
 
@@ -647,7 +647,9 @@ public class ElementalSpell extends TargetedSpell {
 					Buff.affect(target, Frost.class, 2f);
 				} else {
 					Chill chill = target.buff(Chill.class);
-					target.damage(damageRoll(), this);
+					if (target == hero && hero.hasTalent(Talent.ICEMAIL)) {
+						// do not damage herself
+					} else target.damage(damageRoll(), this);
 					Buff.affect(target, Chill.class, 3f);
 
 					if (chill != null && chill.cooldown() >= 5f) {
@@ -658,7 +660,7 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		@Override public String desc() {
-			return Messages.get(this, "desc", (1+Dungeon.hero.lvl/6), (3+Dungeon.hero.lvl/3));
+			return Messages.get(this, "desc", ElementalSpellIce.min(), ElementalSpellIce.max());
 		}
 	}
 
@@ -793,7 +795,7 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		@Override public String desc() {
-			return Messages.get(this, "desc", (3+Dungeon.hero.lvl/4), (8+Dungeon.hero.lvl/2));
+			return Messages.get(this, "desc", ElementalSpellElec.min(), ElementalSpellElec.max());
 		}
 	}
 
@@ -907,6 +909,11 @@ public class ElementalSpell extends TargetedSpell {
 					if (target != null) {
 						Buff.affect(target, Burning.class).reignite(target);
 						target.damage(ElementalSpellFire.damageRoll(), this);
+						if (!target.isAlive() && Dungeon.hero.hasTalent(Talent.WILDFIRE)
+								&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)) {
+							float extend = 3f + Dungeon.hero.pointsInTalent(Talent.WILDFIRE);
+							Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero, extend);
+						}
 					} else GameScene.add(Blob.seed(cell, 2, Fire.class));
 				}
 				else if (focus.state == ChaosFocus.FocusType.ICE) {
@@ -930,7 +937,9 @@ public class ElementalSpell extends TargetedSpell {
 							Buff.affect(target, Frost.class, 2f);
 						} else {
 							Chill chill = target.buff(Chill.class);
-							target.damage(ElementalSpellIce.damageRoll(), this);
+							if (target == hero && hero.hasTalent(Talent.ICEMAIL)) {
+								// do not damage herself
+							} else target.damage(ElementalSpellIce.damageRoll(), this);
 							Buff.affect(target, Chill.class, 3f);
 
 							if (chill != null && chill.cooldown() >= 5f) {

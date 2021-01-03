@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -273,8 +274,20 @@ public class NewCityBossLevel extends Level {
 		for (Mob m : mobs){
 			//bring the first ally with you
 			if (m.alignment == Char.Alignment.ALLY && !m.properties().contains(Char.Property.IMMOVABLE)){
-				m.pos = Dungeon.hero.pos + (Random.Int(2) == 0 ? +1 : -1);
-				m.sprite.place(m.pos);
+				// for summoner's fiend special
+				if (m instanceof HereticSummon) {
+					m.pos = pointToCell((arena.center())) + (Random.Int(2) == 0 ? +1 : -1);
+					m.sprite.place(m.pos);
+					m.sprite.alpha( 0 );
+					m.sprite.parent.add( new AlphaTweener( m.sprite, 1, 0.1f ) );
+					if (Dungeon.level.solid[m.pos]) {
+						m.destroy();
+						m.sprite.die();
+					}
+				} else {
+					m.pos = Dungeon.hero.pos + (Random.Int(2) == 0 ? +1 : -1);
+					m.sprite.place(m.pos);
+				}
 				break;
 			}
 		}

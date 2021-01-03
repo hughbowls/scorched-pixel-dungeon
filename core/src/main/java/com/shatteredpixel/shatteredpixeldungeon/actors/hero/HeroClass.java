@@ -42,6 +42,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlam
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfDragonsBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
@@ -400,6 +402,12 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
 			case HUNTRESS:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
+			case HERETIC:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_HERETIC);
+			case ALCHEMIST:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_ALCHEMIST);
+			case ELEMENTALIST:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_ELEMENTALIST);
 		}
 	}
 	
@@ -413,6 +421,12 @@ public enum HeroClass {
 				return Messages.get(HeroClass.class, "rogue_unlock");
 			case HUNTRESS:
 				return Messages.get(HeroClass.class, "huntress_unlock");
+			case HERETIC:
+				return Messages.get(HeroClass.class, "heretic_unlock");
+			case ALCHEMIST:
+				return Messages.get(HeroClass.class, "alchemist_unlock");
+			case ELEMENTALIST:
+				return Messages.get(HeroClass.class, "elementalist_unlock");
 		}
 	}
 

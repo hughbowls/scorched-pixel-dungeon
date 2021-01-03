@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -94,7 +95,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfEmberBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
@@ -140,6 +143,8 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndScorchedFeedbackPrompt;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndScorchedUnlockPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -150,6 +155,7 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -241,6 +247,12 @@ public class Hero extends Char {
 		AdrenalineSurge buff = buff(AdrenalineSurge.class);
 		if (buff != null){
 			STR += buff.boost();
+		}
+
+		ElixirOfEmberBlood.EmberBlood ember
+				= buff(ElixirOfEmberBlood.EmberBlood.class);
+		if (ember != null){
+			STR += 1;
 		}
 
 		if (isStarving()){
@@ -1545,6 +1557,20 @@ public class Hero extends Char {
 				i.onHeroGainExp(percent, this);
 			}
 		}
+
+		if(!SPDSettings.scorchedunlockNagged()){
+			try {
+				Dungeon.saveAll();
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						ShatteredPixelDungeon.scene().add(new WndScorchedUnlockPrompt());
+					}
+				});
+			} catch (IOException e) {
+				ShatteredPixelDungeon.reportException(e);
+			}
+		}
 		
 		boolean levelUp = false;
 		while (this.exp >= maxExp()) {
@@ -1700,6 +1726,7 @@ public class Hero extends Char {
 			Sample.INSTANCE.play( Assets.Sounds.TELEPORT );
 			GLog.w( Messages.get(this, "revive") );
 			Statistics.ankhsUsed++;
+			Badges.validateHereticUnlock();
 			
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){

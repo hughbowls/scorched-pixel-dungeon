@@ -43,8 +43,6 @@ public class GarmentChange extends FlavourBuff {
 	public void detach() {
 		super.detach();
 		if (target instanceof Hero && target.isAlive()) {
-			((ElementalArmor)(((Hero)target).belongings.armor)).doChange(null, (((Hero)target).belongings.armor));
-
 			Fire fire = (Fire)Dungeon.level.blobs.get(Fire.class);
 			Freezing freezing = (Freezing)Dungeon.level.blobs.get(Freezing.class);
 			Electricity electricity = (Electricity)Dungeon.level.blobs.get(Electricity.class);
@@ -62,6 +60,8 @@ public class GarmentChange extends FlavourBuff {
 					if (Blob.volumeAt(i, Electricity.class) > 0) electricity.clear(i);
 				}
 			}
+
+			((ElementalArmor)(((Hero)target).belongings.armor)).doChange(null, (((Hero)target).belongings.armor));
 
 			Buff.affect(target, GarmentCooldown.class, 80f);
 			GLog.w(Messages.get(ElementalArmor.class, "change_msg_end"));

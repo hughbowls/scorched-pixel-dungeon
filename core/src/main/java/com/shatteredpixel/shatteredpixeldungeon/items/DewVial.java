@@ -175,7 +175,6 @@ public class DewVial extends Item {
 			} catch (IOException e) {
 				ShatteredPixelDungeon.reportException(e);
 			}
-
 		}
 
 		return super.doPickUp(hero);

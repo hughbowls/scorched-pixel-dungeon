@@ -59,6 +59,7 @@ public class ElementalArmor extends Armor {
 		image = ItemSpriteSheet.ARMOR_ELEMENTALIST_BASIC;
 		defaultAction = AC_ABSORB;
 
+		unique = true;
 		bones = false;
 	}
 

@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -67,6 +68,7 @@ public class WndResurrect extends Window {
 				hide();
 				
 				Statistics.ankhsUsed++;
+				Badges.validateHereticUnlock();
 				
 				InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;
 				Game.switchScene( InterlevelScene.class );
