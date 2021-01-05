@@ -172,7 +172,7 @@ public class ElementalArmor extends Armor {
 
 	public static void doChange ( ElementalSpell element, Armor armor ) {
 
-		if (curUser.subClass == HeroSubClass.TEMPEST) {
+		if (Dungeon.hero.subClass == HeroSubClass.TEMPEST) {
 			ElementalArmor changeForm = ElementalArmor.change(element, armor);
 			if (curUser.belongings.armor == armor) {
 				curUser.belongings.armor = changeForm;
@@ -183,7 +183,8 @@ public class ElementalArmor extends Armor {
 				changeForm.collect(curUser.belongings.backpack);
 			}
 			Sample.INSTANCE.play(Assets.Sounds.MELD);
-		} else {
+		} else if (Dungeon.hero.subClass == null || Dungeon.hero.subClass == HeroSubClass.NONE
+				|| Dungeon.hero.subClass == HeroSubClass.SPELLWEAVER) {
 			// do noting
 		}
 	}

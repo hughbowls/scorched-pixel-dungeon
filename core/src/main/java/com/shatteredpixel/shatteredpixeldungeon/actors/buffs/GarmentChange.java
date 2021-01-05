@@ -49,15 +49,16 @@ public class GarmentChange extends FlavourBuff {
 			for (int i : PathFinder.NEIGHBOURS9) {
 				if (((ElementalArmor)(((Hero)target).belongings.armor))
 						instanceof ElementalArmor.ElementalArmorFire){
-					if (Blob.volumeAt(i, Fire.class) > 0) fire.clear(i);
+					if (Blob.volumeAt(target.pos+i, Fire.class) > 0) fire.clear(target.pos+i);
 				}
 				if (((ElementalArmor)(((Hero)target).belongings.armor))
 						instanceof ElementalArmor.ElementalArmorIce){
-					if (Blob.volumeAt(i, Freezing.class) > 0) freezing.clear(i);
+					if (Blob.volumeAt(target.pos+i, Freezing.class) > 0) freezing.clear(target.pos+i);
+					if (target.buffs(Chill.class) != null) Buff.detach(target, Chill.class);
 				}
 				if (((ElementalArmor)(((Hero)target).belongings.armor))
 						instanceof ElementalArmor.ElementalArmorElec){
-					if (Blob.volumeAt(i, Electricity.class) > 0) electricity.clear(i);
+					if (Blob.volumeAt(target.pos+i, Electricity.class) > 0) electricity.clear(target.pos+i);
 				}
 			}
 

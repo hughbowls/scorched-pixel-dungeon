@@ -684,8 +684,9 @@ public class Hero extends Char {
 					GameScene.add( Blob.seed( pos + i, 2 - vol, Electricity.class ) );
 			}
 			if (Dungeon.level.water[pos] && !flying){
-				damage((int)(HT*0.1f), ElementalArmor.ElementalArmorElec.class);
-				GLog.w(Messages.get(ElementalArmor.class, "discharge"));
+				HP = Math.max(HP-(int)(HT*0.1f), 1);
+				if (HP > 1)
+					GLog.w(Messages.get(ElementalArmor.class, "discharge"));
 			}
 		}
 
