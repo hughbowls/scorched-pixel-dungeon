@@ -51,7 +51,51 @@ public class v0_9_X_Changes {
 
 	public static void add_v0_9_0_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		ChangeInfo changes = new ChangeInfo("v0.9.1-v0.2", true, "");
+		ChangeInfo changes = new ChangeInfo("v0.9.1-v0.2.1", true, "");
+		changes.hardlight(0xD06300);
+		changeInfos.add(changes);
+
+		//changes = new ChangeInfo(Messages.get(ChangesScene.class, "new_scorched"), false, null);
+		//changes.hardlight(0xD06300);
+		//changeInfos.add(changes);
+		//
+		//changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARTIFACT_LAMP1), "Shabby Lamp",
+		//		"Introduce new artifact: Shabby Lamp!\n\n" +
+		//				"_-_ Yes, as all you know- you can rub it.\n" +
+		//				"_-_ To upgrade your lamp, you need to achieve different kinds of 'task'.\n\n" +
+		//				"Just for now, you can always find it from rat-king's den to test it."));
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes.hardlight(CharSprite.WARNING);
+		changeInfos.add(changes);
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed:\n" +
+						"_-_ Ring of Elements doesn't affect the Elementalist's elements\n" +
+						"_-_ The Tempest was suffered her storm after the elemental form\n" +
+						"_-_ Interaction of element of chaos + electricity blob was deal so much damage then excepted\n" +
+						"_-_ The Heretic and blacksmith causing crash when they reforge with curse mastery (report by. Omicronrg9)\n" +
+						"_-_ Wrong typo on the Alchemist's grenadier description (report by. Enjuxx)\n" +
+						"\nAlways, Thanks to reports!"));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.PISTOL), "Alchemist pistol",
+				"_-_ For QoL, pistol now can reload by tap himself while aim it."));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ELEMENT_FIRE), "Elementalist elements",
+				"_-_ Each times defeating bosses will increase element of fire's damage by +20%\n\n" +
+				"_-_ Each times defeating bosses will increase element of frost's damage by +10%\n\n" +
+				"_-_ Each times defeating bosses will increase element of lightning's damage by +33%"));
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ARMOR_ELEMENTALIST_BASIC), "Elementalist garment",
+				"_-_ Now grants her to resistance to magic damage. Amount of this resistance is a half of garment's durability."));
+
+		changes.addButton( new ChangeButton(new Image(Assets.Sprites.ELEMENTALIST, 0, 90, 12, 15), "The Tempest",
+				"_-_ Base duration of the 'eye of the storm' is increased by 30 turns from 20 turns, and also receive more wider immunities of each elements. However, each forms are now receive their own weakness."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Interfaces.TALENT_ICONS, 96, 96, 16, 16), Talent.ICEMAIL.title(),
+				"Elementalist's _Icemail_ now remove self-damage from her element of frost."));
+
+		changes = new ChangeInfo("v0.9.1-v0.2", true, "");
 		changes.hardlight(0xD06300);
 		changeInfos.add(changes);
 

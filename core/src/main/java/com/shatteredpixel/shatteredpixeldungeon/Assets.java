@@ -280,5 +280,6 @@ public class Assets {
 		public static final String HERETIC_SUMMON  	= "sprites/heretic_summon.png";
 		public static final String ALCHEMIST  		= "sprites/alchemist.png";
 		public static final String ELEMENTALIST  	= "sprites/elementalist.png";
+		public static final String LAMP  	= "sprites/lamp.png";
 	}
 }

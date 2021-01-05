@@ -25,6 +25,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
@@ -44,7 +45,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.levels.NewCityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -62,6 +65,8 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import static com.shatteredpixel.shatteredpixeldungeon.items.Item.updateQuickslot;
 
 public class DwarfKing extends Mob {
 
@@ -436,6 +441,15 @@ public class DwarfKing extends Mob {
 		}
 
 		Badges.validateBossSlain();
+
+		// for elementalist
+		Statistics.bossSlained++;
+		for (Item item : Dungeon.hero.belongings){
+			if (item instanceof ElementalSpell){
+				((ElementalSpell) item).identify();
+			}
+		}
+		updateQuickslot();
 
 		Dungeon.level.unseal();
 

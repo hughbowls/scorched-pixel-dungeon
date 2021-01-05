@@ -62,6 +62,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
@@ -79,6 +81,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.HereticArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Flow;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -108,17 +111,24 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfTenacity;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfShock;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Flail;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ShockingDart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -672,6 +682,10 @@ public class Hero extends Char {
 				int vol = Electricity.volumeAt(pos+i, Electricity.class);
 				if (vol < 4 && !Dungeon.level.solid[pos + i])
 					GameScene.add( Blob.seed( pos + i, 2 - vol, Electricity.class ) );
+			}
+			if (Dungeon.level.water[pos] && !flying){
+				damage((int)(HT*0.1f), ElementalArmor.ElementalArmorElec.class);
+				GLog.w(Messages.get(ElementalArmor.class, "discharge"));
 			}
 		}
 
@@ -1244,6 +1258,11 @@ public class Hero extends Char {
 			dmg -= AntiMagic.drRoll(belongings.armor.buffedLvl());
 		}
 
+		if (heroClass == HeroClass.ELEMENTALIST
+				&& AntiMagic.RESISTS.contains(src.getClass())){
+			dmg -= 0.5f*(Random.NormalIntRange( belongings.armor.DRMin(), belongings.armor.DRMax()));
+		}
+
 		if (hasTalent(Talent.MALEVOLENT_ARMOR) && AntiMagic.RESISTS.contains(src.getClass())){
 			if (hasTalent(Talent.MALEVOLENT_ARMOR)){
 				if (belongings.armor != null && (belongings.armor.cursed
@@ -1265,6 +1284,33 @@ public class Hero extends Char {
 				if (buff(Chill.class) != null || belongings.armor
 						instanceof ElementalArmor.ElementalArmorIce)
 					dmg = Math.round(dmg*0.5f);
+		}
+
+		if (belongings.armor instanceof ElementalArmor.ElementalArmorFire
+				&& (src instanceof Elemental.FrostElemental
+				|| src instanceof WandOfFrost
+				|| src instanceof ElementalSpell.ElementalSpellIce)) {
+
+			GLog.w(Messages.get(ElementalArmor.class, "cold"));
+			dmg *= 2;
+
+		} if (belongings.armor instanceof ElementalArmor.ElementalArmorIce
+				&& (src instanceof Elemental.FireElemental
+				|| src instanceof Elemental.NewbornFireElemental
+				|| src instanceof WandOfFireblast || src instanceof Burning
+				|| src instanceof ElementalSpell.ElementalSpellFire)) {
+
+			GLog.w(Messages.get(ElementalArmor.class, "melt"));
+			dmg *= 2;
+		}  if (belongings.armor instanceof ElementalArmor.ElementalArmorElec
+				&& (src instanceof Elemental.ShockElemental
+				|| src instanceof DM100.LightningBolt
+				|| src instanceof WandOfLightning
+				|| src instanceof ShockingDart
+				|| src instanceof Shocking
+				|| src instanceof ElementalSpell.ElementalSpellElec)) {
+
+			dmg = 0;
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){

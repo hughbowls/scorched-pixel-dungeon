@@ -291,6 +291,7 @@ abstract public class Weapon extends KindOfWeapon {
 		} else {
 			if (hasCurseEnchant() && curUser.hasTalent(Talent.ENHANCED_CURSE)){
 				// preserve it
+				return super.upgrade();
 			} else if (hasCurseEnchant() && !curUser.hasTalent(Talent.ENHANCED_CURSE)){
 				if (Random.Int(3) == 0) enchant(null);
 			} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){

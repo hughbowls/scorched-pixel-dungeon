@@ -56,6 +56,12 @@ public class Frost extends FlavourBuff {
 			return false;
 		}
 
+		if (target == Dungeon.hero && target.isAlive()
+				&& ((Hero)target).belongings.armor instanceof ElementalArmor.ElementalArmorFire) {
+			GLog.w(Messages.get(ElementalArmor.class, "cold"));
+			target.damage((int)(target.HT*0.05f), this);
+		}
+
 		if (super.attachTo( target )) {
 			
 			target.paralysed++;

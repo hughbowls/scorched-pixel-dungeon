@@ -435,6 +435,9 @@ public class ItemSpriteSheet {
 	public static final int ARTIFACT_ROSE1      = ARTIFACTS+20;
 	public static final int ARTIFACT_ROSE2      = ARTIFACTS+21;
 	public static final int ARTIFACT_ROSE3      = ARTIFACTS+22;
+	public static final int ARTIFACT_LAMP1      = ARTIFACTS+23;
+	public static final int ARTIFACT_LAMP2      = ARTIFACTS+24;
+	public static final int ARTIFACT_LAMP3      = ARTIFACTS+25;
 	static{
 		assignItemRect(ARTIFACT_CLOAK,      9,  15);
 		assignItemRect(ARTIFACT_ARMBAND,    16, 13);
@@ -459,6 +462,9 @@ public class ItemSpriteSheet {
 		assignItemRect(ARTIFACT_ROSE1,      14, 14);
 		assignItemRect(ARTIFACT_ROSE2,      14, 14);
 		assignItemRect(ARTIFACT_ROSE3,      14, 14);
+		assignItemRect(ARTIFACT_LAMP1,      16, 13);
+		assignItemRect(ARTIFACT_LAMP2,      16, 13);
+		assignItemRect(ARTIFACT_LAMP3,      16, 13);
 	}
 
 	                                                                                    //16 free slots

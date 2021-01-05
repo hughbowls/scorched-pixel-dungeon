@@ -769,33 +769,40 @@ public class Pistol extends Weapon {
 		@Override
 		public void onSelect(Integer target) {
 			if (target != null) {
-				Ballistica prepare = new Ballistica(curUser.pos, target,
-						Ballistica.IGNORE_SOFT_SOLID | Ballistica.STOP_SOLID);
-				boolean terrainAffected = false;
-				boolean terrainSolid = false;
-				for (int c : prepare.path) {
-					Char obstacle = Actor.findChar(c);
-					if ((!Dungeon.level.passable[c] && !Dungeon.level.avoid[c])
-							|| (obstacle != null && obstacle != curUser)) {
-						terrainSolid = true;
-					}
 
-					if (Dungeon.level.flamable[c] && !terrainSolid && !(c == curUser.pos)) {
-						if (Dungeon.level.map[c] == Terrain.DOOR){
-							Door.enter(c);
-						} else if (Dungeon.level.map[c] == Terrain.HIGH_GRASS
-							|| Dungeon.level.map[c] == Terrain.FURROWED_GRASS) {
-							HighGrass.trample(Dungeon.level, c);
+				if (target == curUser.pos) {
+					reload();
+
+				} else {
+
+					Ballistica prepare = new Ballistica(curUser.pos, target,
+							Ballistica.IGNORE_SOFT_SOLID | Ballistica.STOP_SOLID);
+					boolean terrainAffected = false;
+					boolean terrainSolid = false;
+					for (int c : prepare.path) {
+						Char obstacle = Actor.findChar(c);
+						if ((!Dungeon.level.passable[c] && !Dungeon.level.avoid[c])
+								|| (obstacle != null && obstacle != curUser)) {
+							terrainSolid = true;
 						}
 
-						GameScene.updateMap(c);
-						terrainAffected = true;
+						if (Dungeon.level.flamable[c] && !terrainSolid && !(c == curUser.pos)) {
+							if (Dungeon.level.map[c] == Terrain.DOOR) {
+								Door.enter(c);
+							} else if (Dungeon.level.map[c] == Terrain.HIGH_GRASS
+									|| Dungeon.level.map[c] == Terrain.FURROWED_GRASS) {
+								HighGrass.trample(Dungeon.level, c);
+							}
+
+							GameScene.updateMap(c);
+							terrainAffected = true;
+						}
 					}
+					if (terrainAffected) {
+						Dungeon.observe();
+					}
+					knockShot().cast(curUser, target);
 				}
-				if (terrainAffected) {
-					Dungeon.observe();
-				}
-				knockShot().cast(curUser, target);
 			}
 		}
 

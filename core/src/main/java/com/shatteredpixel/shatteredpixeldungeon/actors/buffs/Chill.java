@@ -21,10 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 
 import java.text.DecimalFormat;
 
@@ -40,6 +44,12 @@ public class Chill extends FlavourBuff {
 	@Override
 	public boolean attachTo(Char target) {
 		Buff.detach( target, Burning.class );
+
+		if (target == Dungeon.hero && target.isAlive()
+				&& ((Hero)target).belongings.armor instanceof ElementalArmor.ElementalArmorFire) {
+			GLog.w(Messages.get(ElementalArmor.class, "cold"));
+			target.damage((int)(target.HT*0.05f), this);
+		}
 
 		return super.attachTo(target);
 	}

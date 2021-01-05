@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
@@ -41,7 +42,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
@@ -80,6 +80,7 @@ public class ElementalSpell extends TargetedSpell {
 	{
 		unique = true;
 		bones = false;
+		levelKnown = true;
 		usesTargeting = true;
 		defaultAction = AC_CAST;
 	}
@@ -110,6 +111,15 @@ public class ElementalSpell extends TargetedSpell {
 
 	@Override
 	public int value() { return 0; }
+
+	@Override
+	public int level() { return Statistics.bossSlained; }
+
+	@Override
+	public boolean isUpgradable() { return false; }
+
+	@Override
+	public boolean isIdentified() { return true; }
 
 	// focus
 	public static class FireFocus extends Buff {
@@ -478,12 +488,8 @@ public class ElementalSpell extends TargetedSpell {
 			image = ItemSpriteSheet.ELEMENT_FIRE;
 		}
 
-		public static int min() {
-			return 2 + Dungeon.hero.lvl/5;
-		}
-		public static int max() {
-			return 4 + (int)(Dungeon.hero.lvl/2.5f);
-		}
+		public static int min() { return (2 + Dungeon.hero.lvl/5) * (int)((1+Statistics.bossSlained)*1.2f); }
+		public static int max() { return (4 + (int)(Dungeon.hero.lvl/2.5f)) * (int)((1+Statistics.bossSlained)*1.2f); }
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
 		@Override
@@ -528,7 +534,7 @@ public class ElementalSpell extends TargetedSpell {
 							&& !(curUser.belongings.armor instanceof ElementalArmor.ElementalArmorFire)
 							&& curUser.buff(GarmentCooldown.class) == null
 							&& curUser.buff(GarmentChange.class) == null) {
-						Buff.affect(curUser, GarmentChange.class, 20f);
+						Buff.affect(curUser, GarmentChange.class, 30f);
 						ElementalArmor.doChange(this, curUser.belongings.armor);
 						GLog.p(Messages.get(ElementalArmor.class, "change_msg_fire"));
 
@@ -568,11 +574,9 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		public static int min() {
-			return 1 + Dungeon.hero.lvl/6;
+			return (1 + Dungeon.hero.lvl/6) * (int)((1+Statistics.bossSlained)*1.1f);
 		}
-		public static int max() {
-			return 3 + (int)(Dungeon.hero.lvl/3f);
-		}
+		public static int max() { return (3 + (int)(Dungeon.hero.lvl/3f)) * (int)((1+Statistics.bossSlained)*1.1f); }
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
 		@Override
@@ -631,7 +635,7 @@ public class ElementalSpell extends TargetedSpell {
 						&& curUser.buff(GarmentCooldown.class) == null
 						&& curUser.buff(GarmentChange.class) == null)
 				{
-					Buff.affect(curUser, GarmentChange.class, 20f);
+					Buff.affect(curUser, GarmentChange.class, 30f);
 					ElementalArmor.doChange(this, curUser.belongings.armor);
 					GLog.p(Messages.get(ElementalArmor.class, "change_msg_ice"));
 
@@ -670,10 +674,8 @@ public class ElementalSpell extends TargetedSpell {
 			image = ItemSpriteSheet.ELEMENT_ELEC;
 		}
 
-		public static int min() { return 3 + Dungeon.hero.lvl/4; }
-		public static int max() {
-			return 8 + Dungeon.hero.lvl/2;
-		}
+		public static int min() { return (3 + Dungeon.hero.lvl/4) * (int)((1+Statistics.bossSlained)*1.333f); }
+		public static int max() { return (8 + Dungeon.hero.lvl/2) * (int)((1+Statistics.bossSlained)*1.333f); }
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
 		@Override
@@ -721,7 +723,7 @@ public class ElementalSpell extends TargetedSpell {
 					&& curUser.buff(GarmentCooldown.class) == null
 					&& curUser.buff(GarmentChange.class) == null)
 			{
-				Buff.affect(curUser, GarmentChange.class, 20f);
+				Buff.affect(curUser, GarmentChange.class, 30f);
 				ElementalArmor.doChange(this, curUser.belongings.armor);
 				GLog.p(Messages.get(ElementalArmor.class, "change_msg_elec"));
 
@@ -998,7 +1000,7 @@ public class ElementalSpell extends TargetedSpell {
 						GameScene.add(Blob.seed(cell, vol, Fire.class));
 
 					} else if (electricity != null && electricity.volume > 0) {
-						int vol = electricity.volume;
+						int vol = electricity.cur[cell];
 						electricity.clear(cell);
 						Char elec = Actor.findChar(cell);
 						if (elec != null) {
