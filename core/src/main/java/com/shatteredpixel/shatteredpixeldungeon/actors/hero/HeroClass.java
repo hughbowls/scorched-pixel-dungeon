@@ -281,8 +281,6 @@ public enum HeroClass {
 
 		new ScrollOfTeleportation().identify();
 		new PotionOfExperience().identify();
-
-		new TomeOfMastery().collect();
 	}
 
 	public String title() {
