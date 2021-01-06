@@ -707,7 +707,7 @@ public class ItemSpriteSheet {
 	public static final int ELEMENT_ICE   		= SCORCHED +1;
 	public static final int ELEMENT_ELEC   		= SCORCHED +2;
 	public static final int ELEMENT_CHAOS  		= SCORCHED +3;
-	public static final int ELIXIR_EMBERBLOOD  	= SCORCHED +3;
+	public static final int ELIXIR_EMBERBLOOD  	= SCORCHED +4;
 	static{
 		assignItemRect(ELEMENT_FIRE, 16, 16);
 		assignItemRect(ELEMENT_ICE,  16, 16);
