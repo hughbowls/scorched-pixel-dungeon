@@ -17,12 +17,7 @@ import com.watabou.utils.Bundle;
 public class ElixirOfEmberBlood extends Elixir {
 
     {
-        image = ItemSpriteSheet.ELIXIR_DRAGON;
-    }
-
-    @Override
-    public ItemSprite.Glowing glowing() {
-        return new ItemSprite.Glowing(0xFF3C3C, 0.5f);
+        image = ItemSpriteSheet.ELIXIR_EMBERBLOOD;
     }
 
     @Override

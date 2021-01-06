@@ -261,7 +261,8 @@ public class Hero extends Char {
 
 		ElixirOfEmberBlood.EmberBlood ember
 				= buff(ElixirOfEmberBlood.EmberBlood.class);
-		if (ember != null){
+		Burning burn = buff(Burning.class);
+		if (ember != null && burn != null){
 			STR += 1;
 		}
 

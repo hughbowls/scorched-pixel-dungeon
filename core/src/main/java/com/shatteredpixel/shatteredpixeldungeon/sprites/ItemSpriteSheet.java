@@ -701,17 +701,19 @@ public class ItemSpriteSheet {
 		assignItemRect(HOLSTER,     15, 16);
 	}
 
-	// for Elementalist
-	private static final int ELEMENT =                                   xy(1, 32);  //16 slots
-	public static final int ELEMENT_FIRE   = ELEMENT +0;
-	public static final int ELEMENT_ICE    = ELEMENT +1;
-	public static final int ELEMENT_ELEC   = ELEMENT +2;
-	public static final int ELEMENT_CHAOS  = ELEMENT +3;
+	// for scorched-originals
+	private static final int SCORCHED =                                   xy(1, 32);  //16 slots
+	public static final int ELEMENT_FIRE   		= SCORCHED +0;
+	public static final int ELEMENT_ICE   		= SCORCHED +1;
+	public static final int ELEMENT_ELEC   		= SCORCHED +2;
+	public static final int ELEMENT_CHAOS  		= SCORCHED +3;
+	public static final int ELIXIR_EMBERBLOOD  	= SCORCHED +3;
 	static{
 		assignItemRect(ELEMENT_FIRE, 16, 16);
 		assignItemRect(ELEMENT_ICE,  16, 16);
 		assignItemRect(ELEMENT_ELEC, 16, 16);
 		assignItemRect(ELEMENT_CHAOS,16, 16);
+		assignItemRect(ELIXIR_EMBERBLOOD,12, 14);
 	}
 
 	                                                                                    //16 free slots

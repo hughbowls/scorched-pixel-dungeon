@@ -77,6 +77,7 @@ public class v0_9_X_Changes {
 						"_-_ The Heretic and blacksmith causing crash when they reforge with curse mastery (report by. Omicronrg9)\n" +
 						"_-_ Wrong typo on the Alchemist's grenadier description (report by. Enjuxx)\n" +
 						"_-_ HOTFIX(21.01.06) The Tempest crashes game\n" +
+						"_-_ Emberblood affects whenever burning or not (report by. Omicronrg9)\n" +
 						"\nAlways, Thanks to reports!"));
 
 		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.PISTOL), "Alchemist pistol",
