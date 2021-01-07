@@ -39,7 +39,7 @@ public class Shadows extends Invisibility {
 	{
 		announced = false;
 	}
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );

@@ -269,6 +269,11 @@ public class Badges {
 		}
 	}
 
+	public static int unlocked(boolean global){
+		if (global) return Badges.global.size();
+		else        return Badges.local.size();
+	}
+
 	public static void validateMonstersSlain() {
 		Badge badge = null;
 		
@@ -562,7 +567,6 @@ public class Badges {
 			global.contains( Badge.DEATH_FROM_FALLING)) {
 			
 			Badge badge = Badge.YASD;
-			local.add( badge );
 			displayBadge( badge );
 		}
 	}

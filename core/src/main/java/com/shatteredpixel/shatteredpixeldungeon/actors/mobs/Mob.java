@@ -862,7 +862,7 @@ public abstract class Mob extends Char {
 					if (alignment == Alignment.ENEMY && Dungeon.isChallenged(Challenges.SWARM_INTELLIGENCE)) {
 						for (Mob mob : Dungeon.level.mobs) {
 							if (mob.paralysed <= 0
-									&& Dungeon.level.distance(pos, mob.pos) <= 8 //TODO base on pathfinder distance instead?
+									&& Dungeon.level.distance(pos, mob.pos) <= 8
 									&& mob.state != mob.HUNTING) {
 								mob.beckon(target);
 							}
@@ -910,7 +910,7 @@ public abstract class Mob extends Char {
 			if (alignment == Alignment.ENEMY && Dungeon.isChallenged( Challenges.SWARM_INTELLIGENCE )) {
 				for (Mob mob : Dungeon.level.mobs) {
 					if (mob.paralysed <= 0
-							&& Dungeon.level.distance(pos, mob.pos) <= 8 //TODO base on pathfinder distance instead?
+							&& Dungeon.level.distance(pos, mob.pos) <= 8
 							&& mob.state != mob.HUNTING) {
 						mob.beckon( target );
 					}
@@ -975,9 +975,10 @@ public abstract class Mob extends Char {
 					//if moving towards an enemy isn't possible, try to switch targets to another enemy that is closer
 					//unless we have already done that and still can't move toward them, then move on.
 					if (!recursing) {
-						Char newEnemy = chooseEnemy();
-						if (newEnemy != null && enemy != newEnemy) {
-							enemy = newEnemy;
+						Char oldEnemy = enemy;
+						enemy = null;
+						enemy = chooseEnemy();
+						if (enemy != null && enemy != oldEnemy) {
 							recursing = true;
 							boolean result = act(enemyInFOV, justAlerted);
 							recursing = false;
