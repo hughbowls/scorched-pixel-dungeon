@@ -29,18 +29,24 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.AlchemistArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -50,6 +56,7 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -112,7 +119,14 @@ public class Item implements Bundlable {
 			GameScene.pickUp( this, hero.pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
 			Talent.onItemCollected( hero, this );
-			hero.spendAndNext( TIME_TO_PICK_UP );
+
+			if (hero.hasTalent(Talent.INDUSTRIOUS_HANDS)
+				&& (this instanceof MeleeWeapon || this instanceof MissileWeapon)) {
+				hero.spendAndNext( 0f );
+			}
+
+			else hero.spendAndNext( TIME_TO_PICK_UP );
+
 			return true;
 
 		} else {
@@ -480,6 +494,10 @@ public class Item implements Bundlable {
 	private static final String CURSED_KNOWN	= "cursedKnown";
 	private static final String QUICKSLOT		= "quickslotpos";
 
+	// for Troll
+	private static final String DA				= "quickslotpos";
+	private static final String TARG			= "quickslotpos";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
@@ -560,11 +578,83 @@ public class Item implements Bundlable {
 											Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 30f);
 										}
 									}
+
+									boolean isTroll = false;
+									boolean hit = false;
+									float DLY;
+									if (curUser.heroClass == HeroClass.TROLL
+											&& Item.this instanceof MeleeWeapon){
+
+										Char ch = Actor.findChar(cell);
+										if (ch != null && ch.alignment != curUser.alignment) {
+											curUser.belongings.stashedWeapon = curUser.belongings.weapon;
+											curUser.belongings.weapon = ((Weapon)(Item.this));
+											DLY = curUser.attackDelay();
+											if (curUser.hasTalent(Talent.SWIFTY_PROJECTILES)
+												&& curUser.buff(Talent.SwiftyProjectilesTracker.class) != null) {
+												DLY = curUser.pointsInTalent(Talent.SWIFTY_PROJECTILES) == 2 ? 0 : DLY*0.5f;
+											}
+
+											if (curUser.attack( enemy )) hit = true;
+
+											if (hit) {
+												if (curUser.hasTalent(Talent.ARTISANS_INTUITION)) {
+													Item.this.cursedKnown = true;
+													if (curUser.pointsInTalent(Talent.ARTISANS_INTUITION) == 2)
+														Item.this.identify();
+												}
+											}
+
+											Invisibility.dispel();
+											curUser.belongings.weapon = curUser.belongings.stashedWeapon;
+											curUser.belongings.stashedWeapon = null;
+											isTroll = true;
+											user.spendAndNext(DLY);
+											Buff.detach(curUser, Talent.SwiftyProjectilesTracker.class);
+										}
+									}
+
+									// hidden usage for anvil!
+									if (Item.this instanceof Anvil){
+										Char ch = Actor.findChar(cell);
+										boolean visibleFight = Dungeon.level.heroFOV[curUser.pos] || Dungeon.level.heroFOV[ch.pos];
+										if (ch != null && ch.alignment != curUser.alignment){
+
+											if (ch.isInvulnerable(getClass())) {
+												if (visibleFight) {
+													ch.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable") );
+													Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1f, Random.Float(0.96f, 1.05f));
+												}
+
+											} else if (Char.hit(curUser, ch, false)) {
+												Sample.INSTANCE.play(Assets.Sounds.EVOKE, 1f, 0.8f);
+												ch.damage((int) ((Random.NormalFloat(curUser.STR * 0.5f, curUser.STR * 1.5f)
+																- ch.drRoll()) * (ch.buff(Vulnerable.class) != null ? 1.333f : 1f)),
+														Item.this);
+
+												ch.sprite.bloodBurstA( ch.sprite.center(), 1 );
+												ch.sprite.flash();
+												if (!ch.isAlive() && visibleFight) {
+													GLog.i( Messages.capitalize(Messages.get(Char.class, "defeat", ch.name())) );
+												}
+												Invisibility.dispel();
+
+											} else {
+												if (visibleFight) {
+													String defense = ch.defenseVerb();
+													ch.sprite.showStatus( CharSprite.NEUTRAL, defense );
+													Sample.INSTANCE.play(Assets.Sounds.MISS);
+												}
+											}
+										}
+									}
+
 									AlchemistArmor.Showdown showdown = enemy.buff(AlchemistArmor.Showdown.class);
 									if (Item.this instanceof Pistol.PistolShot && showdown != null){
 										user.spendAndNext(0f);
 									}
-									else user.spendAndNext(delay);
+
+									else if (!isTroll) user.spendAndNext(delay);
 								}
 							});
 		} else {

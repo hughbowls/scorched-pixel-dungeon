@@ -122,6 +122,7 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 
 		if (attacker == Dungeon.hero && attacker.isAlive()
+				&& Dungeon.hero.belongings.armor != null
 				&& Dungeon.hero.belongings.armor.glyph != null
 				&& Dungeon.hero.belongings.armor.glyph instanceof Metabolism
 				&& Dungeon.hero.heroClass == HeroClass.HERETIC) {

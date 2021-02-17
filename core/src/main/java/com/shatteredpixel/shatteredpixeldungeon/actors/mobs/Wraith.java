@@ -135,8 +135,8 @@ public class Wraith extends Mob {
 
 		if (enemy instanceof Hero && ((Hero)enemy).hasTalent(Talent.WRAITH_DECEPTION)){
 
-			enemy.HP = enemy.HT;
-			for (Buff buff : enemy.buffs()) {
+			this.HP = this.HT;
+			for (Buff buff : this.buffs()) {
 				if (buff.type == Buff.buffType.NEGATIVE
 						&& !(buff instanceof SoulMark)) {
 					buff.detach();

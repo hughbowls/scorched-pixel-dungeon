@@ -42,7 +42,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
@@ -349,6 +351,18 @@ public class NewDM300 extends Mob {
 		for (int i : trajectory.subPath(0, trajectory.dist)){
 			GameScene.add(Blob.seed(i, 20, ToxicGas.class));
 			gasVented += 20;
+		}
+
+		if (target == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+				&& target.isAlive() && Dungeon.hero.fieldOfView[pos]
+				&& target.buff(Talent.BoulderIsComingCooldown.class) == null
+				&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				&& Dungeon.level.distance(target.pos, pos) > 1
+		){
+			if (buff(TrollJump.class) == null)
+				Buff.affect(this, TrollJump.class).setJump(2f);
+			if (target.buff(TrollJump.class) == null)
+				Buff.affect(target, TrollJump.class).setJump(2f);
 		}
 
 		GameScene.add(Blob.seed(trajectory.collisionPos, 100, ToxicGas.class));

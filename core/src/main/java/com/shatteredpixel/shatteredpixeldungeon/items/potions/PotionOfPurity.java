@@ -97,7 +97,7 @@ public class PotionOfPurity extends Potion {
 		
 	}
 
-	// for Alchemist's pistol
+	// for Alchemist's pistol & Troll's cleansing meal
 	public static void purify( int cell ) {
 
 		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 1 );

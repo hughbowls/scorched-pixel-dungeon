@@ -26,8 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -118,6 +120,17 @@ public abstract class Shaman extends Mob {
 			
 			int dmg = Random.NormalIntRange( 6, 15 );
 			enemy.damage( dmg, new EarthenBolt() );
+
+			if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+					&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+					&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+					&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+			){
+				if (buff(TrollJump.class) == null)
+					Buff.affect(this, TrollJump.class).setJump(2f);
+				if (enemy.buff(TrollJump.class) == null)
+					Buff.affect(enemy, TrollJump.class).setJump(2f);
+			}
 			
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
 				Dungeon.fail( getClass() );

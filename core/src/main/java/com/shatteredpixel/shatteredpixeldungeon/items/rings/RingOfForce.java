@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.rings;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -59,6 +60,19 @@ public class RingOfForce extends Ring {
 		if (hero.buff(Force.class) != null) {
 			int level = getBuffedBonus(hero, Force.class);
 			float tier = tier(hero.STR());
+
+			TrollHammer hammer = hero.buff(TrollHammer.class);
+			if (hammer != null){
+				if (hammer.getBoost() >= 10){
+					return max(level, tier);
+
+				} else if (hammer.getBoost() >= 1){
+					int modifier = (int)(0.1f*(max(level, tier) - min(level, tier)));
+					int dmg = min(level, tier) + (min(level, tier) * modifier * (int)(0.5f * hammer.getBoost()));
+					return Random.NormalIntRange(Math.min(dmg, max(level, tier)), max(level, tier));
+				}
+			}
+
 			return Random.NormalIntRange(min(level, tier), max(level, tier));
 		} else {
 			//attack without any ring of force influence

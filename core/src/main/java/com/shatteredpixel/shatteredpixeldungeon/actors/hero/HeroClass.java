@@ -31,15 +31,18 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.WeaponRack;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticGas;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
@@ -47,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
@@ -56,10 +60,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BoneBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ForgeHammer;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.BlindPowder;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingClub;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -74,7 +80,8 @@ public enum HeroClass {
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	HERETIC("heretic", HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT),
 	ALCHEMIST("alchemist", HeroSubClass.TRAILBLAZER, HeroSubClass.INNOVATOR),
-	ELEMENTALIST("elementalist", HeroSubClass.SPELLWEAVER, HeroSubClass.TEMPEST);
+	ELEMENTALIST("elementalist", HeroSubClass.SPELLWEAVER, HeroSubClass.TEMPEST),
+	TROLL("troll", HeroSubClass.WARSMITH, HeroSubClass.GEOMANCER);
 
 	private String title;
 	private HeroSubClass[] subClasses;
@@ -119,6 +126,10 @@ public enum HeroClass {
 			case ELEMENTALIST:
 				initElementalist( hero );
 				break;
+
+			case TROLL:
+				initTroll( hero );
+				break;
 		}
 
 	}
@@ -141,6 +152,7 @@ public enum HeroClass {
 			case WARRIOR:
 			case HERETIC:
 			case ALCHEMIST:
+			case TROLL:
 				return Badges.Badge.MASTERY_WARRIOR;
 			case MAGE:
 				return Badges.Badge.MASTERY_MAGE;
@@ -221,7 +233,7 @@ public enum HeroClass {
 		new ScrollOfLullaby().identify();
 	}
 
-	private static void initHeretic(Hero hero ) {
+	private static void initHeretic( Hero hero ) {
 
 		(hero.belongings.weapon = new BoneBlade()).identify();
 
@@ -237,7 +249,7 @@ public enum HeroClass {
 		new PotionOfPurity().identify();
 	}
 
-	private static void initAlchemist(Hero hero ) {
+	private static void initAlchemist( Hero hero ) {
 
 		Pistol pistol = new Pistol();
 		pistol.identify().collect();
@@ -258,7 +270,7 @@ public enum HeroClass {
 		new PotionOfStrength().identify();
 	}
 
-	private static void initElementalist(Hero hero ) {
+	private static void initElementalist( Hero hero ) {
 		ElementalArmor garment;
 		garment = new ElementalArmor();
 		(hero.belongings.armor = garment).identify();
@@ -278,6 +290,27 @@ public enum HeroClass {
 
 		new ScrollOfTeleportation().identify();
 		new PotionOfExperience().identify();
+	}
+
+	private static void initTroll( Hero hero ) {
+
+		ForgeHammer hammer;
+		hammer = new ForgeHammer();
+		(hero.belongings.weapon = hammer).identify();
+
+		WeaponRack rack = new WeaponRack();
+		rack.collect();
+		Dungeon.quickslot.setSlot(0, rack);
+
+		ThrowingClub clubs = new ThrowingClub();
+		clubs.quantity(3).collect();
+		Dungeon.quickslot.setSlot(1, clubs);
+
+		new MagicalHolster().collect();
+		Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
+
+		new ScrollOfRetribution().identify();
+		new PotionOfParalyticGas().identify();
 	}
 
 	public String title() {
@@ -304,6 +337,8 @@ public enum HeroClass {
 				return Assets.Sprites.ALCHEMIST;
 			case ELEMENTALIST:
 				return Assets.Sprites.ELEMENTALIST;
+			case TROLL:
+				return Assets.Sprites.TROLL_HERO;
 		}
 	}
 
@@ -323,6 +358,8 @@ public enum HeroClass {
 				return Assets.Splashes.ALCHEMIST;
 			case ELEMENTALIST:
 				return Assets.Splashes.ELEMENTALIST;
+			case TROLL:
+				return Assets.Splashes.TROLL;
 		}
 	}
 	
@@ -384,6 +421,14 @@ public enum HeroClass {
 						Messages.get(HeroClass.class, "elementalist_perk4"),
 						Messages.get(HeroClass.class, "elementalist_perk5"),
 				};
+			case TROLL:
+				return new String[]{
+						Messages.get(HeroClass.class, "troll_perk1"),
+						Messages.get(HeroClass.class, "troll_perk2"),
+						Messages.get(HeroClass.class, "troll_perk3"),
+						Messages.get(HeroClass.class, "troll_perk4"),
+						Messages.get(HeroClass.class, "troll_perk5"),
+				};
 		}
 	}
 	
@@ -406,6 +451,8 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_ALCHEMIST);
 			case ELEMENTALIST:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_ELEMENTALIST);
+			case TROLL:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_TROLL);
 		}
 	}
 	
@@ -425,6 +472,8 @@ public enum HeroClass {
 				return Messages.get(HeroClass.class, "alchemist_unlock");
 			case ELEMENTALIST:
 				return Messages.get(HeroClass.class, "elementalist_unlock");
+			case TROLL:
+				return Messages.get(HeroClass.class, "troll_unlock");
 		}
 	}
 

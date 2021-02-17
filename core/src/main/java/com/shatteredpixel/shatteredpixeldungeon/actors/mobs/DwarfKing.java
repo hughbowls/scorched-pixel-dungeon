@@ -33,12 +33,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LifeLink;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Anvil;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArmorKit;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -435,9 +437,15 @@ public class DwarfKing extends Mob {
 				}
 				h.destroy();
 			}
-			Dungeon.level.drop(new ArmorKit(), pos + Dungeon.level.width()).sprite.drop(pos);
+			if (Dungeon.hero.heroClass == HeroClass.TROLL)
+				Dungeon.level.drop(new Anvil(), pos + Dungeon.level.width()).sprite.drop(pos);
+			else
+				Dungeon.level.drop(new ArmorKit(), pos + Dungeon.level.width()).sprite.drop(pos);
 		} else {
-			Dungeon.level.drop(new ArmorKit(), pos).sprite.drop();
+			if (Dungeon.hero.heroClass == HeroClass.TROLL)
+				Dungeon.level.drop(new Anvil(), pos).sprite.drop();
+			else
+				Dungeon.level.drop(new ArmorKit(), pos).sprite.drop();
 		}
 
 		Badges.validateBossSlain();

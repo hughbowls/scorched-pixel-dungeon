@@ -58,7 +58,7 @@ import java.util.ArrayList;
 
 public abstract class HereticSummon extends NPC {
 
-	private boolean canzap = true;
+	private boolean canzap;
 
 	{
 		HP = HT = 60;
@@ -127,6 +127,7 @@ public abstract class HereticSummon extends NPC {
 		state = HUNTING;
 		target = Dungeon.hero.pos;
 		Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class).charID = this.id();
+		canzap = true;
 	}
 
 	public void cantzap() {
@@ -143,6 +144,10 @@ public abstract class HereticSummon extends NPC {
 	}
 
 	protected boolean doAttack( Char enemy ) {
+
+		if (Dungeon.level.adjacent( pos, enemy.pos ) && !canzap) {
+			return super.doAttack( enemy );
+		}
 
 		if (Dungeon.level.adjacent( pos, enemy.pos ) || rangedCooldown > 0 || canzap) {
 
@@ -273,6 +278,12 @@ public abstract class HereticSummon extends NPC {
 		{
 			spriteClass = HereticSummonSprite.Blood.class;
 			baseSpeed = 2f;
+		}
+
+		@Override
+		public void summon(int HT) {
+			super.summon(HT);
+			cantzap();
 		}
 
 		@Override
@@ -426,6 +437,12 @@ public abstract class HereticSummon extends NPC {
 
 		{
 			spriteClass = HereticSummonSprite.Earth.class;
+		}
+
+		@Override
+		public void summon(int HT) {
+			super.summon(HT);
+			cantzap();
 		}
 
 		@Override

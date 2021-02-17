@@ -98,12 +98,17 @@ public class BuffIndicator extends Component {
 	public static final int UPGRADE     = 50;
 
 	// Scorched only
-	public static final int SC_CLOCK    = 90;
-	public static final int SC_FORM     = 91;
-	public static final int SC_FIRE     = 92;
-	public static final int SC_ICE      = 93;
-	public static final int SC_ELEC     = 94;
-	public static final int SC_CHAOS    = 95;
+	public static final int SC_AIM	    = 90;
+	public static final int SC_PUNCH    = 91;
+	public static final int SC_CLOCK    = 92;
+	public static final int SC_FORM     = 93;
+	public static final int SC_FIRE     = 94;
+	public static final int SC_ICE      = 95;
+	public static final int SC_ELEC     = 96;
+	public static final int SC_CHAOS    = 97;
+	public static final int SC_EARTH    = 98;
+	public static final int SC_HAMMER   = 99;
+	public static final int SC_ANVIL    = 100;
 
 	public static final int SIZE	= 7;
 	

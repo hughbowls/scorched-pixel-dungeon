@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -110,6 +112,17 @@ public class Warlock extends Mob implements Callback {
 			
 			int dmg = Random.NormalIntRange( 12, 18 );
 			enemy.damage( dmg, new DarkBolt() );
+
+			if (Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+					&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+					&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+					&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+			){
+				if (buff(TrollJump.class) == null)
+					Buff.affect(this, TrollJump.class).setJump(2f);
+				if (enemy.buff(TrollJump.class) == null)
+					Buff.affect(enemy, TrollJump.class).setJump(2f);
+			}
 			
 			if (enemy == Dungeon.hero && !enemy.isAlive()) {
 				Dungeon.fail( getClass() );

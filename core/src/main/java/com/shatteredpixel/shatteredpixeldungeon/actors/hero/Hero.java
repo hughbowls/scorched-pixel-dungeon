@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Freezing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AdrenalineSurge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArcaneArmor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
@@ -61,10 +62,19 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollAnvil;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollGeomancy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollSkin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Yog;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
@@ -81,7 +91,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.HereticArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Flow;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -100,7 +109,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfEmberBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
@@ -112,7 +120,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfTenacity;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfShock;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
@@ -152,7 +160,6 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndScorchedFeedbackPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndScorchedUnlockPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
 import com.watabou.noosa.Camera;
@@ -466,7 +473,7 @@ public class Hero extends Char {
 				accuracy *= 1.5f;
 			}
 		}
-		
+
 		if (wep != null) {
 			return (int)(attackSkill * accuracy * wep.accuracyFactor( this ));
 		} else {
@@ -519,8 +526,15 @@ public class Hero extends Char {
 		if (hasTalent(Talent.MALEVOLENT_ARMOR)){
 			if (belongings.armor != null && (belongings.armor.cursed
 					|| ((Armor)belongings.armor).hasCurseGlyph()))
-				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dr += 1;
-				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dr += 2;
+				dr += pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2 ? 2 : 1;
+		}
+
+		if (hasTalent(Talent.ARMORED)){
+			if (buff(Barkskin.class) != null
+				|| buff(Earthroot.Armor.class) != null
+				|| buff(ArcaneArmor.class) != null
+				|| buff(WandOfLivingEarth.RockArmor.class) != null)
+			dr += pointsInTalent(Talent.ARMORED) == 2 ? 3 : 1;
 		}
 		
 		return dr;
@@ -600,7 +614,7 @@ public class Hero extends Char {
 		}
 
 		if (belongings.weapon != null) {
-			
+
 			return belongings.weapon.speedFactor( this );
 			
 		} else {
@@ -754,6 +768,9 @@ public class Hero extends Char {
 		if( subClass == HeroSubClass.WARDEN && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
 			Buff.affect(this, Barkskin.class).set( lvl + 5, 1 );
 		}
+
+		TrollGeomancy geomancy = buff(TrollGeomancy.class);
+		if (geomancy != null) geomancy.setStep(pos);
 		
 		return actResult;
 	}
@@ -1162,7 +1179,7 @@ public class Hero extends Char {
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
 		damage = Talent.onAttackProc( this, enemy, damage );
-		
+
 		switch (subClass) {
 		case SNIPER:
 			if (wep instanceof MissileWeapon && !(wep instanceof SpiritBow.SpiritArrow) && enemy != this) {
@@ -1198,7 +1215,31 @@ public class Hero extends Char {
 		if (morph != null && enemy.isAlive() && wep instanceof MeleeWeapon){
 			morph.attackproc(enemy);
 		}
-		
+
+		if (wep instanceof MissileWeapon && hasTalent(Talent.SWIFTY_PROJECTILES)) {
+			Buff.affect(this, Talent.SwiftyProjectilesTracker.class, 2f);
+		}
+
+		if ((wep instanceof MeleeWeapon || (wep == null && RingOfForce.getBuffedBonus(this, RingOfForce.Force.class) > 0))
+				&& subClass == HeroSubClass.WARSMITH && damage >= 1) {
+			if (buff(TrollHammer.class) == null)
+				Buff.affect(this, TrollHammer.class).set(3);
+			else {
+				TrollHammer hammer = buff(TrollHammer.class);
+				if (hammer != null && hammer.getBoost() == 9)
+					Sample.INSTANCE.play( Assets.Sounds.EVOKE, 1f,0.4f  );
+				if (hammer != null && hammer.getBoost() >= 10){
+					CellEmitter.get(enemy.pos).burst(Speck.factory(Speck.FORGE), 10);
+					Sample.INSTANCE.play(Assets.Sounds.EVOKE, 1f, 0.8f);
+					Camera.main.shake( 3, 0.5f );
+					// T3 talents will affects this line
+					Buff.detach(this, TrollHammer.class);
+				} else {
+					Buff.affect(this, TrollHammer.class).hit();
+				}
+			}
+		}
+
 		return damage;
 	}
 	
@@ -1222,6 +1263,37 @@ public class Hero extends Char {
 		WandOfLivingEarth.RockArmor rockArmor = buff(WandOfLivingEarth.RockArmor.class);
 		if (rockArmor != null) {
 			damage = rockArmor.absorb(damage);
+		}
+
+		if (damage > 0 && subClass == HeroSubClass.WARSMITH) {
+
+			if (buff(TrollAnvil.class) == null)
+				Buff.affect(this, TrollAnvil.class).set(3);
+
+			else {
+
+				TrollAnvil anvil = buff(TrollAnvil.class);
+				if (anvil != null && anvil.getDrBoost() == 9)
+					Sample.INSTANCE.play( Assets.Sounds.EVOKE, 1f,0.4f  );
+
+				if (anvil != null && anvil.getDrBoost() >= 10) {
+					for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+						Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
+						if (ch != null && ch.isAlive() && ch != this
+								&& ch.alignment != Alignment.ALLY
+								&& ch.alignment != Alignment.NEUTRAL) {
+
+							ch.damage( damage, this );
+							WandOfBlastWave.BlastWave.blast(pos);
+							Camera.main.shake( 3, 0.5f );
+							Sample.INSTANCE.play( Assets.Sounds.EVOKE, 1f,0.8f  );
+						}
+					}
+					Buff.detach(this, TrollAnvil.class);
+				}
+				else
+					Buff.affect(this, TrollAnvil.class).hit();
+			}
 		}
 		
 		return damage;
@@ -1264,8 +1336,8 @@ public class Hero extends Char {
 			if (hasTalent(Talent.MALEVOLENT_ARMOR)){
 				if (belongings.armor != null && (belongings.armor.cursed
 						|| ((Armor)belongings.armor).hasCurseGlyph()))
-					if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dmg -= 1;
-				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dmg -= 2;
+					if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 1) dmg = Math.max(0, dmg-1);
+				if (pointsInTalent(Talent.MALEVOLENT_ARMOR) == 2) dmg = Math.max(0, dmg-2);
 			}
 		}
 
@@ -1315,6 +1387,18 @@ public class Hero extends Char {
 			else if (pointsInTalent(Talent.IRON_STOMACH) == 2)  dmg = Math.round(dmg*0.00f);
 		}
 
+		if (hasTalent(Talent.REGENERATION)){
+			Buff.detach(this, Talent.TrollRegeneration.class);
+			Buff.affect(this, Talent.TrollRegeneration.class,
+					pointsInTalent(Talent.REGENERATION) == 2 ? 3f : 5f);
+		}
+
+		TrollAnvil anvil = buff(TrollAnvil.class);
+		if (anvil!= null){
+			float extraDR = 0.4f * anvil.getDrBoost();
+			dmg = Math.max(0, (int)(dmg - extraDR));
+		}
+
 		int preHP = HP + shielding();
 		super.damage( dmg, src );
 		int postHP = HP + shielding();
@@ -1335,6 +1419,32 @@ public class Hero extends Char {
 				} else {
 					Sample.INSTANCE.play(Assets.Sounds.HEALTH_WARN, 1/3f + flashIntensity * 4f);
 				}
+			}
+		}
+
+		if (heroClass == HeroClass.TROLL
+				&& (src instanceof Mob || src instanceof Shocking
+					|| src instanceof DM100.LightningBolt
+					|| src instanceof Shaman.EarthenBolt
+					|| src instanceof Warlock.DarkBolt
+					|| src instanceof Eye.DeathGaze
+					|| src instanceof Yog.BurningFist.DarkBolt
+					|| src instanceof YogFist.BrightFist.LightBeam
+					|| src instanceof YogFist.DarkFist.DarkBolt)){
+			int toSH = Math.round(dmg*0.25f);
+			TrollGeomancy geomancy = buff(TrollGeomancy.class);
+			if (buff(TrollGeomancy.class) != null) {
+				if (geomancy.stacks() >= 9) toSH = Math.round(dmg*0.66f);
+				else if (geomancy.stacks() >= 6) toSH = Math.round(dmg*0.5f);
+				else if (geomancy.stacks() >= 3) toSH = Math.round(dmg*0.33f);
+			}
+			if (toSH < 1) toSH = 0;
+
+			if (toSH > 0) {
+			if (shielding() <= 0) {
+				Buff.affect(this, TrollSkin.class).setShield(toSH);
+			} else
+				Buff.affect(this, TrollSkin.class).incShield(toSH);
 			}
 		}
 	}
@@ -1488,6 +1598,23 @@ public class Hero extends Char {
 			
 			if (subClass == HeroSubClass.FREERUNNER){
 				Buff.affect(this, Momentum.class).gainStack();
+			}
+
+			if (subClass == HeroSubClass.GEOMANCER){
+				ArrayList<Integer> walls = new ArrayList<>();
+				for (int n : PathFinder.NEIGHBOURS8) {
+					int w = step + n;
+					if (Dungeon.level.solid[w]
+							&& (Dungeon.level.map[w] == Terrain.WALL_DECO
+							|| Dungeon.level.map[w] == Terrain.WALL)) {
+						walls.add( w );
+					}
+				}
+				TrollGeomancy geomancy = buff(TrollGeomancy.class);
+				if (geomancy != null) geomancy.setStep(step);
+
+				if (walls.size() > 0)
+					Buff.affect(this, TrollGeomancy.class).gainStack();
 			}
 
 			return true;

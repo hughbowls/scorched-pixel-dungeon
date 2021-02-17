@@ -37,7 +37,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
@@ -346,6 +348,17 @@ public class Yog extends Mob {
 
 				int dmg = damageRoll();
 				enemy.damage( dmg, new DarkBolt() );
+
+				if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+						&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+						&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+						&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				){
+					if (buff(TrollJump.class) == null)
+						Buff.affect(this, TrollJump.class).setJump(2f);
+					if (enemy.buff(TrollJump.class) == null)
+						Buff.affect(enemy, TrollJump.class).setJump(2f);
+				}
 
 				if (!enemy.isAlive() && enemy == Dungeon.hero) {
 					Dungeon.fail( getClass() );

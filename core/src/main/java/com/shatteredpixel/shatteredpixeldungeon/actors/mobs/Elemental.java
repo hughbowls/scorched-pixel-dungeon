@@ -29,7 +29,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
@@ -128,6 +130,18 @@ public abstract class Elemental extends Mob {
 		if (hit( this, enemy, true )) {
 			
 			rangedProc( enemy );
+
+			if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+					&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+					&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+					&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+					&& Dungeon.level.distance(enemy.pos, pos) > 1
+			){
+				if (buff(TrollJump.class) == null)
+					Buff.affect(this, TrollJump.class).setJump(2f);
+				if (enemy.buff(TrollJump.class) == null)
+					Buff.affect(enemy, TrollJump.class).setJump(2f);
+			}
 			
 		} else {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );

@@ -23,6 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -100,7 +103,18 @@ public class DM100 extends Mob implements Callback {
 				enemy.sprite.flash();
 				
 				if (enemy == Dungeon.hero) {
-					
+
+					if (Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+							&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+							&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+							&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+					){
+						if (buff(TrollJump.class) == null)
+							Buff.affect(this, TrollJump.class).setJump(2f);
+						if (enemy.buff(TrollJump.class) == null)
+							Buff.affect(enemy, TrollJump.class).setJump(2f);
+					}
+
 					Camera.main.shake( 2, 0.3f );
 					
 					if (!enemy.isAlive()) {

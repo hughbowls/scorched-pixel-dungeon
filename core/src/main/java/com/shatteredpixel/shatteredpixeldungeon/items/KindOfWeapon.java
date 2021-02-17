@@ -25,8 +25,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -63,8 +65,9 @@ abstract public class KindOfWeapon extends EquipableItem {
 				equipCursed( hero );
 				GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
 			}
-			
-			hero.spendAndNext( TIME_TO_EQUIP );
+
+			hero.spendAndNext( curUser.pointsInTalent(Talent.INDUSTRIOUS_HANDS) == 2 ? 0f : TIME_TO_EQUIP );
+
 			return true;
 			
 		} else {
@@ -100,20 +103,20 @@ abstract public class KindOfWeapon extends EquipableItem {
 	abstract public int max(int lvl);
 
 	public int damageRoll( Char owner ) {
+		TrollHammer hammer = owner.buff(TrollHammer.class);
+		if (hammer != null && owner != null && owner == Dungeon.hero && this instanceof MeleeWeapon){
+			return Random.NormalIntRange( hammer.minBoost(this), max() );
+		}
 		return Random.NormalIntRange( min(), max() );
 	}
 	
-	public float accuracyFactor( Char owner ) {
-		return 1f;
-	}
+	public float accuracyFactor( Char owner ) { return 1f; }
 	
 	public float speedFactor( Char owner ) {
 		return 1f;
 	}
 
-	public int reachFactor( Char owner ){
-		return 1;
-	}
+	public int reachFactor( Char owner ){ return 1; }
 	
 	public boolean canReach( Char owner, int target){
 		if (Dungeon.level.distance( owner.pos, target ) > reachFactor(owner)){

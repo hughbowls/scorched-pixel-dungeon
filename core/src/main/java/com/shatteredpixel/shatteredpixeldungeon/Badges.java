@@ -152,7 +152,8 @@ public class Badges {
 		//scorched
 		UNLOCK_HERETIC        		( 128 ),
 		UNLOCK_ALCHEMIST			( 129 ),
-		UNLOCK_ELEMENTALIST         ( 130 );
+		UNLOCK_ELEMENTALIST         ( 130 ),
+		UNLOCK_TROLL		        ( 131 );
 
 		public boolean meta;
 
@@ -741,10 +742,17 @@ public class Badges {
 		}
 	}
 
+	public static void validateTrollUnlock(){
+		if (!global.contains(Badge.UNLOCK_TROLL)){
+			displayBadge( Badge.UNLOCK_TROLL );
+		}
+	}
+
 	public static void unlockScorchedAll(){
 		if (!global.contains(Badge.UNLOCK_HERETIC)) displayBadge( Badge.UNLOCK_HERETIC );
 		if (!global.contains(Badge.UNLOCK_ALCHEMIST)) displayBadge( Badge.UNLOCK_ALCHEMIST );
 		if (!global.contains(Badge.UNLOCK_ELEMENTALIST)) displayBadge( Badge.UNLOCK_ELEMENTALIST );
+		if (!global.contains(Badge.UNLOCK_TROLL)) displayBadge( Badge.UNLOCK_TROLL );
 	}
 	
 	public static void validateMasteryCombo( int n ) {

@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
@@ -94,6 +95,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blazing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ShockingDart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -271,6 +273,12 @@ public abstract class Char extends Actor {
 	public boolean attack( Char enemy ) {
 
 		if (enemy == null) return false;
+
+		if (this instanceof Hero
+				&& Dungeon.hero.belongings.weapon instanceof MeleeWeapon
+				&& Dungeon.hero.hasTalent(Talent.SWIFTY_PROJECTILES)){
+			Buff.detach(Dungeon.hero, Talent.SwiftyProjectilesTracker.class);
+		}
 		
 		boolean visibleFight = Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos];
 
@@ -307,6 +315,10 @@ public abstract class Char extends Actor {
 						trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
 						WandOfBlastWave.throwChar(enemy, trajectory, 2, true, false);
 					}
+				}
+				if (h.belongings.weapon instanceof MissileWeapon
+						&& h.hasTalent(Talent.SWIFTY_PROJECTILES)){
+					Buff.affect(h, Talent.SwiftyProjectilesTracker.class, 2f);
 				}
 			}
 			

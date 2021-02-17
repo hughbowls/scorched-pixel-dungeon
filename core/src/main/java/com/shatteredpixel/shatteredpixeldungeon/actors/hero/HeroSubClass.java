@@ -47,7 +47,10 @@ public enum HeroSubClass {
 	INNOVATOR("innovator"),
 
 	SPELLWEAVER("spellweaver"),
-	TEMPEST("tempest");
+	TEMPEST("tempest"),
+
+	WARSMITH("warsmith"),
+	GEOMANCER("geomancer");
 	
 	private String title;
 	

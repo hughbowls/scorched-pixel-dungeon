@@ -24,7 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
@@ -180,6 +183,17 @@ public class Eye extends Mob {
 				if (Dungeon.level.heroFOV[pos]) {
 					ch.sprite.flash();
 					CellEmitter.center( pos ).burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
+				}
+
+				if (ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+						&& ch.isAlive() && Dungeon.hero.fieldOfView[pos]
+						&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+						&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				){
+					if (buff(TrollJump.class) == null)
+						Buff.affect(this, TrollJump.class).setJump(2f);
+					if (ch.buff(TrollJump.class) == null)
+						Buff.affect(ch, TrollJump.class).setJump(2f);
 				}
 
 				if (!ch.isAlive() && ch == Dungeon.hero) {

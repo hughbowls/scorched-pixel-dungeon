@@ -34,17 +34,21 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Stamina;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollEncourage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
@@ -64,7 +68,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
@@ -156,13 +162,26 @@ public enum Talent {
 	HYDROMANCER(101),
 	ICEMAIL(102),
 	CHAIN_LIGHTNING(103),
-	WILDFIRE(104);
+	WILDFIRE(104),
+
+	ENCOURAGING_MEAL(112),
+	ARTISANS_INTUITION(113),
+	TESTED_STAMINA(114),
+	ARMORED(115),
+	CLEANSING_MEAL(116),
+	REGENERATION(117),
+	INDUSTRIOUS_HANDS(118),
+	BOULDER_IS_COMING(119),
+	SWIFTY_PROJECTILES(120);
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class RejuvenatingStepsCooldown extends FlavourBuff{};
+
 	public static class TransferHarmCooldown extends FlavourBuff{};
+	public static class BoulderIsComingCooldown extends FlavourBuff{};
+	public static class SwiftyProjectilesTracker extends FlavourBuff{};
 
 	int icon;
 
@@ -295,11 +314,24 @@ public enum Talent {
 			Buff.affect(Dungeon.hero, MagicalSight.class, 1 + 2*hero.pointsInTalent(Talent.PENETRATING_MEAL));
 			Dungeon.observe();
 		}
+		if (hero.hasTalent(ENCOURAGING_MEAL)){
+			//2/3 bonus melee & throwing damage for next 3 attacks
+			Buff.affect( hero, TrollEncourage.class).set(1 + hero.pointsInTalent(ENCOURAGING_MEAL), 3);
+		}
+		if (hero.hasTalent(CLEANSING_MEAL)){
+			//cleanse self/+nearby area
+			for (Buff b : Dungeon.hero.buffs()){
+				if (b.type == Buff.buffType.NEGATIVE && !(b instanceof Corruption || b instanceof Hunger))
+					b.detach();
+			}
+			if (hero.pointsInTalent(CLEANSING_MEAL) == 2) PotionOfPurity.purify(hero.pos);
+		}
 	}
 
 	public static class WarriorFoodImmunity extends FlavourBuff{
 		{ actPriority = HERO_PRIO+1; }
 	}
+	public static class TrollRegeneration extends FlavourBuff{}
 
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
 		// 1.75x/2.5x speed with huntress talent
@@ -448,6 +480,10 @@ public enum Talent {
 			//15/20 turns of adrenaline surge with 1 boost
 			Buff.affect(hero, AdrenalineSurge.class).add(1, 10f + 5f*(float)hero.pointsInTalent(KNOWLEDGE_IS_POWER));
 		}
+		if (hero.hasTalent(TESTED_STAMINA)){
+			//5/8 turns of stamina
+			Buff.affect(hero, Stamina.class, 2f + 3f*hero.pointsInTalent(TESTED_STAMINA));
+		}
 	}
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
@@ -475,6 +511,19 @@ public enum Talent {
 				if (enemy.buff(PreemptiveFireTracker.class) == null) {
 					dmg += hero.pointsInTalent(PREEMPTIVE_FIRE);
 					Buff.affect(enemy, PreemptiveFireTracker.class);
+				}
+			}
+		}
+
+		TrollEncourage encourage = hero.buff(TrollEncourage.class);
+		if (encourage != null){
+			if (hero.belongings.weapon instanceof MeleeWeapon
+					|| hero.belongings.weapon instanceof MissileWeapon
+					|| (hero.belongings.weapon == null && RingOfForce.getBuffedBonus(hero, RingOfForce.Force.class) > 0)) {
+				dmg += encourage.dmgBoost;
+				encourage.left--;
+				if (encourage.left <= 0) {
+					encourage.detach();
 				}
 			}
 		}
@@ -582,6 +631,9 @@ public enum Talent {
 			case ELEMENTALIST:
 				Collections.addAll(tierTalents, SHIELDING_MEAL, PYTHONESS_INTUITION, EXTENDED_FOCUS, ELEMENTAL_SHIELD);
 				break;
+			case TROLL:
+				Collections.addAll(tierTalents, ENCOURAGING_MEAL, ARTISANS_INTUITION, TESTED_STAMINA, ARMORED);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			talents.get(0).put(talent, 0);
@@ -610,6 +662,9 @@ public enum Talent {
 				break;
 			case ELEMENTALIST:
 				Collections.addAll(tierTalents, PENETRATING_MEAL, HYDROMANCER, ICEMAIL, CHAIN_LIGHTNING, WILDFIRE);
+				break;
+			case TROLL:
+				Collections.addAll(tierTalents, CLEANSING_MEAL, REGENERATION, INDUSTRIOUS_HANDS, BOULDER_IS_COMING, SWIFTY_PROJECTILES);
 				break;
 		}
 		for (Talent talent : tierTalents){

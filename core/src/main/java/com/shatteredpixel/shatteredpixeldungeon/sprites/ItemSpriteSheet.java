@@ -367,7 +367,7 @@ public class ItemSpriteSheet {
 		assignItemRect(ARMOR_ROGUE,     14, 12);
 		assignItemRect(ARMOR_HUNTRESS,  13, 15);
 		assignItemRect(ARMOR_HERETIC,   14, 16);
-		assignItemRect(ARMOR_ALCHEMIST,   16, 12);
+		assignItemRect(ARMOR_ALCHEMIST, 16, 12);
 		assignItemRect(ARMOR_ELEMENTALIST_BASIC, 13, 13);
 		assignItemRect(ARMOR_ELEMENTALIST_ADV,   13, 13);
 	}
@@ -708,12 +708,20 @@ public class ItemSpriteSheet {
 	public static final int ELEMENT_ELEC   		= SCORCHED +2;
 	public static final int ELEMENT_CHAOS  		= SCORCHED +3;
 	public static final int ELIXIR_EMBERBLOOD  	= SCORCHED +4;
+	public static final int TROLL_HAMMER	  	= SCORCHED +5;
+	public static final int TROLL_ANVIL		  	= SCORCHED +6;
+	public static final int TROLL_LETTER		= SCORCHED +7;
+	public static final int TROLL_RACK			= SCORCHED +8;
 	static{
 		assignItemRect(ELEMENT_FIRE, 16, 16);
 		assignItemRect(ELEMENT_ICE,  16, 16);
 		assignItemRect(ELEMENT_ELEC, 16, 16);
 		assignItemRect(ELEMENT_CHAOS,16, 16);
 		assignItemRect(ELIXIR_EMBERBLOOD,12, 14);
+		assignItemRect(TROLL_HAMMER, 14, 14);
+		assignItemRect(TROLL_ANVIL, 16, 10);
+		assignItemRect(TROLL_LETTER, 10, 11);
+		assignItemRect(TROLL_RACK, 16, 10);
 	}
 
 	                                                                                    //16 free slots

@@ -201,6 +201,9 @@ public abstract class EquipableItem extends Item {
 	}
 
 	protected float time2equip( Hero hero ) {
+		if (this instanceof MeleeWeapon && hero.pointsInTalent(Talent.INDUSTRIOUS_HANDS) == 2) {
+			return 0;
+		}
 		return 1;
 	}
 

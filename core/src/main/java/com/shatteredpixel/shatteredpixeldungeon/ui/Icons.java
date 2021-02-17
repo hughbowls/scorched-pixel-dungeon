@@ -58,6 +58,7 @@ public enum Icons {
 	SCROLL_HOLDER,
 	POTION_BANDOLIER,
 	WAND_HOLSTER,
+	WEAPON_RACK,
 	
 	//hero & rankings icons
 	DEPTH,
@@ -68,6 +69,7 @@ public enum Icons {
 	HERETIC,
 	ALCHEMIST,
 	ELEMENTALIST,
+	TROLL_HERO,
 
 	//main menu icons
 	ENTER,
@@ -204,6 +206,14 @@ public enum Icons {
 			elementalist.frame( elementalist.texture.uvRect( 0, 496, 16, 512) );
 			icon = elementalist;
 			break;
+		case TROLL_HERO:
+			Image troll = new Image(Assets.Sprites.ITEMS);
+			troll.frame( troll.texture.uvRect( 80, 496, 94, 512) );
+			icon = troll;
+			break;
+			case WEAPON_RACK:
+				icon.frame( icon.texture.uvRect( 80, 56, 91, 61 ) );
+				break;
 		
 		case ENTER:
 			icon.frame( icon.texture.uvRect( 0, 64, 16, 80 ) );
@@ -279,6 +289,8 @@ public enum Icons {
 			return get( ALCHEMIST );
 		case ELEMENTALIST:
 			return get( ELEMENTALIST );
+		case TROLL:
+			return get( TROLL_HERO );
 		default:
 			return null;
 		}

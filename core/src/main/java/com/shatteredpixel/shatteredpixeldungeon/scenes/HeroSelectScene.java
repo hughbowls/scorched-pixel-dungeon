@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -111,7 +112,7 @@ public class HeroSelectScene extends PixelScene {
 
 		prompt = PixelScene.renderTextBlock(Messages.get(this, "title"), 12);
 		prompt.hardlight(Window.TITLE_COLOR);
-		prompt.setPos( (Camera.main.width - prompt.width())/2f, (Camera.main.height - HeroBtn.HEIGHT - prompt.height() - 4));
+		prompt.setPos( (Camera.main.width - prompt.width())/2f, (Camera.main.height - (HeroBtn.HEIGHT*2) - prompt.height() - 4));
 		PixelScene.align(prompt);
 		add(prompt);
 
@@ -136,7 +137,7 @@ public class HeroSelectScene extends PixelScene {
 		};
 		startBtn.icon(Icons.get(Icons.ENTER));
 		startBtn.setSize(80, 21);
-		startBtn.setPos((Camera.main.width - startBtn.width())/2f, (Camera.main.height - HeroBtn.HEIGHT + 2 - startBtn.height()));
+		startBtn.setPos((Camera.main.width - startBtn.width())/2f, (Camera.main.height - (HeroBtn.HEIGHT*2) + 2 - startBtn.height()));
 		add(startBtn);
 		startBtn.visible = false;
 
@@ -154,19 +155,36 @@ public class HeroSelectScene extends PixelScene {
 		HeroClass[] classes = HeroClass.values();
 
 		int btnWidth = HeroBtn.MIN_WIDTH;
-		int curX = (Camera.main.width - btnWidth * classes.length)/2;
+		int curX = (Camera.main.width - btnWidth * (classes.length-4))/2;
 		if (curX > 0){
 			btnWidth += Math.min(curX/(classes.length/2), 15);
 			curX = (Camera.main.width - btnWidth * classes.length)/2;
 		}
 
 		int heroBtnleft = curX;
+		int placed = 0;
 		for (HeroClass cl : classes){
+
 			HeroBtn button = new HeroBtn(cl);
-			button.setRect(curX, Camera.main.height-HeroBtn.HEIGHT+3, btnWidth, HeroBtn.HEIGHT);
-			curX += btnWidth;
+
+			if (placed >= 4){
+				if (placed == 4) {
+					curX = (Camera.main.width - btnWidth * (classes.length-4))/2;
+				}
+				button.setRect(curX, Camera.main.height-(HeroBtn.HEIGHT*2)+3, btnWidth, HeroBtn.HEIGHT);
+				curX += btnWidth;
+			} else {
+				if (placed == 0) {
+					curX = (Camera.main.width - btnWidth * (classes.length-4))/2;
+				}
+				button.setRect(curX, Camera.main.height-HeroBtn.HEIGHT+3, btnWidth, HeroBtn.HEIGHT);
+				curX += btnWidth;
+			}
+
 			add(button);
 			heroBtns.add(button);
+
+			placed++;
 		}
 
 		challengeButton = new IconButton(
@@ -189,7 +207,7 @@ public class HeroSelectScene extends PixelScene {
 				super.update();
 			}
 		};
-		challengeButton.setRect(heroBtnleft + 16, Camera.main.height-HeroBtn.HEIGHT-16, 21, 21);
+		challengeButton.setRect(heroBtnleft + 16, Camera.main.height-(HeroBtn.HEIGHT*2)-16, 21, 21);
 		challengeButton.visible = false;
 
 		if (DeviceCompat.isDebug() || Badges.isUnlocked(Badges.Badge.VICTORY)){
@@ -304,7 +322,10 @@ public class HeroSelectScene extends PixelScene {
 			super.update();
 			if (cl != GamesInProgress.selectedClass){
 				if (!cl.isUnlocked()){
-					icon.brightness(0.1f);
+					if (cl == HeroClass.TROLL)
+						icon.brightness(0f);
+					else
+						icon.brightness(0.1f);
 				} else {
 					icon.brightness(0.6f);
 				}
@@ -396,6 +417,12 @@ public class HeroSelectScene extends PixelScene {
 					tabIcons = new Image[]{
 							Icons.get(Icons.ELEMENTALIST),
 							new ItemSprite(ItemSpriteSheet.ARMOR_ELEMENTALIST_BASIC, null)
+					};
+					break;
+				case TROLL:
+					tabIcons = new Image[]{
+							new Image(Assets.Interfaces.TALENT_ICONS, 48, 112, 16, 16),
+							new ItemSprite(ItemSpriteSheet.TROLL_HAMMER, null)
 					};
 					break;
 			}

@@ -35,6 +35,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
@@ -453,6 +455,18 @@ public abstract class YogFist extends Mob {
 				enemy.damage( Random.NormalIntRange(10, 20), new LightBeam() );
 				Buff.prolong( enemy, Blindness.class, Blindness.DURATION/2f );
 
+				// Maybe hero using Mind Vision?
+				if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+						&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+						&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+						&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				){
+					if (buff(TrollJump.class) == null)
+						Buff.affect(this, TrollJump.class).setJump(2f);
+					if (enemy.buff(TrollJump.class) == null)
+						Buff.affect(enemy, TrollJump.class).setJump(2f);
+				}
+
 				if (!enemy.isAlive() && enemy == Dungeon.hero) {
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(Char.class, "kill", name()) );
@@ -518,6 +532,17 @@ public abstract class YogFist extends Mob {
 				Light l = enemy.buff(Light.class);
 				if (l != null){
 					l.weaken(50);
+				}
+
+				if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+						&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+						&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+						&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				){
+					if (buff(TrollJump.class) == null)
+						Buff.affect(this, TrollJump.class).setJump(2f);
+					if (enemy.buff(TrollJump.class) == null)
+						Buff.affect(enemy, TrollJump.class).setJump(2f);
 				}
 
 				if (!enemy.isAlive() && enemy == Dungeon.hero) {

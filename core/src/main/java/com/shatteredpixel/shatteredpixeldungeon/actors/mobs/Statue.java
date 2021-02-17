@@ -23,6 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon.Enchantment;
@@ -122,6 +125,19 @@ public class Statue extends Mob {
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
 		damage = weapon.proc( this, enemy, damage );
+
+		if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+				&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+				&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+				&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				&& Dungeon.level.distance(enemy.pos, pos) > 1
+		){
+			if (buff(TrollJump.class) == null)
+				Buff.affect(this, TrollJump.class).setJump(2f);
+			if (enemy.buff(TrollJump.class) == null)
+				Buff.affect(enemy, TrollJump.class).setJump(2f);
+		}
+
 		if (!enemy.isAlive() && enemy == Dungeon.hero){
 			Dungeon.fail(getClass());
 			GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );

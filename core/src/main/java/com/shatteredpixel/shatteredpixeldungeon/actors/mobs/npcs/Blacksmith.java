@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
@@ -31,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Letter;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -153,9 +155,20 @@ public class Blacksmith extends NPC {
 			});
 			
 		} else {
-			
-			tell( Messages.get(this, "get_lost") );
-			
+			if (Statistics.amuletObtained && !Quest.surfacing) {
+				Quest.surfacing = true;
+
+				tell( Messages.get(this, "surfacing") );
+
+				Letter letter = new Letter();
+				if (letter.doPickUp( Dungeon.hero )) {
+					GLog.i( Messages.get(Dungeon.hero, "you_now_have", letter.name() ));
+				} else {
+					Dungeon.level.drop( letter, Dungeon.hero.pos ).sprite.drop();
+				}
+			}
+			else tell( Messages.get(this, "get_lost") );
+
 		}
 
 		return true;
@@ -278,12 +291,16 @@ public class Blacksmith extends NPC {
 		private static boolean given;
 		private static boolean completed;
 		private static boolean reforged;
+		// for scorched, to unlock him as a hero!
+		private static boolean surfacing;
 		
 		public static void reset() {
 			spawned		= false;
 			given		= false;
 			completed	= false;
 			reforged	= false;
+
+			surfacing	= false;
 		}
 		
 		private static final String NODE	= "blacksmith";
@@ -293,7 +310,9 @@ public class Blacksmith extends NPC {
 		private static final String GIVEN		= "given";
 		private static final String COMPLETED	= "completed";
 		private static final String REFORGED	= "reforged";
-		
+
+		private static final String SURFACING	= "surfacing";
+
 		public static void storeInBundle( Bundle bundle ) {
 			
 			Bundle node = new Bundle();
@@ -305,6 +324,8 @@ public class Blacksmith extends NPC {
 				node.put( GIVEN, given );
 				node.put( COMPLETED, completed );
 				node.put( REFORGED, reforged );
+
+				node.put( SURFACING, surfacing );
 			}
 			
 			bundle.put( NODE, node );
@@ -319,6 +340,8 @@ public class Blacksmith extends NPC {
 				given = node.getBoolean( GIVEN );
 				completed = node.getBoolean( COMPLETED );
 				reforged = node.getBoolean( REFORGED );
+
+				surfacing = node.getBoolean( SURFACING );
 			} else {
 				reset();
 			}
