@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -217,20 +218,24 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 	
 	@Override
-	public float speedFactor( Char owner ) {
+	public float delayFactor( Char owner ) {
+		return baseDelay(owner) * (1f/speedMultiplier(owner));
+	}
 
-		int encumbrance = 0;
+	protected float baseDelay( Char owner ){
+		float delay = augment.delayFactor(this.DLY);
 		if (owner instanceof Hero) {
-			encumbrance = STRReq() - ((Hero)owner).STR();
+			int encumbrance = STRReq() - ((Hero)owner).STR();
+			if (encumbrance > 0){
+				delay *= Math.pow( 1.2, encumbrance );
+			}
 		}
 
-		float DLY = augment.delayFactor(this.DLY);
+		return delay;
+	}
 
-		if (!(this instanceof Pistol)) {
-			DLY *= RingOfFuror.attackDelayMultiplier(owner);
-		}
-
-		return (encumbrance > 0 ? (float)(DLY * Math.pow( 1.2, encumbrance )) : DLY);
+	protected float speedMultiplier(Char owner ){
+		return RingOfFuror.attackSpeedMultiplier(owner);
 	}
 
 	@Override
@@ -247,7 +252,14 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	public abstract int STRReq(int lvl);
-	
+
+	protected static int STRReq(int tier, int lvl){
+		lvl = Math.max(0, lvl);
+
+		//strength req decreases at +1,+3,+6,+10,etc.
+		return (8 + tier * 2) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
+	}
+
 	@Override
 	public int level() {
 		return super.level() + (curseInfusionBonus ? 1 : 0);
@@ -277,7 +289,7 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 		if (this.innovationBonus < 0) this.innovationBonus = 0;
 	}
-	
+
 	@Override
 	public Item upgrade() {
 		return upgrade(false);
@@ -395,6 +407,17 @@ abstract public class Weapon extends KindOfWeapon {
 		
 			
 		public abstract int proc( Weapon weapon, Char attacker, Char defender, int damage );
+
+		protected float procChanceMultiplier( Char attacker ){
+			float multi = 1f;
+			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST)){
+				Berserk rage = attacker.buff(Berserk.class);
+				if (rage != null) {
+					multi += (rage.rageAmount() / 6f) * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST);
+				}
+			}
+			return multi;
+		}
 
 		public String name() {
 			if (!curse())

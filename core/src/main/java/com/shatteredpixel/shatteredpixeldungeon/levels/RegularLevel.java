@@ -223,8 +223,8 @@ public abstract class RegularLevel extends Level {
 				mobsToSpawn--;
 				mobs.add(mob);
 
-				//add a second mob to this room
-				if (mobsToSpawn > 0 && Random.Int(4) == 0){
+				//chance to add a second mob to this room, except on floor 1
+				if (Dungeon.depth > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
 					mob = createMob();
 
 					tries = 30;
@@ -504,7 +504,8 @@ public abstract class RegularLevel extends Level {
 	}
 	
 	protected int randomDropCell( Class<?extends Room> roomType ) {
-		while (true) {
+		int tries = 100;
+		while (tries-- > 0) {
 			Room room = randomRoom( roomType );
 			if (room == null){
 				return -1;
@@ -529,6 +530,7 @@ public abstract class RegularLevel extends Level {
 				}
 			}
 		}
+		return -1;
 	}
 	
 	@Override

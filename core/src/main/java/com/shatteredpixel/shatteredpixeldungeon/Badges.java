@@ -50,6 +50,7 @@ public class Badges {
 		MASTERY_MAGE,
 		MASTERY_ROGUE,
 		MASTERY_HUNTRESS,
+		FOUND_RATMOGRIFY,
 
 		//bronze
 		UNLOCK_MAGE                 ( 1 ),
@@ -142,12 +143,12 @@ public class Badges {
 		VICTORY_HUNTRESS,
 		VICTORY_ALL_CLASSES         ( 98, true ),
 		GAMES_PLAYED_3              ( 99, true ),
-		CHAMPION_1                  ( 100, true ),
+		CHAMPION_1                  ( 100 ),
 
 		//diamond
 		GAMES_PLAYED_4              ( 112, true ),
-		CHAMPION_2                  ( 113, true ),
-		CHAMPION_3                  ( 114, true ),
+		CHAMPION_2                  ( 113 ),
+		CHAMPION_3                  ( 114 ),
 
 		//scorched
 		UNLOCK_HERETIC        		( 128 ),
@@ -705,7 +706,14 @@ public class Badges {
 			saveNeeded = true;
 		}
 	}
-	
+
+	public static void validateRatmogrify(){
+		if (!global.contains( Badge.FOUND_RATMOGRIFY )) {
+			global.add( Badge.FOUND_RATMOGRIFY );
+			saveNeeded = true;
+		}
+	}
+
 	public static void validateMageUnlock(){
 		if (Statistics.upgradesUsed >= 1 && !global.contains(Badge.UNLOCK_MAGE)){
 			displayBadge( Badge.UNLOCK_MAGE );
@@ -754,7 +762,7 @@ public class Badges {
 		if (!global.contains(Badge.UNLOCK_ELEMENTALIST)) displayBadge( Badge.UNLOCK_ELEMENTALIST );
 		if (!global.contains(Badge.UNLOCK_TROLL)) displayBadge( Badge.UNLOCK_TROLL );
 	}
-	
+
 	public static void validateMasteryCombo( int n ) {
 		if (!local.contains( Badge.MASTERY_COMBO ) && n == 10) {
 			Badge badge = Badge.MASTERY_COMBO;
@@ -863,6 +871,7 @@ public class Badges {
 			}
 			badge = Badge.CHAMPION_3;
 		}
+		local.add(badge);
 		displayBadge( badge );
 	}
 	

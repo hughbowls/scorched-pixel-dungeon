@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -40,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutat
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -139,7 +141,7 @@ public class UnstableSpellbook extends Artifact {
 					final ExploitHandler handler = Buff.affect(hero, ExploitHandler.class);
 					handler.scroll = scroll;
 
-					GameScene.show(new WndOptions(
+					GameScene.show(new WndOptions(new ItemSprite(this),
 							Messages.get(this, "prompt"),
 							Messages.get(this, "read_empowered"),
 							scroll.trueName(),
@@ -151,8 +153,10 @@ public class UnstableSpellbook extends Artifact {
 								Scroll scroll = Reflection.newInstance(ExoticScroll.regToExo.get(fScroll.getClass()));
 								charge--;
 								scroll.doRead();
+								Talent.onArtifactUsed(Dungeon.hero);
 							} else {
 								fScroll.doRead();
+								Talent.onArtifactUsed(Dungeon.hero);
 							}
 						}
 						
@@ -163,6 +167,7 @@ public class UnstableSpellbook extends Artifact {
 					});
 				} else {
 					scroll.doRead();
+					Talent.onArtifactUsed(Dungeon.hero);
 				}
 				updateQuickslot();
 			}
@@ -212,9 +217,9 @@ public class UnstableSpellbook extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		if (charge < chargeCap){
-			partialCharge += 0.1f;
+			partialCharge += 0.1f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
 				charge++;
@@ -232,6 +237,17 @@ public class UnstableSpellbook extends Artifact {
 			scrolls.remove(0);
 
 		return super.upgrade();
+	}
+
+	public static boolean canUseScroll( Item item ){
+		if (item instanceof Scroll){
+			if (!(curItem instanceof UnstableSpellbook)){
+				return true;
+			} else {
+				return item.isIdentified() && ((UnstableSpellbook) curItem).scrolls.contains(item.getClass());
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -323,8 +339,9 @@ public class UnstableSpellbook extends Artifact {
 					}
 				}
 				GLog.w( Messages.get(UnstableSpellbook.class, "unable_scroll") );
-			} else if (item instanceof Scroll && !item.isIdentified())
+			} else if (item instanceof Scroll && !item.isIdentified()) {
 				GLog.w( Messages.get(UnstableSpellbook.class, "unknown_scroll") );
+			}
 		}
 	};
 }

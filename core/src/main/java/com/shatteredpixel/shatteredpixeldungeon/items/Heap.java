@@ -63,8 +63,7 @@ public class Heap implements Bundlable {
 		CRYSTAL_CHEST,
 		TOMB,
 		SKELETON,
-		REMAINS,
-		MIMIC //remains for pre-0.8.0 compatibility. There are converted to mimics on level load
+		REMAINS
 	}
 	public Type type = Type.HEAP;
 	
@@ -78,9 +77,6 @@ public class Heap implements Bundlable {
 	
 	public void open( Hero hero ) {
 		switch (type) {
-		case MIMIC:
-			type = Type.CHEST;
-			break;
 		case TOMB:
 			Wraith.spawnAround( hero.pos );
 			break;
@@ -99,16 +95,14 @@ public class Heap implements Bundlable {
 			Sample.INSTANCE.play( Assets.Sounds.CURSED );
 		}
 
-		if (type != Type.MIMIC) {
-			type = Type.HEAP;
-			ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1);
-			if (bonus != null && !bonus.isEmpty()) {
-				items.addAll(0, bonus);
-				RingOfWealth.showFlareForBonusDrop(sprite);
-			}
-			sprite.link();
-			sprite.drop();
+		type = Type.HEAP;
+		ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1);
+		if (bonus != null && !bonus.isEmpty()) {
+			items.addAll(0, bonus);
+			RingOfWealth.showFlareForBonusDrop(sprite);
 		}
+		sprite.link();
+		sprite.drop();
 	}
 	
 	public Heap setHauntedIfCursed(){
@@ -175,6 +169,12 @@ public class Heap implements Bundlable {
 		int index = items.indexOf( a );
 		if (index != -1) {
 			items.remove( index );
+			for (Item i : items) {
+				if (i.isSimilar( b )) {
+					i.merge( b );
+					return;
+				}
+			}
 			items.add( index, b );
 		}
 	}
@@ -204,8 +204,8 @@ public class Heap implements Bundlable {
 			} else if (item instanceof Dewdrop) {
 				items.remove( item );
 				evaporated = true;
-			} else if (item instanceof MysteryMeat) {
-				replace( item, ChargrilledMeat.cook( (MysteryMeat)item ) );
+			} else if (item instanceof MysteryMeat || item instanceof FrozenCarpaccio) {
+				replace( item, ChargrilledMeat.cook( item.quantity ) );
 				burnt = true;
 			} else if (item instanceof Bomb) {
 				items.remove( item );
@@ -242,7 +242,7 @@ public class Heap implements Bundlable {
 	public void explode() {
 
 		//breaks open most standard containers, mimics die.
-		if (type == Type.MIMIC || type == Type.CHEST || type == Type.SKELETON) {
+		if (type == Type.CHEST || type == Type.SKELETON) {
 			type = Type.HEAP;
 			sprite.link();
 			sprite.drop();
@@ -355,7 +355,6 @@ public class Heap implements Bundlable {
 					return i.toString();
 				}
 			case CHEST:
-			case MIMIC:
 				return Messages.get(this, "chest");
 			case LOCKED_CHEST:
 				return Messages.get(this, "locked_chest");
@@ -375,7 +374,6 @@ public class Heap implements Bundlable {
 	public String info(){
 		switch(type){
 			case CHEST:
-			case MIMIC:
 				return Messages.get(this, "chest_desc");
 			case LOCKED_CHEST:
 				return Messages.get(this, "locked_chest_desc");

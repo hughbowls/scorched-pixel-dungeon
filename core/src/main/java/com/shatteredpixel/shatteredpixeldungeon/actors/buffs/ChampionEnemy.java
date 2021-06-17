@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
@@ -29,12 +30,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
-
-import java.util.HashSet;
 
 public abstract class ChampionEnemy extends Buff {
 
@@ -94,20 +94,12 @@ public abstract class ChampionEnemy extends Buff {
 		immunities.add(Corruption.class);
 	}
 
-	public static void rollForChampion(Mob m, HashSet<Mob> existing){
-		int existingChamps = 0;
-		for (Mob e : existing){
-			if (!e.buffs(ChampionEnemy.class).isEmpty()){
-				existingChamps++;
-			}
-		}
+	public static void rollForChampion(Mob m){
+		if (Dungeon.mobsToChampion <= 0) Dungeon.mobsToChampion = 8;
 
-		//cap of 2/2/3/3/4 champs for each region. Mainly to prevent terrible luck in the earlygame
-		if (existingChamps >= 2 + Dungeon.depth/10){
-			return;
-		}
+		Dungeon.mobsToChampion--;
 
-		if (Random.Int(10) == 0){
+		if (Dungeon.mobsToChampion <= 0){
 			switch (Random.Int(6)){
 				case 0: default:    Buff.affect(m, Blazing.class);      break;
 				case 1:             Buff.affect(m, Projecting.class);   break;
@@ -199,8 +191,18 @@ public abstract class ChampionEnemy extends Buff {
 
 		@Override
 		public boolean canAttackWithExtraReach(Char enemy) {
-			//attack range of 2
-			return target.fieldOfView[enemy.pos] && Dungeon.level.distance(target.pos, enemy.pos) <= 2;
+			if (Dungeon.level.distance( target.pos, enemy.pos ) > 2){
+				return false;
+			} else {
+				boolean[] passable = BArray.not(Dungeon.level.solid, null);
+				for (Char ch : Actor.chars()) {
+					if (ch != target) passable[ch.pos] = false;
+				}
+
+				PathFinder.buildDistanceMap(enemy.pos, passable, 2);
+
+				return PathFinder.distance[target.pos] <= 2;
+			}
 		}
 	}
 

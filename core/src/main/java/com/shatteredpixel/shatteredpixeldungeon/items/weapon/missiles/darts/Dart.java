@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -101,6 +102,10 @@ public class Dart extends MissileWeapon {
 			bow = null;
 		}
 	}
+
+	public boolean crossbowHasEnchant( Char owner ){
+		return bow != null && bow.enchantment != null && owner.buff(MagicImmune.class) == null;
+	}
 	
 	@Override
 	public boolean hasEnchant(Class<? extends Enchantment> type, Char owner) {
@@ -113,11 +118,10 @@ public class Dart extends MissileWeapon {
 	
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
-		if (bow != null && bow.enchantment != null && attacker.buff(MagicImmune.class) == null){
-			level(bow.level());
-			damage = bow.enchantment.proc(this, attacker, defender, damage);
-			level(0);
+		if (bow != null){
+			damage = bow.proc(attacker, defender, damage);
 		}
+
 		return super.proc(attacker, defender, damage);
 	}
 	
@@ -140,7 +144,16 @@ public class Dart extends MissileWeapon {
 	@Override
 	public String info() {
 		updateCrossbow();
-		return super.info();
+		if (bow != null && !bow.isIdentified()){
+			int level = bow.level();
+			//temporarily sets the level of the bow to 0 for IDing purposes
+			bow.level(0);
+			String info = super.info();
+			bow.level(level);
+			return info;
+		} else {
+			return super.info();
+		}
 	}
 	
 	@Override
@@ -188,7 +201,8 @@ public class Dart extends MissileWeapon {
 			
 			TippedDart tipResult = TippedDart.getTipped((Plant.Seed) item, 1);
 			
-			GameScene.show(new WndOptions(Messages.get(Dart.class, "tip_title"),
+			GameScene.show(new WndOptions( new ItemSprite(item),
+					Messages.titleCase(item.name()),
 					Messages.get(Dart.class, "tip_desc", tipResult.name()) + "\n\n" + tipResult.desc(),
 					options){
 				

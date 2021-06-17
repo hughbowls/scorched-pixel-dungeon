@@ -50,7 +50,7 @@ import com.watabou.utils.Rect;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class NewCityBossLevel extends Level {
+public class CityBossLevel extends Level {
 
 	{
 		color1 = 0x4b6636;
@@ -271,26 +271,10 @@ public class NewCityBossLevel extends Level {
 	public void seal() {
 		super.seal();
 
-		for (Mob m : mobs){
-			//bring the first ally with you
-			if (m.alignment == Char.Alignment.ALLY && !m.properties().contains(Char.Property.IMMOVABLE)){
-				// for summoner's fiend special
-				if (m instanceof HereticSummon) {
-					m.pos = pointToCell((arena.center())) + (Random.Int(2) == 0 ? +1 : -1);
-					m.sprite.place(m.pos);
-					m.sprite.alpha( 0 );
-					m.sprite.parent.add( new AlphaTweener( m.sprite, 1, 0.1f ) );
-					if (Dungeon.level.solid[m.pos]) {
-						m.destroy();
-						m.sprite.die();
-					}
-				} else {
-					m.pos = Dungeon.hero.pos + (Random.Int(2) == 0 ? +1 : -1);
-					m.sprite.place(m.pos);
-				}
-				break;
-			}
-		}
+		//moves intelligent allies with the hero, preferring closer pos to entrance door
+		int doorPos = pointToCell(new Point(arena.left + arena.width()/2, arena.bottom));
+		Mob.holdAllies(this, doorPos);
+		Mob.restoreAllies(this, Dungeon.hero.pos, doorPos);
 
 		DwarfKing boss = new DwarfKing();
 		boss.state = boss.WANDERING;
@@ -522,9 +506,9 @@ public class NewCityBossLevel extends Level {
 				//DK arena tiles
 			} else {
 				if (Dungeon.level.map[cell] == Terrain.SIGN){
-					return Messages.get(NewCityBossLevel.class, "throne_name");
+					return Messages.get(CityBossLevel.class, "throne_name");
 				} else if (Dungeon.level.map[cell] == Terrain.PEDESTAL){
-					return Messages.get(NewCityBossLevel.class, "summoning_name");
+					return Messages.get(CityBossLevel.class, "summoning_name");
 				}
 			}
 
@@ -548,9 +532,9 @@ public class NewCityBossLevel extends Level {
 			//DK arena tiles
 			} else {
 				if (Dungeon.level.map[cell] == Terrain.SIGN){
-					return Messages.get(NewCityBossLevel.class, "throne_desc");
+					return Messages.get(CityBossLevel.class, "throne_desc");
 				} else if (Dungeon.level.map[cell] == Terrain.PEDESTAL){
-					return Messages.get(NewCityBossLevel.class, "summoning_desc");
+					return Messages.get(CityBossLevel.class, "summoning_desc");
 				}
 			}
 

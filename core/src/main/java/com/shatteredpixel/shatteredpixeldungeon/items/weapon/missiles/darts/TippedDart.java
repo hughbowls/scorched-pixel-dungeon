@@ -27,7 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.utils.Reflection;
 
@@ -55,9 +56,8 @@ public abstract class TippedDart extends Dart {
 	
 	{
 		tier = 2;
-		
-		//so that 1.5x durability is needed for 2 uses
-		baseUses = 0.67f;
+
+		baseUses = 1f;
 	}
 	
 	private static final String AC_CLEAN = "CLEAN";
@@ -75,7 +75,8 @@ public abstract class TippedDart extends Dart {
 		super.execute(hero, action);
 		if (action.equals( AC_CLEAN )){
 			
-			GameScene.show(new WndOptions(Messages.get(this, "clean_title"),
+			GameScene.show(new WndOptions(new ItemSprite(this),
+					Messages.titleCase(name()),
 					Messages.get(this, "clean_desc"),
 					Messages.get(this, "clean_all"),
 					Messages.get(this, "clean_one"),
@@ -131,9 +132,7 @@ public abstract class TippedDart extends Dart {
 	protected float durabilityPerUse() {
 		float use = super.durabilityPerUse();
 		
-		if (Dungeon.hero.subClass == HeroSubClass.WARDEN){
-			use /= 2f;
-		}
+		use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS));
 
 		//checks both destination and source position
 		float lotusPreserve = 0f;

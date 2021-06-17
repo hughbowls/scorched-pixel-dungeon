@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.GameSettings;
@@ -164,7 +163,6 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_SUPPORT_NAGGED 	= "support_nagged";
 	public static final String KEY_FEEDBACK_NAGGED 	= "feedback_nagged";
 	public static final String KEY_UNLOCK_NAGGED	= "unlock_nagged";
-
 	public static void intro( boolean value ) {
 		put( KEY_INTRO, value );
 	}
@@ -204,7 +202,6 @@ public class SPDSettings extends GameSettings {
 
 	public static boolean scorchedfeedbackNagged() { return getBoolean(KEY_FEEDBACK_NAGGED, false); }
 	public static boolean scorchedunlockNagged() { return getBoolean(KEY_UNLOCK_NAGGED, false); }
-
 
 	//Audio
 	

@@ -245,10 +245,12 @@ public class CellSelector extends ScrollArea {
 				} else {
 					if (action == SPDAction.ZOOM_IN){
 						zoom( camera.zoom+1 );
+						mouseZoom = camera.zoom;
 						return true;
 
 					} else if (action == SPDAction.ZOOM_OUT){
 						zoom( camera.zoom-1 );
+						mouseZoom = camera.zoom;
 						return true;
 					}
 				}
@@ -262,6 +264,10 @@ public class CellSelector extends ScrollArea {
 	};
 	
 	private boolean moveFromAction(GameAction action){
+		if (Dungeon.hero == null){
+			return false;
+		}
+
 		int cell = Dungeon.hero.pos;
 
 		if (action == SPDAction.N)  cell += -Dungeon.level.width();

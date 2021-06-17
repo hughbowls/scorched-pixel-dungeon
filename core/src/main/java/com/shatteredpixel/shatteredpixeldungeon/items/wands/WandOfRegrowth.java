@@ -26,8 +26,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
@@ -47,6 +50,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.ColorMath;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -58,10 +62,12 @@ public class WandOfRegrowth extends Wand {
 	{
 		image = ItemSpriteSheet.WAND_REGROWTH;
 
-		collisionProperties = Ballistica.STOP_SOLID;
+		//only used for targeting, actual projectile logic is Ballistica.STOP_SOLID
+		collisionProperties = Ballistica.WONT_STOP;
 	}
 	
 	private int totChrgUsed = 0;
+	private int chargesOverLimit = 0;
 
 	ConeAOE cone;
 	int target;
@@ -77,12 +83,14 @@ public class WandOfRegrowth extends Wand {
 	}
 
 	@Override
-	protected void onZap( Ballistica bolt ) {
+	public void onZap(Ballistica bolt) {
 
 		ArrayList<Integer> cells = new ArrayList<>(cone.cells);
 
-		int overLimit = totChrgUsed - chargeLimit(Dungeon.hero.lvl);
-		float furrowedChance = overLimit > 0 ? (overLimit / (10f + Dungeon.hero.lvl)) : 0;
+		float furrowedChance = 0;
+		if (totChrgUsed >= chargeLimit(Dungeon.hero.lvl)){
+			furrowedChance = (chargesOverLimit+1)/5f;
+		}
 
 		int chrgUsed = chargesPerCast();
 		int grassToPlace = Math.round((3.67f+buffedLvl()/3f)*chrgUsed);
@@ -105,7 +113,7 @@ public class WandOfRegrowth extends Wand {
 				}
 				Char ch = Actor.findChar(cell);
 				if (ch != null){
-					processSoulMark(ch, chargesPerCast());
+					wandProc(ch, chargesPerCast());
 					Buff.prolong( ch, Roots.class, 4f * chrgUsed );
 				}
 			}
@@ -175,9 +183,17 @@ public class WandOfRegrowth extends Wand {
 			grassToPlace--;
 		}
 
-		if (furrowedChance < 1f) {
+		if (totChrgUsed < chargeLimit(Dungeon.hero.lvl)) {
+			chargesOverLimit = 0;
 			totChrgUsed += chrgUsed;
+			if (totChrgUsed > chargeLimit(Dungeon.hero.lvl)){
+				chargesOverLimit = totChrgUsed - chargeLimit(Dungeon.hero.lvl);
+				totChrgUsed = chargeLimit(Dungeon.hero.lvl);
+			}
+		} else {
+			chargesOverLimit += chrgUsed;
 		}
+
 	}
 	
 	private int chargeLimit( int heroLvl ){
@@ -216,7 +232,7 @@ public class WandOfRegrowth extends Wand {
 
 	}
 
-	protected void fx( Ballistica bolt, Callback callback ) {
+	public void fx(Ballistica bolt, Callback callback) {
 
 		// 4/6/8 distance
 		int maxDist = 2 + 2*chargesPerCast();
@@ -225,10 +241,10 @@ public class WandOfRegrowth extends Wand {
 		cone = new ConeAOE( bolt,
 				maxDist,
 				20 + 10*chargesPerCast(),
-				collisionProperties | Ballistica.STOP_TARGET);
+				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
 
 		//cast to cells at the tip, rather than all cells, better performance.
-		for (Ballistica ray : cone.rays){
+		for (Ballistica ray : cone.outerRays){
 			((MagicMissile)curUser.sprite.parent.recycle( MagicMissile.class )).reset(
 					MagicMissile.FOLIAGE_CONE,
 					curUser.sprite,
@@ -248,13 +264,21 @@ public class WandOfRegrowth extends Wand {
 
 	@Override
 	protected int chargesPerCast() {
-		//consumes 30% of current charges, rounded up, with a minimum of one.
-		return Math.max(1, (int)Math.ceil(curCharges*0.3f));
+		if (charger != null && charger.target.buff(WildMagic.WildMagicTracker.class) != null){
+			return 1;
+		}
+		//consumes 30% of current charges, rounded up, with a min of 1 and a max of 3.
+		return (int) GameMath.gate(1, (int)Math.ceil(curCharges*0.3f), 3);
 	}
 
 	@Override
 	public String statsDesc() {
-		return Messages.get(this, "stats_desc", chargesPerCast());
+		String desc = Messages.get(this, "stats_desc", chargesPerCast());
+		if (isIdentified()){
+			int chargeLeft = chargeLimit(Dungeon.hero.lvl) - totChrgUsed;
+			if (chargeLeft < 10000) desc += " " + Messages.get(this, "degradation", Math.max(chargeLeft, 0));
+		}
+		return desc;
 	}
 
 	@Override
@@ -270,17 +294,20 @@ public class WandOfRegrowth extends Wand {
 	}
 	
 	private static final String TOTAL = "totChrgUsed";
+	private static final String OVER = "chargesOverLimit";
 	
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( TOTAL, totChrgUsed );
+		bundle.put( OVER, chargesOverLimit);
 	}
 	
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		totChrgUsed = bundle.getInt(TOTAL);
+		chargesOverLimit = bundle.getInt(OVER);
 	}
 	
 	public static class Dewcatcher extends Plant{
@@ -305,7 +332,11 @@ public class WandOfRegrowth extends Wand {
 
 			for (int i = 0; i < nDrops && !candidates.isEmpty(); i++){
 				Integer c = Random.element(candidates);
-				Dungeon.level.drop(new Dewdrop(), c).sprite.drop(pos);
+				if (Dungeon.level.heaps.get(c) == null) {
+					Dungeon.level.drop(new Dewdrop(), c).sprite.drop(pos);
+				} else {
+					Dungeon.level.drop(new Dewdrop(), c).sprite.drop(c);
+				}
 				candidates.remove(c);
 			}
 
@@ -417,6 +448,11 @@ public class WandOfRegrowth extends Wand {
 		@Override
 		public boolean isInvulnerable(Class effect) {
 			return true;
+		}
+
+		{
+			immunities.add(Corruption.class);
+			immunities.add(Doom.class);
 		}
 
 		@Override

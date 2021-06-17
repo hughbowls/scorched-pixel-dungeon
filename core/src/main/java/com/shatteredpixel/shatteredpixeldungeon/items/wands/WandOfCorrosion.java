@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.CorrosionParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
@@ -52,7 +53,7 @@ public class WandOfCorrosion extends Wand {
 	}
 
 	@Override
-	protected void onZap(Ballistica bolt) {
+	public void onZap(Ballistica bolt) {
 		CorrosiveGas gas = Blob.seed(bolt.collisionPos, 50 + 10 * buffedLvl(), CorrosiveGas.class);
 		CellEmitter.get(bolt.collisionPos).burst(Speck.factory(Speck.CORROSION), 10 );
 		gas.setStrength(2 + buffedLvl());
@@ -62,7 +63,7 @@ public class WandOfCorrosion extends Wand {
 		for (int i : PathFinder.NEIGHBOURS9) {
 			Char ch = Actor.findChar(bolt.collisionPos + i);
 			if (ch != null) {
-				processSoulMark(ch, chargesPerCast());
+				wandProc(ch, chargesPerCast());
 			}
 		}
 		
@@ -72,7 +73,7 @@ public class WandOfCorrosion extends Wand {
 	}
 
 	@Override
-	protected void fx(Ballistica bolt, Callback callback) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar(
 				curUser.sprite.parent,
 				MagicMissile.CORROSION,
@@ -103,6 +104,14 @@ public class WandOfCorrosion extends Wand {
 		particle.acc.set(0, 20);
 		particle.setSize( 0.5f, 3f );
 		particle.shuffleXY( 1f );
+	}
+
+	@Override
+	public String statsDesc() {
+		if (levelKnown)
+			return Messages.get(this, "stats_desc", 2+buffedLvl());
+		else
+			return Messages.get(this, "stats_desc", 2);
 	}
 
 }

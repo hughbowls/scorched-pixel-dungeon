@@ -92,9 +92,12 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 					}
 				} else {
 					Item item = select(slotNum);
-					if (item.usesTargeting)
-						useTargeting();
-					item.execute( Dungeon.hero );
+					if (Dungeon.hero.belongings.contains(item)) {
+						item.execute(Dungeon.hero);
+						if (item.usesTargeting) {
+							useTargeting();
+						}
+					}
 				}
 			}
 			
@@ -188,7 +191,7 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 		slot.item( item );
 		enableSlot();
 	}
-	
+
 	public void enable( boolean value ) {
 		active = value;
 		if (value) {
@@ -207,6 +210,7 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 		if (lastTarget != null &&
 				Actor.chars().contains( lastTarget ) &&
 				lastTarget.isAlive() &&
+				lastTarget.alignment != Char.Alignment.ALLY &&
 				Dungeon.level.heroFOV[lastTarget.pos]) {
 
 			targeting = true;
@@ -251,11 +255,12 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 		//couldn't find a cell, give up.
 		return -1;
 	}
-	
+
 	public static void refresh() {
 		for (int i = 0; i < instance.length; i++) {
 			if (instance[i] != null) {
 				instance[i].item(select(i));
+				instance[i].enable(instance[i].active);
 			}
 		}
 	}

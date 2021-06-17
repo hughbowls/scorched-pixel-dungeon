@@ -277,6 +277,9 @@ public class Assets {
 		public static final String PYLON	= "sprites/pylon.png";
 		public static final String DM200	= "sprites/dm200.png";
 		public static final String LOTUS	= "sprites/lotus.png";
+		public static final String NINJA_LOG= "sprites/ninja_log.png";
+		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
+
 		public static final String HERETIC  = "sprites/heretic.png";
 		public static final String HERETIC_SUMMON  	= "sprites/heretic_summon.png";
 		public static final String ALCHEMIST  		= "sprites/alchemist.png";

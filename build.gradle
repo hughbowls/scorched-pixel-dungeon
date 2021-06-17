@@ -1,10 +1,10 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.1'
     }
 }
 
@@ -14,8 +14,8 @@ allprojects {
         appName = 'Scorched Pixel Dungeon'
         appPackageName = 'com.scorchedpixel.scorchedpixeldungeon'
 
-        appVersionCode = 507
-        appVersionName = '0.9.1b-0.1'
+        appVersionCode = 549
+        appVersionName = '0.9.3a'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
@@ -29,7 +29,7 @@ allprojects {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
 }

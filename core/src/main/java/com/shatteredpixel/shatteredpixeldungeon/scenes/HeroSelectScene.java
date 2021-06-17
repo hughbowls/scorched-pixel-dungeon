@@ -30,23 +30,18 @@ import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.TalentsPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -57,7 +52,6 @@ import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class HeroSelectScene extends PixelScene {
 
@@ -74,6 +68,8 @@ public class HeroSelectScene extends PixelScene {
 	@Override
 	public void create() {
 		super.create();
+
+		Dungeon.hero = null;
 
 		Badges.loadGlobal();
 		Journal.loadGlobal();
@@ -399,30 +395,6 @@ public class HeroSelectScene extends PixelScene {
 					tabIcons = new Image[]{
 							new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null),
 							new ItemSprite(ItemSpriteSheet.GLOVES, null)
-					};
-					break;
-				case HERETIC:
-					tabIcons = new Image[]{
-							Icons.get(Icons.HERETIC),
-							new ItemSprite(ItemSpriteSheet.BONE_BLADE, null)
-					};
-					break;
-				case ALCHEMIST:
-					tabIcons = new Image[]{
-							new ItemSprite(ItemSpriteSheet.PISTOL, null),
-							new ItemSprite(ItemSpriteSheet.ARTIFACT_TOOLKIT, null)
-					};
-					break;
-				case ELEMENTALIST:
-					tabIcons = new Image[]{
-							Icons.get(Icons.ELEMENTALIST),
-							new ItemSprite(ItemSpriteSheet.ARMOR_ELEMENTALIST_BASIC, null)
-					};
-					break;
-				case TROLL:
-					tabIcons = new Image[]{
-							new Image(Assets.Interfaces.TALENT_ICONS, 48, 112, 16, 16),
-							new ItemSprite(ItemSpriteSheet.TROLL_HAMMER, null)
 					};
 					break;
 			}

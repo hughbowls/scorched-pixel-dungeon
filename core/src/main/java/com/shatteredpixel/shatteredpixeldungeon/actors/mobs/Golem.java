@@ -40,8 +40,8 @@ public class Golem extends Mob {
 	{
 		spriteClass = GolemSprite.class;
 		
-		HP = HT = 100;
-		defenseSkill = 12;
+		HP = HT = 120;
+		defenseSkill = 15;
 		
 		EXP = 12;
 		maxLvl = 22;
@@ -58,7 +58,7 @@ public class Golem extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 15, 35 );
+		return Random.NormalIntRange( 25, 30 );
 	}
 	
 	@Override
@@ -176,7 +176,7 @@ public class Golem extends Mob {
 			if (target != -1 && getCloser( target )) {
 				spend( 1 / speed() );
 				return moveSprite( oldPos, pos );
-			} else if (target != -1 && target != pos && selfTeleCooldown <= 0) {
+			} else if (!Dungeon.bossLevel() && target != -1 && target != pos && selfTeleCooldown <= 0) {
 				((GolemSprite)sprite).teleParticles(true);
 				teleporting = true;
 				spend( 2*TICK );
@@ -201,7 +201,7 @@ public class Golem extends Mob {
 
 				int oldPos = pos;
 
-				if (enemyTeleCooldown <= 0 && Random.Int(100/distance(enemy)) == 0
+				if (enemyTeleCooldown <= 0 && distance(enemy) >= 1 && Random.Int(100/distance(enemy)) == 0
 						&& !Char.hasProp(enemy, Property.IMMOVABLE)){
 					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 						sprite.zap( enemy.pos );

@@ -34,6 +34,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
+//FIXME needs a refactor, lots of weird thread interaction here.
 public class AttackIndicator extends Tag {
 	
 	private static final float ENABLED	= 1.0f;
@@ -50,13 +51,15 @@ public class AttackIndicator extends Tag {
 	
 	public AttackIndicator() {
 		super( DangerIndicator.COLOR );
-		
-		instance = this;
-		lastTarget = null;
-		
-		setSize( 24, 24 );
-		visible( false );
-		enable( false );
+
+		synchronized (this) {
+			instance = this;
+			lastTarget = null;
+
+			setSize(24, 24);
+			visible(false);
+			enable(false);
+		}
 	}
 	
 	@Override
@@ -146,6 +149,7 @@ public class AttackIndicator extends Tag {
 		sprite.linkVisuals(lastTarget);
 		sprite.idle();
 		sprite.paused = true;
+		sprite.visible = bg.visible;
 		add( sprite );
 
 		layout();

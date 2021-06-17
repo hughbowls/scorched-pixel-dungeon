@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
@@ -88,9 +89,9 @@ public class TalismanOfForesight extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		if (charge < chargeCap){
-			charge += 2f;
+			charge += Math.round(2*amount);
 			if (charge >= chargeCap) {
 				charge = chargeCap;
 				partialCharge = 0;
@@ -205,6 +206,11 @@ public class TalismanOfForesight extends Artifact {
 					partialCharge ++;
 					charge --;
 				}
+				while (charge < 0){
+					charge++;
+					partialCharge--;
+				}
+				Talent.onArtifactUsed(Dungeon.hero);
 				updateQuickslot();
 				Dungeon.observe();
 				Dungeon.hero.checkVisibleMobs();
@@ -318,6 +324,7 @@ public class TalismanOfForesight extends Artifact {
 		public void charge(int boost){
 			if (!cursed) {
 				charge = Math.min((charge + boost), chargeCap);
+				updateQuickslot();
 			}
 		}
 
@@ -343,9 +350,8 @@ public class TalismanOfForesight extends Artifact {
 	public static class CharAwareness extends FlavourBuff {
 
 		public int charID;
-		public int depth = Dungeon.depth;
 
-		private static final String ID = "id";
+		private static final String CHAR_ID = "char_id";
 
 		@Override
 		public void detach() {
@@ -357,13 +363,13 @@ public class TalismanOfForesight extends Artifact {
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			charID = bundle.getInt(ID);
+			charID = bundle.getInt(CHAR_ID);
 		}
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			bundle.put(ID, charID);
+			bundle.put(CHAR_ID, charID);
 		}
 
 	}

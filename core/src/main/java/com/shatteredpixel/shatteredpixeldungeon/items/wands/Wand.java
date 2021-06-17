@@ -32,11 +32,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -140,7 +142,7 @@ public abstract class Wand extends Item {
 		return new Ballistica( user.pos, dst, collisionProperties ).collisionPos;
 	}
 
-	protected abstract void onZap(Ballistica attack );
+	public abstract void onZap(Ballistica attack);
 
 	public abstract void onHit( MagesStaff staff, Char attacker, Char defender, int damage);
 
@@ -198,12 +200,12 @@ public abstract class Wand extends Item {
 		charger.setScaleFactor( chargeScaleFactor );
 	}
 
-	protected void processSoulMark(Char target, int chargesUsed){
-		processSoulMark(target, buffedLvl(), chargesUsed);
+	protected void wandProc(Char target, int chargesUsed){
+		wandProc(target, buffedLvl(), chargesUsed);
 	}
 
-	//TODO some naming issues here. Consider renaming this method and externalizing char awareness buff
-	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed){
+	//TODO Consider externalizing char awareness buff
+	protected static void wandProc(Char target, int wandLevel, int chargesUsed){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION)) {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION);
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
@@ -265,6 +267,10 @@ public abstract class Wand extends Item {
 			desc += "\n\n" + Messages.get(Wand.class, "not_cursed");
 		}
 
+		if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
+			desc += "\n\n" + Messages.get(this, "bmage_desc");
+		}
+
 		return desc;
 	}
 
@@ -324,8 +330,19 @@ public abstract class Wand extends Item {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
-		if (curUser != null) {
-			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
+
+		if (charger != null && charger.target != null) {
+			if (charger.target.buff(WildMagic.WildMagicTracker.class) != null){
+				int level = 2 + ((Hero)charger.target).pointsInTalent(Talent.WILD_POWER);
+				if (Random.Int(2) == 0) level++;
+				return level/2; // +1/+1.5/+2/+2.5/+3 at 0/1/2/3/4 talent points
+			}
+
+			if (charger.target.buff(ScrollEmpower.class) != null){
+				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
+			}
+
+			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && buff.level() > lvl){
 				return buff.level();
 			}
@@ -346,7 +363,7 @@ public abstract class Wand extends Item {
 		return 1;
 	}
 	
-	protected void fx( Ballistica bolt, Callback callback ) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar( curUser.sprite.parent,
 				MagicMissile.MAGIC_MISSILE,
 				curUser.sprite,
@@ -377,19 +394,27 @@ public abstract class Wand extends Item {
 		
 		curCharges -= cursed ? 1 : chargesPerCast();
 
+		ScrollEmpower empower = curUser.buff(ScrollEmpower.class);
+		if (empower != null){
+			empower.detach();
+		}
+
 		WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
 		if (buff != null && buff.level() > super.buffedLvl()){
 			buff.detach();
 		}
 
 		//if the wand is owned by the hero, but not in their inventory, it must be in the staff
-		if (curCharges == 0
-				&& charger != null
+		if (charger != null
 				&& charger.target == Dungeon.hero
-				&& !Dungeon.hero.belongings.contains(this)
-				&& Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)){
-			//grants 4/6 shielding
-			Buff.affect(Dungeon.hero, Barrier.class).setShield(2 + 2*Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER));
+				&& !Dungeon.hero.belongings.contains(this)) {
+			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) {
+				//grants 3/5 shielding
+				Buff.affect(Dungeon.hero, Barrier.class).setShield(1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER));
+			}
+			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE)){
+				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
+			}
 		}
 
 		Invisibility.dispel();
@@ -476,7 +501,7 @@ public abstract class Wand extends Item {
 		availableUsesToID = USES_TO_ID/2f;
 	}
 
-	protected int collisionProperties( int target ){
+	public int collisionProperties(int target){
 		return collisionProperties;
 	}
 	

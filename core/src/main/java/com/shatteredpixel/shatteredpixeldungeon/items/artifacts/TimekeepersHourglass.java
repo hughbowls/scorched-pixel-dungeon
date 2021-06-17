@@ -28,12 +28,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -88,7 +90,8 @@ public class TimekeepersHourglass extends Artifact {
 			} else if (charge <= 0)         GLog.i( Messages.get(this, "no_charge") );
 			else if (cursed)                GLog.i( Messages.get(this, "cursed") );
 			else GameScene.show(
-						new WndOptions( Messages.get(this, "name"),
+						new WndOptions(new ItemSprite(this),
+								Messages.titleCase(name()),
 								Messages.get(this, "prompt"),
 								Messages.get(this, "stasis"),
 								Messages.get(this, "freeze")) {
@@ -96,17 +99,19 @@ public class TimekeepersHourglass extends Artifact {
 							protected void onSelect(int index) {
 								if (index == 0) {
 									GLog.i( Messages.get(TimekeepersHourglass.class, "onstasis") );
-									GameScene.flash(0xFFFFFF);
+									GameScene.flash(0x80FFFFFF);
 									Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 									activeBuff = new timeStasis();
+									Talent.onArtifactUsed(Dungeon.hero);
 									activeBuff.attachTo(Dungeon.hero);
 								} else if (index == 1) {
 									GLog.i( Messages.get(TimekeepersHourglass.class, "onfreeze") );
-									GameScene.flash(0xFFFFFF);
+									GameScene.flash(0x80FFFFFF);
 									Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 									activeBuff = new timeFreeze();
+									Talent.onArtifactUsed(Dungeon.hero);
 									activeBuff.attachTo(Dungeon.hero);
 									((timeFreeze)activeBuff).processTime(0f);
 								}
@@ -141,9 +146,9 @@ public class TimekeepersHourglass extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		if (charge < chargeCap){
-			partialCharge += 0.25f;
+			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
 				charge++;
