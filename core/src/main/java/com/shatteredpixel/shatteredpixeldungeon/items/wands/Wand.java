@@ -300,9 +300,9 @@ public abstract class Wand extends Item {
 
 		if (!cursed && curseInfusionBonus){
 			curseInfusionBonus = false;
+			updateLevel();
 		}
 
-		updateLevel();
 		return trueLevel + (curseInfusionBonus ? 1 : 0);
 	}
 	
