@@ -29,24 +29,18 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -58,7 +52,6 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
-import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -103,8 +96,7 @@ public class Item implements Bundlable {
 	// whether an item can be included in heroes remains
 	public boolean bones = false;
 
-	private static Comparator<Item> itemComparator = new Comparator<Item>() {
-	
+	public static final Comparator<Item> itemComparator = new Comparator<Item>() {
 		@Override
 		public int compare( Item lhs, Item rhs ) {
 			return Generator.Category.order( lhs ) - Generator.Category.order( rhs );
@@ -241,7 +233,9 @@ public class Item implements Bundlable {
 				if (isSimilar( item )) {
 					item.merge( this );
 					item.updateQuickslot();
-					Talent.onItemCollected( Dungeon.hero, item );
+					if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
+						Talent.onItemCollected(Dungeon.hero, item);
+					}
 					return true;
 				}
 			}
@@ -589,50 +583,42 @@ public class Item implements Bundlable {
 							enemy.sprite,
 							this,
 							new Callback() {
-								@Override
-								public void call() {
-									curUser = user;
-									Item.this.detach(user.belongings.backpack).onThrow(cell);
-									if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)
-											&& !(Item.this instanceof MissileWeapon)
-											&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
-										Char ch = Actor.findChar(cell);
-										if (ch != null && ch.alignment != curUser.alignment){
-											Sample.INSTANCE.play(Assets.Sounds.HIT);
-											Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES));
-											Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 50f);
+						@Override
+						public void call() {
+							curUser = user;
+							Item i = Item.this.detach(user.belongings.backpack);
+							if (i != null) i.onThrow(cell);
+							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)
+									&& !(Item.this instanceof MissileWeapon)
+									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
+								if (enemy != null && enemy.alignment != curUser.alignment){
+									Sample.INSTANCE.play(Assets.Sounds.HIT);
+									Buff.affect(enemy, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES));
+									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 50f);
 								}
 							}
 							if (user.buff(Talent.LethalMomentumTracker.class) != null){
 								user.buff(Talent.LethalMomentumTracker.class).detach();
-										user.next();
+								user.next();
 							} else {
 								user.spendAndNext(delay);
 							}
-					}});
+						}
+					});
 		} else {
 			((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
 					reset(user.sprite,
 							cell,
 							this,
 							new Callback() {
-								@Override
-								public void call() {
-									curUser = user;
-									Item.this.detach(user.belongings.backpack).onThrow(cell);
-									if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)
-											&& !(Item.this instanceof MissileWeapon)
-											&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
-										Char ch = Actor.findChar(cell);
-										if (ch != null && ch.alignment != curUser.alignment){
-											Sample.INSTANCE.play(Assets.Sounds.HIT);
-											Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES));
-											Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 30f);
-										}
-									}
-									user.spendAndNext(delay);
-								}
-							});
+						@Override
+						public void call() {
+							curUser = user;
+							Item i = Item.this.detach(user.belongings.backpack);
+							if (i != null) i.onThrow(cell);
+							user.spendAndNext(delay);
+						}
+					});
 		}
 	}
 
