@@ -425,7 +425,7 @@ public enum Talent {
 			}
 		}
 
-		if (talent == FARSIGHT){
+		if (talent == HEIGHTENED_SENSES || talent == FARSIGHT){
 			Dungeon.observe();
 		}
 

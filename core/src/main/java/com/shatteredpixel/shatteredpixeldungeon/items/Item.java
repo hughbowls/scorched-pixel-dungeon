@@ -104,6 +104,7 @@ public class Item implements Bundlable {
 	public boolean bones = false;
 
 	private static Comparator<Item> itemComparator = new Comparator<Item>() {
+	
 		@Override
 		public int compare( Item lhs, Item rhs ) {
 			return Generator.Category.order( lhs ) - Generator.Category.order( rhs );
