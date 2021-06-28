@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
@@ -60,7 +61,7 @@ public class AlchemistsToolkit extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (isEquipped( hero ) && !cursed)
+		if ((isEquipped( hero ) || hero.hasTalent(Talent.PORTABLE_KIT)) && !cursed)
 			actions.add(AC_BREW);
 		return actions;
 	}
@@ -71,7 +72,7 @@ public class AlchemistsToolkit extends Artifact {
 		super.execute(hero, action);
 
 		if (action.equals(AC_BREW)){
-			if (!isEquipped(hero))                                          GLog.i( Messages.get(this, "need_to_equip") );
+			if (!isEquipped(hero) && !hero.hasTalent(Talent.PORTABLE_KIT))  GLog.i( Messages.get(this, "need_to_equip") );
 			else if (cursed)                                                GLog.w( Messages.get(this, "cursed") );
 			else if (!alchemyReady)                                         GLog.i( Messages.get(this, "not_ready") );
 			else if (hero.visibleEnemies() > hero.mindVisionEnemies.size()) GLog.i( Messages.get(this, "enemy_near") );
@@ -142,13 +143,32 @@ public class AlchemistsToolkit extends Artifact {
 		
 		return result;
 	}
-	
+
 	@Override
-	public boolean doEquip(Hero hero) {
-		if (super.doEquip(hero)){
+	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
+		if (super.doUnequip(hero, collect, single)){
+			if (!collect || !hero.hasTalent(Talent.PORTABLE_KIT)){
+				if (activeBuff != null){
+					activeBuff.detach();
+					activeBuff = null;
+				}
+			}
 			alchemyReady = false;
 			return true;
-		} else {
+		} else
+			return false;
+	}
+
+	@Override
+	public boolean collect( Bag container ) {
+		if (super.collect(container)){
+			if (container.owner instanceof Hero
+					&& passiveBuff == null
+					&& ((Hero) container.owner).hasTalent(Talent.PORTABLE_KIT)){
+				activate((Hero) container.owner);
+			}
+			return true;
+		} else{
 			return false;
 		}
 	}
@@ -183,8 +203,13 @@ public class AlchemistsToolkit extends Artifact {
 				float effectiveLevel = GameMath.gate(0, level() + exp/10f, 10);
 				float chargeGain = (2 + (1f * effectiveLevel)) * levelPortion;
 				chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
+
+				if (!isEquipped((Hero)target)) {
+					chargeGain *= 0.4f*((Hero)target).pointsInTalent(Talent.PORTABLE_KIT)/3f;
+				}
+
 				partialCharge += chargeGain;
-				
+
 				//charge is in increments of 1/10 max hunger value.
 				while (partialCharge >= 1) {
 					charge++;

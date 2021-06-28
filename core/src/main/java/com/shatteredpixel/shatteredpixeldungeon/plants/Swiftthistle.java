@@ -25,7 +25,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SpellWeave;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -65,15 +68,19 @@ public class Swiftthistle extends Plant {
 	//FIXME lots of copypasta from time freeze here
 	
 	public static class TimeBubble extends Buff {
-		
+
 		{
 			type = buffType.POSITIVE;
-			announced = true;
+			announce_check = false; //Scorched
 		}
 		
 		private float left;
 		ArrayList<Integer> presses = new ArrayList<>();
-		
+
+		//Scorched
+		public boolean announce_check = false;
+		public boolean bend_time 	  = false;
+
 		@Override
 		public int icon() {
 			return BuffIndicator.TIME;
@@ -81,29 +88,66 @@ public class Swiftthistle extends Plant {
 
 		@Override
 		public void tintIcon(Image icon) {
-			icon.hardlight(1f, 1f, 0);
+			if (bend_time)
+				icon.hardlight(0xA15CE5);
+			else
+				icon.hardlight(1f, 1f, 0);
 		}
 
 		@Override
 		public float iconFadePercent() {
-			return Math.max(0, (6f - left) / 6f);
+			if (bend_time) {
+				float dur = 4f + ((Hero)target).pointsInTalent(Talent.TRAVELER) == 1 ? 2f : 0f
+						+ ((Hero)target).pointsInTalent(Talent.TRAVELER) >= 2 ? 4f : 0f;
+				return Math.max(0, (dur - left) / dur);
+			}
+			else
+				return Math.max(0, (6f - left) / 6f);
 		}
 		
 		public void reset(){
+			if (!announce_check) {
+				announce_check = true;
+				target.sprite.showStatus(CharSprite.POSITIVE, toString());
+			}
 			left = 7f;
+			if (bend_time) {
+				bend_time = false;
+				BuffIndicator.refreshHero();
+			}
 		}
 
 		public void add(float pow){
 			left += pow;
 		}
-		
+
+		public void bendTime(float pow){
+			if (!announce_check) {
+				target.sprite.showStatus(CharSprite.POSITIVE,
+						Messages.get(SpellWeave.class, "bend_time_buff_name"));
+				announce_check = true;
+			}
+			left += pow;
+			bend_time = true;
+			BuffIndicator.refreshHero();
+		}
+
 		@Override
 		public String toString() {
+			if (bend_time){
+				return Messages.get(SpellWeave.class, "bend_time_buff_name");
+			}
 			return Messages.get(this, "name");
 		}
 		
 		@Override
 		public String desc() {
+			if (bend_time){
+				if (((Hero)target).pointsInTalent(Talent.TRAVELER) == 3)
+					return Messages.get(SpellWeave.class, "bend_time_buff_desc1", dispTurns(left));
+				else
+					return Messages.get(SpellWeave.class, "bend_time_buff_desc2", dispTurns(left));
+			}
 			return Messages.get(this, "desc", dispTurns(left));
 		}
 		
@@ -152,7 +196,10 @@ public class Swiftthistle extends Plant {
 		
 		private static final String PRESSES = "presses";
 		private static final String LEFT = "left";
-		
+
+		private static final String ANNOUNCED = "announce_check";
+		private static final String BEND_TIME = "bend_time";
+
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
@@ -162,7 +209,10 @@ public class Swiftthistle extends Plant {
 				values[i] = presses.get(i);
 			bundle.put( PRESSES , values );
 			
-			bundle.put( LEFT, left);
+			bundle.put( LEFT, left );
+
+			bundle.put( ANNOUNCED, announce_check);
+			bundle.put( BEND_TIME, bend_time );
 		}
 		
 		@Override
@@ -174,6 +224,9 @@ public class Swiftthistle extends Plant {
 				presses.add(value);
 			
 			left = bundle.getFloat(LEFT);
+
+			announce_check = bundle.getBoolean(ANNOUNCED);
+			bend_time = bundle.getBoolean(BEND_TIME);
 		}
 		
 	}

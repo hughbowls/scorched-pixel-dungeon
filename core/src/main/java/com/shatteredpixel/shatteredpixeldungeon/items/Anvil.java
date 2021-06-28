@@ -31,6 +31,7 @@ import com.watabou.utils.Callback;
 
 import java.util.ArrayList;
 
+//currently unused
 public class Anvil extends Item {
 
 	private static final String TXT_UPGRADED		= "you applied the anvil to upgrade your %s";

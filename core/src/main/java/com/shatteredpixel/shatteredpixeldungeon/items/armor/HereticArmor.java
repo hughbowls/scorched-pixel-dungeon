@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Metamorphosis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
@@ -36,18 +36,18 @@ public class HereticArmor extends ClassArmor {
 		image = ItemSpriteSheet.ARMOR_HERETIC;
 	}
 	
-	@Override
-	public void doSpecial() {
+	// Legacy
+	//public void doSpecial() {
 
-		charge -= 35;
-		updateQuickslot();
-		Buff.affect(curUser, Metamorphosis.class).set(20f);
-		Sample.INSTANCE.play( Assets.Sounds.BADGE );
-		GameScene.flash(0xFF0000);
-		
-		curUser.spend( Actor.TICK );
-		curUser.sprite.operate( curUser.pos );
-		Invisibility.dispel();
-		curUser.busy();
-	}
+	//	charge -= 35;
+	//	updateQuickslot();
+	//	Buff.affect(curUser, MetamorphosisBuff.class).set(20f);
+	//	Sample.INSTANCE.play( Assets.Sounds.BADGE );
+	//	GameScene.flash(0xFF0000);
+	//
+	//	curUser.spend( Actor.TICK );
+	//	curUser.sprite.operate( curUser.pos );
+	//	Invisibility.dispel();
+	//	curUser.busy();
+	//}
 }

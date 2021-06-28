@@ -21,8 +21,19 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EnergyParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
@@ -37,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
@@ -76,6 +88,30 @@ public class ArcaneCatalyst extends Spell {
 		s.anonymize();
 		curItem = s;
 		s.doRead();
+	}
+
+	@Override
+	protected void onThrow( int cell ) {
+		if (curUser.hasTalent(Talent.ARCANE_ENGINEER)) {
+
+			Char ch = Actor.findChar(cell);
+			if (ch != null && ch.alignment != curUser.alignment){
+				if (ch instanceof DM100 || ch instanceof DM200 || ch instanceof DM201
+					|| (ch instanceof Golem && curUser.pointsInTalent(Talent.ARCANE_ENGINEER) >= 2)){
+					ch.alignment = Char.Alignment.ALLY;
+					ch.sprite.centerEmitter().burst(EnergyParticle.FACTORY, 10);
+				}
+			} else if (ch != null && ch.alignment == curUser.alignment
+							&& curUser.pointsInTalent(Talent.ARCANE_ENGINEER) == 3){
+				PotionOfHealing.cure(ch);
+				PotionOfHealing.heal(ch);
+				ch.sprite.centerEmitter().burst(EnergyParticle.FACTORY, 10);
+			}
+
+			else super.onThrow( cell );
+		} else {
+			super.onThrow( cell );
+		}
 	}
 	
 	@Override

@@ -24,13 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -106,17 +103,6 @@ public class TengusMask extends Item {
 		e.pos(e.x-2, e.y-6, 4, 4);
 		e.start(Speck.factory(Speck.MASK), 0.05f, 20);
 		GLog.p( Messages.get(this, "used"));
-
-		if (way == HeroSubClass.SPELLWEAVER) {
-			ElementalSpell.ElementalSpellChaos chaos = new ElementalSpell.ElementalSpellChaos();
-			if (chaos.doPickUp( Dungeon.hero )) {
-				GLog.i( Messages.get(Dungeon.hero, "you_now_have", chaos.name() ));
-			} else {
-				Dungeon.level.drop( chaos, Dungeon.hero.pos ).sprite.drop();
-			}
-		} else {
-			// do noting
-		}
 		
 	}
 }

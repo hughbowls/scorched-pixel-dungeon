@@ -54,7 +54,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -79,8 +78,6 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import static com.shatteredpixel.shatteredpixeldungeon.items.Item.updateQuickslot;
 
 public class Tengu extends Mob {
 	
@@ -212,15 +209,6 @@ public class Tengu extends Mob {
 		super.die( cause );
 		
 		Badges.validateBossSlain();
-
-		// for elementalist
-		Statistics.bossSlained++;
-		for (Item item : Dungeon.hero.belongings){
-			if (item instanceof ElementalSpell){
-				((ElementalSpell) item).identify();
-			}
-		}
-		updateQuickslot();
 
 		LloydsBeacon beacon = Dungeon.hero.belongings.getItem(LloydsBeacon.class);
 		if (beacon != null) {

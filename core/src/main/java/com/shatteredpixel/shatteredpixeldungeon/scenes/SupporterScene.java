@@ -86,10 +86,28 @@ public class SupporterScene extends PixelScene {
 				DeviceCompat.openURI(link);
 			}
 		};
-		link.icon(Icons.get(Icons.GOLD));
+		link.icon(Icons.get(Icons.SHPX));
 		link.textColor(Window.TITLE_COLOR);
 		link.setSize(elementWidth, BTN_HEIGHT);
 		add(link);
+
+		StyledButton link_scorched = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "supporter_link_scorched")){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				String link_scorched = "https://www.patreon.com/ScorchedPD";
+				//tracking codes, so that the website knows where this pageview came from
+				//TODO: Adjust under three lines for Scorched
+				link_scorched += "?utm_source=shatteredpd";
+				link_scorched += "&utm_medium=supporter_page";
+				link_scorched += "&utm_campaign=ingame_link";
+				DeviceCompat.openURI(link_scorched);
+			}
+		};
+		link_scorched.icon(Icons.get(Icons.ELEMENTALIST));
+		link_scorched.textColor(Window.SCORCHED_COLOR);
+		link_scorched.setSize(elementWidth, BTN_HEIGHT);
+		add(link_scorched);
 
 		float elementHeight = msg.height() + BTN_HEIGHT + GAP;
 
@@ -99,7 +117,10 @@ public class SupporterScene extends PixelScene {
 		msg.setPos(left, top);
 		align(msg);
 
-		link.setPos(left, msg.bottom()+GAP);
+		link_scorched.setPos(left, msg.bottom()+GAP);
+		align(link_scorched);
+
+		link.setPos(left, link_scorched.bottom()+GAP);
 		align(link);
 
 	}
@@ -122,17 +143,16 @@ public class SupporterScene extends PixelScene {
 
 			String message = Messages.get(SupporterScene.class, "intro");
 			message += "\n\n" + Messages.get(SupporterScene.class, "patreon_msg");
-			if (Messages.lang() != Languages.ENGLISH) {
-				message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
-			}
-			message += "\n\n- Evan";
+			//if (Messages.lang() != Languages.ENGLISH) {
+			//	message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
+			//}
+			//message += "\n\n- Evan";
 
 			text = PixelScene.renderTextBlock(message, 6);
 			add(text);
 
-			icon = Icons.get(Icons.SHPX);
-			add(icon);
-
+			//icon = Icons.get(Icons.SHPX);
+			//add(icon);
 		}
 
 		@Override
@@ -143,8 +163,8 @@ public class SupporterScene extends PixelScene {
 			text.maxWidth((int)width - bg.marginHor());
 			text.setPos(x + bg.marginLeft(), y + bg.marginTop() + 1);
 
-			icon.y = text.bottom() - icon.height() + 4;
-			icon.x = x + 25;
+			//icon.y = text.bottom() - icon.height() + 4;
+			//icon.x = x + 25;
 
 			height = (text.bottom() + 3) - y;
 

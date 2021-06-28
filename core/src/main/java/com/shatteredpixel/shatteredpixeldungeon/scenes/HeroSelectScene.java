@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -318,10 +317,7 @@ public class HeroSelectScene extends PixelScene {
 			super.update();
 			if (cl != GamesInProgress.selectedClass){
 				if (!cl.isUnlocked()){
-					if (cl == HeroClass.TROLL)
-						icon.brightness(0f);
-					else
-						icon.brightness(0.1f);
+					icon.brightness(0.1f);
 				} else {
 					icon.brightness(0.6f);
 				}
@@ -344,135 +340,4 @@ public class HeroSelectScene extends PixelScene {
 		}
 	}
 
-	private static class WndHeroInfo extends WndTabbed {
-
-		private RenderedTextBlock title;
-		private RenderedTextBlock info;
-
-		private TalentsPane talents;
-
-		private int WIDTH = 120;
-		private int HEIGHT = 120;
-		private int MARGIN = 2;
-		private int INFO_WIDTH = WIDTH - MARGIN*2;
-
-		public WndHeroInfo( HeroClass cl ){
-
-			title = PixelScene.renderTextBlock(9);
-			title.hardlight(TITLE_COLOR);
-			add(title);
-
-			info = PixelScene.renderTextBlock(6);
-			add(info);
-
-			ArrayList<LinkedHashMap<Talent, Integer>> talentList = new ArrayList<>();
-			Talent.initClassTalents(cl, talentList);
-			talents = new TalentsPane(false, talentList);
-			add(talents);
-
-			Tab tab;
-			Image[] tabIcons;
-			switch (cl){
-				case WARRIOR: default:
-					tabIcons = new Image[]{
-							new ItemSprite(ItemSpriteSheet.SEAL, null),
-							new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD, null)
-					};
-					break;
-				case MAGE:
-					tabIcons = new Image[]{
-							new ItemSprite(ItemSpriteSheet.MAGES_STAFF, null),
-							new ItemSprite(ItemSpriteSheet.HOLDER, null)
-					};
-					break;
-				case ROGUE:
-					tabIcons = new Image[]{
-							new ItemSprite(ItemSpriteSheet.ARTIFACT_CLOAK, null),
-							new ItemSprite(ItemSpriteSheet.DAGGER, null)
-					};
-					break;
-				case HUNTRESS:
-					tabIcons = new Image[]{
-							new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null),
-							new ItemSprite(ItemSpriteSheet.GLOVES, null)
-					};
-					break;
-			}
-
-			tab = new IconTab( tabIcons[0] ){
-				@Override
-				protected void select(boolean value) {
-					super.select(value);
-					if (value){
-						title.text(Messages.titleCase(Messages.get(WndHeroInfo.class, "innate_title")));
-						info.text(Messages.get(cl, cl.name() + "_desc_innate"), INFO_WIDTH);
-					}
-				}
-			};
-			add(tab);
-
-			tab = new IconTab( tabIcons[1] ){
-				@Override
-				protected void select(boolean value) {
-					super.select(value);
-					if (value){
-						title.text(Messages.titleCase(Messages.get(WndHeroInfo.class, "loadout_title")));
-						info.text(Messages.get(cl, cl.name() + "_desc_loadout"), INFO_WIDTH);
-					}
-				}
-			};
-			add(tab);
-
-			tab = new IconTab( Icons.get(Icons.TALENT) ){
-				@Override
-				protected void select(boolean value) {
-					super.select(value);
-					if (value){
-						title.text(Messages.titleCase(Messages.get(WndHeroInfo.class, "talents_title")));
-						info.text(Messages.get(WndHeroInfo.class, "talents_desc"), INFO_WIDTH);
-					}
-					talents.visible = talents.active = value;
-				}
-			};
-			add(tab);
-
-			tab = new IconTab(new ItemSprite(ItemSpriteSheet.MASTERY, null)){
-				@Override
-				protected void select(boolean value) {
-					super.select(value);
-					if (value){
-						title.text(Messages.titleCase(Messages.get(WndHeroInfo.class, "subclasses_title")));
-						String msg = Messages.get(cl, cl.name() + "_desc_subclasses");
-						for (HeroSubClass sub : cl.subClasses()){
-							msg += "\n\n" + sub.desc();
-						}
-						info.text(msg, INFO_WIDTH);
-					}
-				}
-			};
-			add(tab);
-
-			select(0);
-
-		}
-
-		@Override
-		public void select(Tab tab) {
-			super.select(tab);
-
-			title.setPos((WIDTH-title.width())/2, MARGIN);
-			info.setPos(MARGIN, title.bottom()+2*MARGIN);
-			talents.setRect(0, info.bottom()+2*MARGIN, WIDTH, 100);
-
-			if (talents.visible) {
-				resize(WIDTH, (int) talents.bottom());
-				talents.setRect(0, info.bottom()+2*MARGIN, WIDTH, 100);
-			} else {
-				resize(WIDTH, (int) info.bottom() + 2*MARGIN);
-			}
-
-			layoutTabs();
-
-		}
-	}
 }

@@ -51,7 +51,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.WeaponRack;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
@@ -1066,8 +1065,6 @@ public class GameScene extends PixelScene {
 					WndBag.getBag( PotionBandolier.class, listener, mode, title ) :
 				mode == Mode.WAND ?
 					WndBag.getBag( MagicalHolster.class, listener, mode, title ) :
-				mode == Mode.WEAPON ?
-					WndBag.getBag( WeaponRack.class, listener, mode, title ) :
 				WndBag.lastBag( listener, mode, title );
 		
 		if (scene != null) scene.addToFront( wnd );

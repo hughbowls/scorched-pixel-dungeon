@@ -27,6 +27,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -46,6 +48,14 @@ public class PotionOfShielding extends ExoticPotion {
 			//~75% of a potion of healing
 			Buff.affect(hero, Barrier.class).setShield((int) (0.6f * hero.HT + 10));
 			Talent.onHealingPotionUsed( hero );
+
+			if (hero.hasTalent(Talent.PACT_OF_KNOT)) {
+				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+					if (m != null && m instanceof HereticSummon) {
+						Buff.affect(m, Barrier.class).setShield((int) (0.6f * hero.HT + 10));
+					}
+				}
+			}
 		}
 	}
 }

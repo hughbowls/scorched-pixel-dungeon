@@ -22,11 +22,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -92,7 +96,25 @@ public class Dewdrop extends Item {
 				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", shield) );
 			}
 
+			if (hero.pointsInTalent(Talent.PACT_OF_KNOT) >= 2){
+				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+					if (m != null && m instanceof HereticSummon){
+						m.HP += effect;
+						if (m.HP > m.HT)
+							m.HP = m.HT;
+						hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+					}
+				}
+			}
+
 		} else {
+
+			AlchemistsToolkit.kitEnergy kit = hero.buff(AlchemistsToolkit.kitEnergy.class);
+			if (hero.pointsInTalent(Talent.DEWCHEMY) >= 2 && kit != null){
+				kit.gainCharge(1 + 2*(hero.pointsInTalent(Talent.DEWCHEMY) == 3 ? 1 : 0));
+				return true;
+			}
+
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );
 			return false;
 		}

@@ -114,6 +114,7 @@ public class Ring extends KindofMisc {
 		// for Innovator
 		innovationBonus = 0;
 		innovationLeft = 0;
+		innovationPartialLeft = 0;
 	}
 	
 	public void activate( Char ch ) {
@@ -273,8 +274,10 @@ public class Ring extends KindofMisc {
 
 	public int innovationBonus = 0;
 	public int innovationLeft = 0;
+	public int innovationPartialLeft = 0;
 	private static final String INNOVATION_BONUS	 = "innovation_bonus";
 	private static final String INNOVATION_LEFT 	 = "innovation_left";
+	private static final String INNOVATION_PARTIAL_LEFT = "innovation_partial_left";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -283,6 +286,7 @@ public class Ring extends KindofMisc {
 
 		bundle.put( INNOVATION_BONUS, innovationBonus );
 		bundle.put( INNOVATION_LEFT, innovationLeft );
+		bundle.put( INNOVATION_PARTIAL_LEFT, innovationPartialLeft );
 	}
 
 	@Override
@@ -292,11 +296,13 @@ public class Ring extends KindofMisc {
 
 		innovationBonus = bundle.getInt( INNOVATION_BONUS );
 		innovationLeft = bundle.getInt( INNOVATION_LEFT );
+		innovationPartialLeft = bundle.getInt( INNOVATION_PARTIAL_LEFT );
 	}
 
 	public void setInnovation(int bonus, int left) {
 		this.innovationBonus = bonus;
 		this.innovationLeft = left;
+		this.innovationPartialLeft = 0;
 		if (this.level() >= 4){
 			this.innovationBonus--;
 			if (this.level() >= 8){
@@ -334,6 +340,11 @@ public class Ring extends KindofMisc {
 		if (Dungeon.hero.buff(EnhancedRings.class) != null){
 			lvl++;
 		}
+
+		if (cursed && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
+			lvl += Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
+		}
+
 		return lvl;
 	}
 

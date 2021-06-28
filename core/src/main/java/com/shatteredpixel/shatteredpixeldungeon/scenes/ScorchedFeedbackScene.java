@@ -124,10 +124,6 @@ public class ScorchedFeedbackScene extends PixelScene {
 
 			text = PixelScene.renderTextBlock(message, 6);
 			add(text);
-
-			icon = Icons.get(Icons.ALERT);
-			add(icon);
-
 		}
 
 		@Override
@@ -138,8 +134,8 @@ public class ScorchedFeedbackScene extends PixelScene {
 			text.maxWidth((int)width - bg.marginHor());
 			text.setPos(x + bg.marginLeft(), y + bg.marginTop() + 1);
 
-			icon.y = text.bottom() - icon.height() + 4;
-			icon.x = x + 25;
+			//icon.y = text.bottom() - icon.height() + 4;
+			//icon.x = x + 25;
 
 			height = (text.bottom() + 3) - y;
 

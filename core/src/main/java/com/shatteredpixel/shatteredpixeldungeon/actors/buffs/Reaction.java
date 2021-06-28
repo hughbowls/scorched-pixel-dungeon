@@ -21,6 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -32,13 +36,22 @@ public class Reaction extends Buff {
 	}
 
 	@Override
+	public boolean attachTo( Char target ) {
+		Hero hero = Dungeon.hero;
+		if (hero.buff(Talent.DoubleTabTracker.class) != null){
+			Buff.affect(hero, Talent.DoubleTabTracker.class);
+		}
+		return super.attachTo(target);
+	}
+
+	@Override
 	public int icon() {
 		return BuffIndicator.MOMENTUM;
 	}
 
 	@Override
 	public void tintIcon(Image icon) {
-		icon.hardlight(0.5f, 0.75f, 2f);
+		icon.hardlight(0x00C7C7);
 	}
 
 	@Override

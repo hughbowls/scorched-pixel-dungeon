@@ -107,9 +107,31 @@ public class Invisibility extends FlavourBuff {
 			prep.detach();
 		}
 		
-		Swiftthistle.TimeBubble bubble =  Dungeon.hero.buff( Swiftthistle.TimeBubble.class );
+		Swiftthistle.TimeBubble bubble = Dungeon.hero.buff( Swiftthistle.TimeBubble.class );
 		if (bubble != null){
 			bubble.detach();
+		}
+	}
+
+	//Scorched
+	public static void dispel_bendTime() {
+		for ( Buff invis : Dungeon.hero.buffs( Invisibility.class )){
+			invis.detach();
+		}
+		CloakOfShadows.cloakStealth cloakBuff = Dungeon.hero.buff( CloakOfShadows.cloakStealth.class );
+		if (cloakBuff != null) {
+			cloakBuff.dispel();
+		}
+
+		//these aren't forms of invisibilty, but do dispel at the same time as it.
+		TimekeepersHourglass.timeFreeze timeFreeze = Dungeon.hero.buff( TimekeepersHourglass.timeFreeze.class );
+		if (timeFreeze != null) {
+			timeFreeze.detach();
+		}
+
+		Preparation prep = Dungeon.hero.buff( Preparation.class );
+		if (prep != null){
+			prep.detach();
 		}
 	}
 }

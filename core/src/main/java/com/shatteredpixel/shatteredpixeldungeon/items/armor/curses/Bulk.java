@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -38,7 +39,7 @@ public class Bulk extends Armor.Glyph {
 		
 		//no proc effect, see armor.speedfactor
 
-		if (defender.buff(HereticBulkProc.class) != null){
+		if (Random.Int(8) == 0 && defender == Dungeon.hero){
 			float pow = 5f + Random.NormalFloat(armor.buffedLvl()*0.5f, armor.buffedLvl()*1.5f);
 			Buff.affect(attacker, Terror.class, pow).object = defender.id();
 		}

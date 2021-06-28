@@ -23,14 +23,16 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 
 import static com.watabou.utils.Random.NormalFloat;
 
@@ -95,14 +97,21 @@ public class Bleeding extends Buff {
 							target.sprite.blood(), Math.min( 10 * dmg / target.HT, 10 ) );
 				}
 
+				if (target.alignment != Dungeon.hero.alignment){
+					if (!target.isAlive() && Dungeon.hero.pointsInTalent(Talent.SERUM) >= 2) {
+						Dewdrop dewdrop = new Dewdrop();
+						Dungeon.level.drop(dewdrop, Dungeon.hero.pos).sprite.drop();
+					}
+					if (target.isAlive() && Dungeon.hero.pointsInTalent(Talent.SERUM) == 2) {
+						Dewdrop dewdrop = new Dewdrop();
+						if (Random.Int(0, 3) == 3)
+						Dungeon.level.drop(dewdrop, Dungeon.hero.pos).sprite.drop();
+					}
+				}
+
 				if (target == Dungeon.hero && !target.isAlive()) {
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "ondeath") );
-				}
-
-				if (target != Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.BLOODKNIGHT){
-					Dungeon.hero.HP = Math.min(Dungeon.hero.HP+dmg, Dungeon.hero.HT);
-					Dungeon.hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 				}
 
 				spend( TICK );

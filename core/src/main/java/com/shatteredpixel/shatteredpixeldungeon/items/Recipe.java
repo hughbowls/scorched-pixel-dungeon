@@ -173,7 +173,7 @@ public abstract class Recipe {
 		new Scroll.ScrollToStone(),
 		new StewedMeat.oneMeat(),
 		new InnovationSpell.Recipe(),
-		new Bomb.Grenade.GrenadeRecipe()
+		new Waterskin.DewchemyRecipe()
 	};
 
 	private static Recipe[] twoIngredientRecipes = new Recipe[]{
@@ -248,7 +248,7 @@ public abstract class Recipe {
 				&& (!(item instanceof EquipableItem)
 				|| item instanceof Pistol
 				|| (item instanceof AlchemistsToolkit && item.isIdentified()))
-				&& !(item instanceof Wand) && !(item instanceof Bomb.Grenade);
+				&& !(item instanceof Wand);
 	}
 }
 

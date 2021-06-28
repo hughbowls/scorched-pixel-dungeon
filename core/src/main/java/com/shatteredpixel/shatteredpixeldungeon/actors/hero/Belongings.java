@@ -55,7 +55,9 @@ public class Belongings implements Iterable<Item> {
 
 	//used when thrown weapons temporary occupy the weapon slot
 	public KindOfWeapon stashedWeapon = null;
-	
+	//Scorched: for binder
+	public Armor stashedArmor = null;
+
 	public Belongings( Hero owner ) {
 		this.owner = owner;
 		

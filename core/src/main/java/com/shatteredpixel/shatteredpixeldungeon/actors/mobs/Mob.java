@@ -28,63 +28,40 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Preparation;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.SiegeMachine;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Conflict;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.trollhero.CapeAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Wound;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BloodParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PoisonParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
@@ -97,9 +74,9 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -643,6 +620,21 @@ public abstract class Mob extends Char {
 			}
 		}
 
+		if (buff(Conflict.ConflictTracker.class) != null) {
+			if (Dungeon.hero.isAlive()) {
+				int shAmt = Math.round(damage * 0.2f * (Dungeon.hero.pointsInTalent(Talent.EATER_OF_CONFLICT)));
+				if (shAmt > 0 && Dungeon.hero.isAlive()) {
+
+					if (Dungeon.hero.shielding() <= 0) {
+						Buff.affect(Dungeon.hero, Barrier.class).setShield(shAmt);
+					} else Buff.affect(Dungeon.hero, Barrier.class).incShield(shAmt);
+
+					Dungeon.hero.sprite.emitter().burst(MagicMissile.MagicParticle.BURST_ATTRACTING, 10);
+					Dungeon.hero.sprite.showStatus(0x00A0FF, Integer.toString(shAmt));
+				}
+			}
+		}
+
 		return damage;
 	}
 
@@ -695,6 +687,10 @@ public abstract class Mob extends Char {
 					Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", exp));
 				}
 				Dungeon.hero.earnExp(exp, getClass());
+
+				MetamorphosisBuff morph = Dungeon.hero.buff(MetamorphosisBuff.class);
+				if (morph != null && Dungeon.hero.hasTalent(Talent.CARNAGE))
+					morph.extend(Dungeon.hero.pointsInTalent(Talent.CARNAGE));
 			}
 		}
 	}
@@ -715,6 +711,37 @@ public abstract class Mob extends Char {
 					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)
 					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM)){
 				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 2f);
+			}
+
+			CapeAbility.CapeAbilityTracker trollCape = buff(CapeAbility.CapeAbilityTracker.class);
+			if (trollCape != null){
+				if (Dungeon.hero.hasTalent(Talent.LETHAL_THORNS))
+					trollCape.extend(Dungeon.hero.pointsInTalent(Talent.LETHAL_THORNS));
+			}
+		}
+
+		if (buff(Conflict.ConflictTracker.class) != null &&
+				Dungeon.hero.hasTalent(Talent.END_OF_CONFLICT)) {
+			float power = this.HT*(0.3f+(0.1f*Dungeon.hero.pointsInTalent(Talent.END_OF_CONFLICT)));
+			float dur = Dungeon.hero.pointsInTalent(Talent.END_OF_CONFLICT) == 4 ? 2f : 3f;
+
+			if (Dungeon.hero.fieldOfView[this.pos]) {
+				GameScene.flash(0x80FFFFFF);
+				Sample.INSTANCE.play(Assets.Sounds.BLAST);
+			}
+
+			PathFinder.buildDistanceMap( this.pos, BArray.not( Dungeon.level.solid, null ), 2 );
+			for (int i = 0; i < PathFinder.distance.length; i++) {
+				if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+					Char ch = Actor.findChar(i);
+					if (ch != null && ch != this && ch.alignment != Dungeon.hero.alignment) {
+						ch.damage((int)power, this);
+
+						if (ch.isAlive() && Dungeon.hero.pointsInTalent(Talent.END_OF_CONFLICT) >= 3) {
+							Buff.prolong(ch, Blindness.class, dur);
+						}
+					}
+				}
 			}
 		}
 
@@ -1121,7 +1148,9 @@ public abstract class Mob extends Char {
 			//preserve intelligent allies if they are near the hero
 			} else if (mob.alignment == Alignment.ALLY
 					&& mob.intelligentAlly
-					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5){
+					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5
+					//except Siege Machine
+					&& !(mob instanceof SiegeMachine.SiegeAlly)){
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 			}

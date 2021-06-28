@@ -27,7 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -89,6 +93,26 @@ public class GnollTrickster extends Gnoll {
 				Buff.affect( enemy, Poison.class).set((effect-2) );
 
 		}
+
+		if (enemy == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOULDER_IS_COMING)
+				&& enemy.isAlive() && Dungeon.hero.fieldOfView[pos]
+				&& Dungeon.hero.buff(Talent.BoulderIsComingCooldown.class) == null
+				&& Random.Float() < 0.33f* Dungeon.hero.pointsInTalent(Talent.BOULDER_IS_COMING)
+				&& Dungeon.level.distance(enemy.pos, pos) > 1
+		){
+			if (buff(TrollJump.class) == null)
+				Buff.affect(this, TrollJump.class).setJump(2f);
+			if (enemy.buff(TrollJump.class) == null)
+				Buff.affect(enemy, TrollJump.class).setJump(2f);
+		}
+
+		if (Dungeon.hero.buff(MetamorphosisBuff.class) != null
+				&& Dungeon.hero.hasTalent(Talent.CRIPPLING_STING)
+				&& enemy.isAlive() && enemy == Dungeon.hero
+				&& Dungeon.level.distance(enemy.pos, pos) > 1) {
+			Metamorphosis.CripplingStingFire(pos);
+		}
+
 		return damage;
 	}
 

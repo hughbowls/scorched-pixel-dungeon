@@ -21,22 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WraithSprite;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.Bundle;
@@ -129,41 +118,4 @@ public class Wraith extends Mob {
 			return null;
 		}
 	}
-
-	@Override
-	public int defenseProc(Char enemy, int damage) {
-
-		if (enemy instanceof Hero && ((Hero)enemy).hasTalent(Talent.WRAITH_DECEPTION)){
-
-			this.HP = this.HT;
-			for (Buff buff : this.buffs()) {
-				if (buff.type == Buff.buffType.NEGATIVE
-						&& !(buff instanceof SoulMark)) {
-					buff.detach();
-				} else if (buff instanceof PinCushion){
-					buff.detach();
-				}
-			}
-
-			Buff.affect(this, Corruption.class);
-			if (((Hero)enemy).pointsInTalent(Talent.WRAITH_DECEPTION) == 2){
-				Buff.affect(this, Barrier.class).setShield(1 + (int)(Dungeon.depth * 0.75f));
-			}
-
-			if (this.EXP > 0 && Dungeon.hero.lvl <= this.maxLvl) {
-				Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", this.EXP));
-				Dungeon.hero.earnExp(this.EXP, this.getClass());
-			} else {
-				Dungeon.hero.earnExp(0, this.getClass());
-			}
-
-			Statistics.enemiesSlain++;
-			Badges.validateMonstersSlain();
-			Statistics.qualifiedForNoKilling = false;
-			return 0;
-		}
-
-		return super.defenseProc(enemy, damage);
-	}
-
 }

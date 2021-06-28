@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
@@ -46,15 +47,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
@@ -79,8 +79,6 @@ import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.shatteredpixel.shatteredpixeldungeon.items.Item.updateQuickslot;
 
 public class DM300 extends Mob {
 
@@ -391,6 +389,13 @@ public class DM300 extends Mob {
 				Buff.affect(target, TrollJump.class).setJump(2f);
 		}
 
+		if (Dungeon.hero.buff(MetamorphosisBuff.class) != null
+				&& Dungeon.hero.hasTalent(Talent.CRIPPLING_STING)
+				&& enemy.isAlive() && enemy == Dungeon.hero
+				&& Dungeon.level.distance(enemy.pos, pos) > 1) {
+			Metamorphosis.CripplingStingFire(pos);
+		}
+
 		GameScene.add(Blob.seed(trajectory.collisionPos, 100*gasMulti, ToxicGas.class));
 
 		if (gasVented < 250*gasMulti){
@@ -552,15 +557,6 @@ public class DM300 extends Mob {
 		}
 
 		Badges.validateBossSlain();
-
-		// for elementalist
-		Statistics.bossSlained++;
-		for (Item item : Dungeon.hero.belongings){
-			if (item instanceof ElementalSpell){
-				((ElementalSpell) item).identify();
-			}
-		}
-		updateQuickslot();
 
 		LloydsBeacon beacon = Dungeon.hero.belongings.getItem(LloydsBeacon.class);
 		if (beacon != null) {

@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.stones;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
@@ -54,7 +55,9 @@ public class StoneOfAugmentation extends InventoryStone {
 		weapon.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
-		
+
+		if (curUser.hasTalent(Talent.ARTISANS_INTUITION))
+			weapon.identify();
 	}
 	
 	public void apply( Armor armor, Armor.Augment augment ) {
@@ -62,6 +65,9 @@ public class StoneOfAugmentation extends InventoryStone {
 		armor.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
+
+		if (curUser.hasTalent(Talent.ARTISANS_INTUITION))
+			armor.identify();
 	}
 	
 	@Override

@@ -27,45 +27,60 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.Exoskeleton;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.MountNLoad;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.SiegeMachine;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.elementalist.AetherBlink;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.elementalist.Conduit;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.elementalist.Resonance;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Conflict;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.DeathGazeAbility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpectralBlades;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WarpBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.ElementalBlast;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.DeathMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.ShadowClone;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.SmokeBomb;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.trollhero.CapeAbility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.trollhero.GreatThrowingWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.trollhero.Sapper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Shockwave;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
+import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmorVariant;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.WeaponRack;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticGas;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.ShockingBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
@@ -75,12 +90,14 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BoneBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dirk;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.ForgeHammer;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Spear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.BlindPowder;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingClub;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.FishingSpear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -92,10 +109,11 @@ public enum HeroClass {
 	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
 	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	HERETIC("heretic", HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT),
-	ALCHEMIST("alchemist", HeroSubClass.TRAILBLAZER, HeroSubClass.INNOVATOR),
-	ELEMENTALIST("elementalist", HeroSubClass.SPELLWEAVER, HeroSubClass.TEMPEST),
-	TROLL("troll", HeroSubClass.WARSMITH, HeroSubClass.GEOMANCER);
+	//Scorched
+	HERETIC(HeroSubClass.SUMMONER, HeroSubClass.BLOODKNIGHT),
+	ALCHEMIST(HeroSubClass.TRAILBLAZER, HeroSubClass.INNOVATOR),
+	ELEMENTALIST(HeroSubClass.BINDER, HeroSubClass.SPELLWEAVER),
+	TROLL(HeroSubClass.WARSMITH, HeroSubClass.GEOMANCER);
 
 	private HeroSubClass[] subClasses;
 
@@ -260,9 +278,6 @@ public enum HeroClass {
 
 		Dungeon.quickslot.setSlot(0, powders);
 
-		new ScrollHolder().collect();
-		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
-
 		new ScrollOfRemoveCurse().identify();
 		new PotionOfPurity().identify();
 	}
@@ -281,17 +296,37 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0, pistol);
 		Dungeon.quickslot.setSlot(1, kit);
 
-		new PotionBandolier().collect();
-		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
-
 		new ScrollOfTransmutation().identify();
 		new PotionOfStrength().identify();
 	}
 
 	private static void initElementalist( Hero hero ) {
-		ElementalArmor garment;
-		garment = new ElementalArmor();
-		(hero.belongings.armor = garment).identify();
+		//TEST ONLY
+		new PotionOfExperience().identify().quantity(25).collect();
+		new PotionOfFrost().identify().quantity(25).collect();
+		new PotionOfLiquidFlame().identify().quantity(25).collect();
+		new ShockingBrew().identify().quantity(25).collect();
+		new ScrollOfMirrorImage().identify().quantity(25).collect();
+		new ScrollOfUpgrade().identify().quantity(25).collect();
+
+		new Dirk().identify().collect();
+		new Spear().identify().collect();
+		new FishingSpear().quantity(15).collect();
+
+		new TengusMask().collect();
+		new KingsCrown().collect();
+		//TEST ONLY
+
+		hero.STR = 8;
+
+		ClothArmorVariant variant;
+		variant = new ClothArmorVariant();
+		(hero.belongings.armor = variant).identify();
+
+		new ScrollHolder().collect();
+		new PotionBandolier().collect();
+		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
 
 		ElementalSpell.ElementalSpellFire fire = new ElementalSpell.ElementalSpellFire();
 		fire.collect(); Dungeon.quickslot.setSlot(0, fire);
@@ -299,36 +334,34 @@ public enum HeroClass {
 		ice.collect(); Dungeon.quickslot.setSlot(1, ice);
 		ElementalSpell.ElementalSpellElec elec = new ElementalSpell.ElementalSpellElec();
 		elec.collect(); Dungeon.quickslot.setSlot(2, elec);
-		Dungeon.quickslot.setSlot(3, garment);
-
-		new PotionBandolier().collect();
-		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
-		new ScrollHolder().collect();
-		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
 
 		new ScrollOfTeleportation().identify();
-		new PotionOfExperience().identify();
+		new PotionOfLevitation().identify();
 	}
 
 	private static void initTroll( Hero hero ) {
+		//TEST ONLY
+		new PotionOfExperience().identify().quantity(25).collect();
+		new PotionOfFrost().identify().quantity(25).collect();
+		new PotionOfLiquidFlame().identify().quantity(25).collect();
+		new ShockingBrew().identify().quantity(25).collect();
+		new ScrollOfMirrorImage().identify().quantity(25).collect();
+		new ScrollOfUpgrade().identify().quantity(25).collect();
+
+		new Dirk().identify().collect();
+		new Spear().identify().collect();
+		new FishingSpear().quantity(15).collect();
+
+		new TengusMask().collect();
+		new KingsCrown().collect();
+		//TEST ONLY
 
 		ForgeHammer hammer;
 		hammer = new ForgeHammer();
 		(hero.belongings.weapon = hammer).identify();
 
-		WeaponRack rack = new WeaponRack();
-		rack.collect();
-		Dungeon.quickslot.setSlot(0, rack);
-
-		ThrowingClub clubs = new ThrowingClub();
-		clubs.quantity(3).collect();
-		Dungeon.quickslot.setSlot(1, clubs);
-
-		new MagicalHolster().collect();
-		Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
-
-		new ScrollOfRetribution().identify();
-		new PotionOfParalyticGas().identify();
+		new ScrollOfUpgrade().identify();
+		new PotionOfHaste().identify();
 	}
 
 	public String title() {
@@ -353,6 +386,14 @@ public enum HeroClass {
 				return new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
 			case HUNTRESS:
 				return new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
+			case HERETIC:
+				return new ArmorAbility[]{new Metamorphosis(), new DeathGazeAbility(), new Conflict()};
+			case ALCHEMIST:
+				return new ArmorAbility[]{new Exoskeleton(), new SiegeMachine(), new MountNLoad()};
+			case ELEMENTALIST:
+				return new ArmorAbility[]{new Resonance(), new AetherBlink(), new Conduit()};
+			case TROLL:
+				return new ArmorAbility[]{new Sapper(), new CapeAbility(), new GreatThrowingWeapon()};
 		}
 	}
 

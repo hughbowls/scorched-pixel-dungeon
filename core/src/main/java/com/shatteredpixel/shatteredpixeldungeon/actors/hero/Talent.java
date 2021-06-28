@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
@@ -69,6 +70,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PoisonParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
@@ -77,6 +79,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -88,8 +91,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -171,45 +174,73 @@ public enum Talent {
 	//Spirit Hawk T4
 	EAGLE_EYE(119, 4), GO_FOR_THE_EYES(120, 4), SWIFT_SPIRIT(121, 4),
 
-	BUTCHERY(64),
-	ACCURSEDS_INTUITION(65),
-	KNOWLEDGE_IS_POWER(66),
-	MALEVOLENT_ARMOR(67),
-	ASCETIC(68),
-	TRANSFER_HARM(69),
-	ENHANCED_CURSE(70),
-	CHAOS_ADEPT(71),
-	WRAITH_DECEPTION(72),
+	//Heretic T1
+	BUTCHERY(128), ACCURSEDS_INTUITION(129), KNOWLEDGE_IS_POWER(130), MALEVOLENT_ARMOR(131),
+	//Heretic T2
+	ASCETIC(132), SUBLIMATION(133), CHAOS_ADEPT(134), OVERWHELM(135), RUNE_OF_CURSE(136),
+	//Heretic T3
+	ENHANCED_CURSE(137, 3), TRANSFER_HARM(138, 3),
+	//Blood Knight T3
+	PREDATOR(139, 3), RUSH_OF_BLOOD(140, 3), SERUM(141, 3),
+	//Summoner T3
+	FIEND_WARP(142, 3), PACT_OF_KNOT(143, 3), CURSED_CLAW(144, 3),
+	//Metamorphosis T4
+	CARNAGE(145, 4), RIPPING_CLAW(146, 4), CRIPPLING_STING(147, 4),
+	//Death Gaze T4
+	HELLISH_RESISTANCE(148, 4), AGONIZING_GAZE(149, 4), SERIAL_GAZER(150, 4),
+	//Curse of Conflict T4
+	EATER_OF_CONFLICT(151, 4), END_OF_CONFLICT(152, 4), CENTER_OF_CONFLICT(153, 4),
 
-	FOOD_ALCHEMY(80),
-	INVENTORS_INTUITION(81),
-	PREEMPTIVE_FIRE(82),
-	EXPERIMENTAL_BARRIER(83),
-	FRESH_MEAL(84),
-	RELOADING_UPGRADE(85),
-	ELIXIR_FORMULA(86),
-	GRENADIER(87),
-	GASEOUS_WARFARE(88),
+	//Alchemist T1
+	FOOD_ALCHEMY(160), INVENTORS_INTUITION(161), PREEMPTIVE_FIRE(162), EXPERIMENTAL_BARRIER(163),
+	//Alchemist T2
+	FRESH_MEAL(164), RELOADING_UPGRADE(165), ELIXIR_FORMULA(166), REBREATHER(167), GASEOUS_WARFARE(168),
+	//Alchemist T3
+	ADVANCED_PISTOL(169, 3), PORTABLE_KIT(170, 3),
+	//Trailblazer T3
+	STEADY_AIM(171, 3), INFUSED_GUNSMITH(172, 3), DOUBLE_TAB(173, 3),
+	//Innovator T3
+	DEWCHEMY(174, 3), ARCANE_ENGINEER(175, 3), CATALYST_MK2(176, 3),
+	//Exoskeleton T4
+	HYDRAULIC_PISTON(177, 4), DEPLOY_BARRIER(178, 4), KINETIC_CHARGER(179, 4),
+	//Siege Machine T4
+	SHARED_ROUND(180, 4), JUGGERNAUT(181, 4), TRANSPORTER(182, 4),
+	//Mount N' Load T4
+	HAIL_OF_SHOTS(183, 4), FMJ(184, 4), TRENCH_WARFARE(185, 4),
 
-	SHIELDING_MEAL(96),
-	PYTHONESS_INTUITION(97),
-	EXTENDED_FOCUS(98),
-	ELEMENTAL_SHIELD(99),
-	PENETRATING_MEAL(100),
-	HYDROMANCER(101),
-	ICEMAIL(102),
-	CHAIN_LIGHTNING(103),
-	WILDFIRE(104),
+	//Elementalist T1
+	SHIELDING_MEAL(192), PYTHONESS_INTUITION(193), EXTENDED_FOCUS(194), ELEMENTAL_SHIELD(195),
+	//Elementalist T2
+	PENETRATING_MEAL(196), HYDROMANCER(197), ICEMAIL(198), CHAIN_LIGHTNING(199), WILDFIRE(200),
+	//Elementalist T3
+	ELEMENTAL_MASTER(201, 3), ELEMENT_OF_CHAOS(202, 3),
+	//Binder T3
+	ARDENT_BLADE(203, 3), WALKING_GLACIER(204, 3), MIGHTY_THUNDER(205, 3),
+	//Spellweaver T3
+	DEVASTATOR(206, 3), TRAVELER(207, 3), CLAIRVOYANT(208, 3),
+	//Resonance T4
+	ECHOING_RESONANCE(209, 4), REACTIVE_RESONANCE(210, 4), DOUBLE_RESONANCE(211, 4),
+	//Aether Step T4
+	AFTERSHOCK(212, 4), AETHER_VISION(213, 4), AETHER_TETHER(214, 4),
+	//Elemental Conduit T4
+	CONDUIT_RELAY(215, 4), STABILIZED_CONDUIT(216, 4), ELEMENTAL_AMPLIFIER(217, 4),
 
-	ENCOURAGING_MEAL(112),
-	ARTISANS_INTUITION(113),
-	TESTED_STAMINA(114),
-	ARMORED(115),
-	CLEANSING_MEAL(116),
-	REGENERATION(117),
-	INDUSTRIOUS_HANDS(118),
-	BOULDER_IS_COMING(119),
-	SWIFTY_PROJECTILES(120),
+	//Blacksmith T1
+	ENCOURAGING_MEAL(224), ARTISANS_INTUITION(225), TESTED_STAMINA(226), ARMORED_TROLL(227),
+	//Blacksmith T2
+	CLEANSING_MEAL(228), REGENERATION(229), INDUSTRIOUS_HANDS(230), BOULDER_IS_COMING(231), MARKSTROLL(232),
+	//Blacksmith T3
+	UPGRADE_MASTERY(233, 3), MINT_MASTER(234, 3),
+	//Warsmith T3
+	ARCANESMITH(235, 3), CRUCIBLE(236, 3), WANDTROLL(237, 3),
+	//Geomancer T3
+	HARMONY(238, 3), AVALANCHE(239, 3), LANDSLIDER(240, 3),
+	//Sapper T4
+	EMERGENCY_STAIR(241, 4), LOCKSMITH(242, 4), TRAP_DISPOSAL(243, 4),
+	//Cape of Thorns T4
+	SHARP_THORNS(244, 4), LETHAL_THORNS(245, 4), ARCANE_CAPE(246, 4),
+	//Grand Grapple T4
+	SHOT_PUT(247, 4), DAZING_COLLIDE(248, 4), GREAT_COMMUNICATOR(249, 4),
 
 	//universal T4
 	HEROIC_ENERGY(26, 4), //See icon() and title() for special logic for this one
@@ -244,9 +275,56 @@ public enum Talent {
 	};
 	public static class SpiritBladesTracker extends FlavourBuff{};
 
-	public static class TransferHarmCooldown extends FlavourBuff{};
-	public static class BoulderIsComingCooldown extends FlavourBuff{};
-	public static class SwiftyProjectilesTracker extends FlavourBuff{};
+	public static class TransferHarmCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.0f, 0.0f); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / (Dungeon.hero.pointsInTalent(TRANSFER_HARM) >= 3 ? 10 : 20)); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	};
+	public static class PactOfKnotCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.0f, 0.2f); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / 100); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	};
+	public static class RebreatherCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0x00C7C7); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / 20); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	};
+	public static class DoubleTabTracker extends FlavourBuff{};
+	public static class TransporterCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0xFFFF00); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / (36-6*(Dungeon.hero.pointsInTalent(TRANSPORTER)))); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	};
+	public static class BoulderIsComingCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0xB0ADB7); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / 10); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	};
+	public static class MarksTrollCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0xFFCF32); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / (10-(Dungeon.hero.pointsInTalent(MARKSTROLL) == 2 ? 4 : 0))); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	};
+	public static class UpgradeMasterTracker extends FlavourBuff{};
+	public static class CrucibleTracker extends FlavourBuff{
+		public int icon() { return BuffIndicator.VULNERABLE; }
+		public void tintIcon(Image icon) { icon.hardlight(0xFF2A00); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc"); }
+	};
 
 	int icon;
 	int maxPoints;
@@ -278,6 +356,14 @@ public enum Talent {
 					return 90;
 				case HUNTRESS:
 					return 122;
+				case HERETIC:
+					return 154;
+				case ALCHEMIST:
+					return 186;
+				case ELEMENTALIST:
+					return 218;
+				case TROLL:
+					return 250;
 			}
 		} else {
 			return icon;
@@ -343,7 +429,7 @@ public enum Talent {
 			Dungeon.observe();
 		}
 
-		if (hero.hasTalent(ACCURSEDS_INTUITION)){
+		if (talent == ACCURSEDS_INTUITION){
 			for (Item item : Dungeon.hero.belongings){
 				item.cursedKnown = true;
 				if (hero.pointsInTalent(ACCURSEDS_INTUITION) == 1){
@@ -365,6 +451,37 @@ public enum Talent {
 						item.identify();
 					}
 				}
+			}
+		}
+
+		if (talent == ADVANCED_PISTOL && hero.pointsInTalent(ADVANCED_PISTOL) == 3){
+			for (Item item : Dungeon.hero.belongings){
+				if (item instanceof Pistol){
+					((Pistol) item).setReloadTime(1f);
+				}
+			}
+		}
+
+		if (talent == ELEMENT_OF_CHAOS && hero.pointsInTalent(ELEMENT_OF_CHAOS) == 1){
+			ElementalSpell.ElementalSpellChaos chaos = new ElementalSpell.ElementalSpellChaos();
+			if (chaos.doPickUp( Dungeon.hero )) {
+				GLog.i( Messages.get(Dungeon.hero, "you_now_have", chaos.name() ));
+			} else {
+				Dungeon.level.drop( chaos, Dungeon.hero.pos ).sprite.drop();
+			}
+		}
+
+		if (talent == UPGRADE_MASTERY && hero.pointsInTalent(UPGRADE_MASTERY) == 3){
+			UpgradeMasterTracker reforged = Dungeon.hero.buff(UpgradeMasterTracker.class);
+			if (reforged == null) Buff.affect(Dungeon.hero, UpgradeMasterTracker.class);
+		}
+
+		if (talent == MINT_MASTER){
+			Gold gold = new Gold();
+			switch (hero.pointsInTalent(MINT_MASTER)) {
+				case 1: gold.quantity(3000).doPickUp(Dungeon.hero); break;
+				case 2: gold.quantity(5000).doPickUp(Dungeon.hero); break;
+				case 3: gold.quantity(7500).doPickUp(Dungeon.hero); break;
 			}
 		}
 	}
@@ -575,6 +692,11 @@ public enum Talent {
 				}
 			}
 		}
+		if (hero.pointsInTalent(ADVANCED_PISTOL) == 3){
+			if (item instanceof Pistol){
+				((Pistol) item).setReloadTime(1f);
+			}
+		}
 	}
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
@@ -595,8 +717,8 @@ public enum Talent {
 			Buff.affect(hero, AdrenalineSurge.class).add(1, 10f + 5f*(float)hero.pointsInTalent(KNOWLEDGE_IS_POWER));
 		}
 		if (hero.hasTalent(TESTED_STAMINA)){
-			//5/8 turns of stamina
-			Buff.affect(hero, Stamina.class, 2f + 3f*hero.pointsInTalent(TESTED_STAMINA));
+			//6/10 turns of stamina
+			Buff.affect(hero, Stamina.class, hero.pointsInTalent(TESTED_STAMINA) == 2 ? 10f : 6f);
 		}
 	}
 
@@ -633,7 +755,8 @@ public enum Talent {
 		if (encourage != null){
 			if (hero.belongings.weapon instanceof MeleeWeapon
 					|| hero.belongings.weapon instanceof MissileWeapon
-					|| (hero.belongings.weapon == null && RingOfForce.getBuffedBonus(hero, RingOfForce.Force.class) > 0)) {
+					|| (hero.belongings.weapon == null
+						&& RingOfForce.getBuffedBonus(hero, RingOfForce.Force.class) > 0)) {
 				dmg += encourage.dmgBoost;
 				encourage.left--;
 				if (encourage.left <= 0) {
@@ -645,7 +768,8 @@ public enum Talent {
 		if (hero.hasTalent(Talent.TRANSFER_HARM)
 				&& enemy instanceof Mob
 				&& hero.belongings.weapon instanceof MeleeWeapon
-				&& ((MeleeWeapon)hero.belongings.weapon).hasCurseEnchant()
+				&& (((MeleeWeapon)hero.belongings.weapon).hasCurseEnchant()
+					|| hero.belongings.weapon.cursed)
 				&& hero.buff(TransferHarmCooldown.class) == null
 				&& enemy.buff(TransferHarmTracker.class) == null
 				&& (hero.buff(Poison.class) != null || hero.buff(Cripple.class) != null
@@ -657,7 +781,7 @@ public enum Talent {
 				|| hero.buff(Blindness.class) != null)){
 
 			enemy.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-			Buff.affect(hero, TransferHarmCooldown.class, 15f);
+			Buff.affect(hero, TransferHarmCooldown.class, 20f - (hero.pointsInTalent(TRANSFER_HARM) >= 2 ? 10f : 0f));
 			Buff.affect(enemy, TransferHarmTracker.class);
 
 			if (hero.buff(Poison.class) != null) {
@@ -684,7 +808,7 @@ public enum Talent {
 			} if (hero.buff(Roots.class) != null) { Buff.affect( enemy, Roots.class, Math.round(dmg*0.6f)); }
 			if (hero.buff(Blindness.class) != null) { Buff.affect( enemy, Blindness.class, Math.round(dmg*0.6f)); }
 
-			if (hero.pointsInTalent(Talent.TRANSFER_HARM) == 2){
+			if (hero.pointsInTalent(Talent.TRANSFER_HARM) == 3){
 				if (hero.buff(Poison.class) != null) hero.buff(Poison.class).detach();
 				if (hero.buff(Cripple.class) != null) hero.buff(Cripple.class).detach();
 				if (hero.buff(Weakness.class) != null) hero.buff(Weakness.class).detach();
@@ -699,6 +823,15 @@ public enum Talent {
 				if (hero.buff(Roots.class) != null) hero.buff(Roots.class).detach();
 				if (hero.buff(Blindness.class) != null) hero.buff(Blindness.class).detach();
 			}
+		}
+
+		if (hero.hasTalent(MARKSTROLL) && hero.buff(MarksTrollCooldown.class) == null
+				&& hero.belongings.weapon instanceof MissileWeapon
+				&& !Dungeon.level.adjacent(hero.pos, enemy.pos)){
+			Sample.INSTANCE.play(Assets.Sounds.EVOKE, 1f, 0.4f);
+			Buff.affect(hero, MarksTrollCooldown.class,
+					(10-(Dungeon.hero.pointsInTalent(MARKSTROLL) == 2 ? 4 : 0)));
+			Buff.affect( enemy, Paralysis.class, 3f);
 		}
 
 		return dmg;
@@ -746,7 +879,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, SHIELDING_MEAL, PYTHONESS_INTUITION, EXTENDED_FOCUS, ELEMENTAL_SHIELD);
 				break;
 			case TROLL:
-				Collections.addAll(tierTalents, ENCOURAGING_MEAL, ARTISANS_INTUITION, TESTED_STAMINA, ARMORED);
+				Collections.addAll(tierTalents, ENCOURAGING_MEAL, ARTISANS_INTUITION, TESTED_STAMINA, ARMORED_TROLL);
 				break;
 		}
 		for (Talent talent : tierTalents){
@@ -769,16 +902,16 @@ public enum Talent {
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, RESTORED_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
 				break;
 			case HERETIC:
-				Collections.addAll(tierTalents, ASCETIC, TRANSFER_HARM, ENHANCED_CURSE, CHAOS_ADEPT, WRAITH_DECEPTION);
+				Collections.addAll(tierTalents, ASCETIC, SUBLIMATION, CHAOS_ADEPT, OVERWHELM, RUNE_OF_CURSE);
 				break;
 			case ALCHEMIST:
-				Collections.addAll(tierTalents, FRESH_MEAL, RELOADING_UPGRADE, ELIXIR_FORMULA, GRENADIER, GASEOUS_WARFARE);
+				Collections.addAll(tierTalents, FRESH_MEAL, RELOADING_UPGRADE, ELIXIR_FORMULA, REBREATHER, GASEOUS_WARFARE);
 				break;
 			case ELEMENTALIST:
 				Collections.addAll(tierTalents, PENETRATING_MEAL, HYDROMANCER, ICEMAIL, CHAIN_LIGHTNING, WILDFIRE);
 				break;
 			case TROLL:
-				Collections.addAll(tierTalents, CLEANSING_MEAL, REGENERATION, INDUSTRIOUS_HANDS, BOULDER_IS_COMING, SWIFTY_PROJECTILES);
+				Collections.addAll(tierTalents, CLEANSING_MEAL, REGENERATION, INDUSTRIOUS_HANDS, BOULDER_IS_COMING, MARKSTROLL);
 				break;
 		}
 		for (Talent talent : tierTalents){
@@ -799,6 +932,18 @@ public enum Talent {
 				break;
 			case HUNTRESS:
 				Collections.addAll(tierTalents, POINT_BLANK, SEER_SHOT);
+				break;
+			case HERETIC:
+				Collections.addAll(tierTalents, ENHANCED_CURSE, TRANSFER_HARM);
+				break;
+			case ALCHEMIST:
+				Collections.addAll(tierTalents, ADVANCED_PISTOL, PORTABLE_KIT);
+				break;
+			case ELEMENTALIST:
+				Collections.addAll(tierTalents, ELEMENTAL_MASTER, ELEMENT_OF_CHAOS);
+				break;
+			case TROLL:
+				Collections.addAll(tierTalents, UPGRADE_MASTERY, MINT_MASTER);
 				break;
 		}
 		for (Talent talent : tierTalents){
@@ -848,6 +993,30 @@ public enum Talent {
 				break;
 			case WARDEN:
 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
+				break;
+			case SUMMONER:
+				Collections.addAll(tierTalents, FIEND_WARP, PACT_OF_KNOT, CURSED_CLAW);
+				break;
+			case BLOODKNIGHT:
+				Collections.addAll(tierTalents, PREDATOR, RUSH_OF_BLOOD, SERUM);
+				break;
+			case TRAILBLAZER:
+				Collections.addAll(tierTalents, STEADY_AIM, INFUSED_GUNSMITH, DOUBLE_TAB);
+				break;
+			case INNOVATOR:
+				Collections.addAll(tierTalents, DEWCHEMY, ARCANE_ENGINEER, CATALYST_MK2);
+				break;
+			case BINDER:
+				Collections.addAll(tierTalents, ARDENT_BLADE, WALKING_GLACIER, MIGHTY_THUNDER);
+				break;
+			case SPELLWEAVER:
+				Collections.addAll(tierTalents, DEVASTATOR, TRAVELER, CLAIRVOYANT);
+				break;
+			case WARSMITH:
+				Collections.addAll(tierTalents, ARCANESMITH, CRUCIBLE, WANDTROLL);
+				break;
+			case GEOMANCER:
+				Collections.addAll(tierTalents, HARMONY, AVALANCHE, LANDSLIDER);
 				break;
 		}
 		for (Talent talent : tierTalents){

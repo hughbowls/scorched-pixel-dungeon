@@ -24,12 +24,13 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
@@ -51,19 +52,9 @@ public class Frost extends FlavourBuff {
 	@Override
 	public boolean attachTo( Char target ) {
 		Buff.detach( target, Burning.class );
-		if (target == Dungeon.hero &&
-				((Hero)target).belongings.armor instanceof ElementalArmor.ElementalArmorIce) {
-			return false;
-		}
-
-		if (target == Dungeon.hero && target.isAlive()
-				&& ((Hero)target).belongings.armor instanceof ElementalArmor.ElementalArmorFire) {
-			GLog.w(Messages.get(ElementalArmor.class, "cold"));
-			target.damage((int)(target.HT*0.05f), this);
-		}
 
 		if (super.attachTo( target )) {
-			
+
 			target.paralysed++;
 			Buff.detach( target, Chill.class );
 
@@ -117,6 +108,19 @@ public class Frost extends FlavourBuff {
 			target.paralysed--;
 		if (Dungeon.level.water[target.pos])
 			Buff.prolong(target, Chill.class, Chill.DURATION/2f);
+
+		ElementalSpell.IceFocus focus = target.buff(ElementalSpell.IceFocus.class);
+		if (target.isAlive() && target == Dungeon.hero && focus != null
+			&& Dungeon.hero.pointsInTalent(Talent.WALKING_GLACIER) >= 2){
+
+			for (Buff b : target.buffs()){
+				if (b.type == Buff.buffType.NEGATIVE
+						&& !(b instanceof Chill)
+						&& !(b instanceof Hunger)){
+					b.detach();
+				}
+			}
+		}
 	}
 	
 	@Override

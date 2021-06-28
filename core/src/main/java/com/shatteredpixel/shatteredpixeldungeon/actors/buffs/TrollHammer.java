@@ -95,6 +95,10 @@ public class TrollHammer extends Buff {
 		left = 3;
 	}
 
+	public void spend(int num){
+		boost = Math.min(boost--, 0);
+	}
+
 	public int minBoost(KindOfWeapon wep){
 		if (boost <= 0)  return wep.min(wep.buffedLvl());
 		if (boost >= 10) return wep.max(wep.buffedLvl());
@@ -111,7 +115,7 @@ public class TrollHammer extends Buff {
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		bundle.put( BOOST, boost);
+		bundle.put( BOOST, boost );
 		bundle.put( LEFT, left );
 	}
 

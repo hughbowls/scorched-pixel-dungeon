@@ -51,14 +51,11 @@ public enum HeroSubClass {
 	TRAILBLAZER,
 	INNOVATOR,
 
+	BINDER,
 	SPELLWEAVER,
-	TEMPEST,
 
 	WARSMITH,
 	GEOMANCER;
-
-	SNIPER,
-	WARDEN;
 	
 	public String title() {
 		return Messages.get(this, name());
@@ -113,6 +110,28 @@ public enum HeroSubClass {
 				return new Image(Assets.Interfaces.BUFFS_LARGE, 176, 16, 16, 16);
 			case WARDEN:
 				return new Image(Assets.Interfaces.BUFFS_LARGE, 208, 0, 16, 16);
+
+			case SUMMONER:
+				return new Image(Assets.Interfaces.TALENT_ICONS, 432, 64, 16, 16);
+			case BLOODKNIGHT:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 160, 16, 16, 16);
+
+			case TRAILBLAZER:
+				im = new Image(Assets.Interfaces.BUFFS_LARGE, 48, 48, 16, 16);
+				im.hardlight(0x00C7C7);
+				return im;
+			case INNOVATOR:
+				return new Image(Assets.Interfaces.TALENT_ICONS, 432, 80, 16, 16);
+
+			case SPELLWEAVER:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 48, 96, 16, 16);
+			case BINDER:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 64, 96, 16, 16);
+
+			case WARSMITH:
+				return new Image(Assets.Interfaces.TALENT_ICONS, 432, 112, 16, 16);
+			case GEOMANCER:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 112, 96, 16, 16);
 		}
 	}
 

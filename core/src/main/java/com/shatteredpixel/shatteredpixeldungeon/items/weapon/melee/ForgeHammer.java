@@ -34,7 +34,7 @@ public class ForgeHammer extends MeleeWeapon {
 		tier = 1;
 		bones = false;
 
-		ACC = 1.32f; //32% boost to accuracy
+		ACC = 2f; //100% boost to accuracy; to against snakes
 	}
 
 	@Override

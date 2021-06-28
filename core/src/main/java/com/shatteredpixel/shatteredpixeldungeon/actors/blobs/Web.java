@@ -23,8 +23,10 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WebParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -66,7 +68,13 @@ public class Web extends Blob {
 
 	//affects characters as they step on it. See Level.OccupyCell and Level.PressCell
 	public static void affectChar( Char ch ){
-		Buff.prolong( ch, Roots.class, Roots.DURATION );
+		if (ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REBREATHER)
+				&& Dungeon.hero.buff(Talent.RebreatherCooldown.class) == null){
+			Buff.affect(ch, BlobImmunity.class,
+					1+(2*Dungeon.hero.pointsInTalent(Talent.REBREATHER)));
+			Buff.affect(ch, Talent.RebreatherCooldown.class, 20f);
+		} else
+			Buff.prolong( ch, Roots.class, Roots.DURATION );
 	}
 	
 	@Override

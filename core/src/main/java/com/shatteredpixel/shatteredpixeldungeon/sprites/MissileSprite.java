@@ -22,7 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.SiegeMachine;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
@@ -99,7 +102,9 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 		
 		ANGULAR_SPEEDS.put(SpiritBow.SpiritArrow.class,       0);
 		ANGULAR_SPEEDS.put(ScorpioSprite.ScorpioShot.class,   0);
+		ANGULAR_SPEEDS.put(Metamorphosis.CripplingStingShot.class,   0);
 		ANGULAR_SPEEDS.put(Pistol.PistolShot.class,   0);
+		ANGULAR_SPEEDS.put(SiegeMachine.SiegeSprite.SiegeShot.class,   0);
 
 		//720 is default
 		
@@ -152,11 +157,12 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 		
 		float speed = SPEED;
 		if ((item instanceof Dart && Dungeon.hero.belongings.weapon instanceof Crossbow)
-			|| item instanceof Pistol.PistolShot){
+			|| item instanceof Pistol.PistolShot || item instanceof SiegeMachine.SiegeSprite.SiegeShot){
 			speed *= 3f;
 			
 		} else if (item instanceof SpiritBow.SpiritArrow
 				|| item instanceof ScorpioSprite.ScorpioShot
+				|| item instanceof Metamorphosis.CripplingStingShot
 				|| item instanceof TenguSprite.TenguShuriken){
 			speed *= 1.5f;
 		}

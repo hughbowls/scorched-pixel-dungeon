@@ -37,6 +37,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -55,6 +57,15 @@ public class PotionOfHealing extends Potion {
 		cure( hero );
 		heal( hero );
 		Talent.onHealingPotionUsed( hero );
+
+		if (hero.hasTalent(Talent.PACT_OF_KNOT)) {
+			for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+				if (m != null && m instanceof HereticSummon) {
+					cure( m );
+					heal( m );
+				}
+			}
+		}
 	}
 
 	public static void heal( Char ch ){

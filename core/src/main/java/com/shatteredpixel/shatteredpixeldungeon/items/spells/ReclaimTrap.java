@@ -83,6 +83,12 @@ public class ReclaimTrap extends TargetedSpell {
 			
 		}
 	}
+
+	//Scorched
+	public void setStoredTrap(int pos) {
+		Trap t = Dungeon.level.traps.get(pos);
+		storedTrap = t.getClass();
+	}
 	
 	@Override
 	public String desc() {

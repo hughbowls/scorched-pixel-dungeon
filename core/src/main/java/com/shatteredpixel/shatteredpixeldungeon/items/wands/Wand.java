@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -119,21 +120,18 @@ public abstract class Wand extends Item {
 
 		else if (action.equals(AC_HERETIC_CURSE)) {
 
-			if (!isIdentified()) {
-				GLog.w(Messages.get(this, "heretic_fail_curse"));
-			} else {
-				cursed = true;
+			cursed = true;
+			if (!cursedKnown) cursedKnown = true;
 
-				GLog.p( Messages.get(this, "heretic_wand_curse", this.name()));
-				hero.spend(1f);
-				hero.busy();
+			GLog.p( Messages.get(this, "heretic_wand_curse", this.name()));
+			hero.spend(1f);
+			hero.busy();
 
-				hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-				Sample.INSTANCE.play( Assets.Sounds.CURSED );
-				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+			hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+			Sample.INSTANCE.play( Assets.Sounds.CURSED );
+			Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 
-				updateQuickslot();
-			}
+			updateQuickslot();
 		}
 	}
 
@@ -342,6 +340,15 @@ public abstract class Wand extends Item {
 				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
 			}
 
+			if (cursed && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
+				lvl += Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
+			}
+
+			TrollHammer hammer = charger.target.buff(TrollHammer.class);
+			if (hammer != null && Dungeon.hero.hasTalent(Talent.WANDTROLL)){
+				lvl += Dungeon.hero.pointsInTalent(Talent.WANDTROLL);
+			}
+
 			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && buff.level() > lvl){
 				return buff.level();
@@ -402,6 +409,11 @@ public abstract class Wand extends Item {
 		WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
 		if (buff != null && buff.level() > super.buffedLvl()){
 			buff.detach();
+		}
+
+		TrollHammer hammer = curUser.buff(TrollHammer.class);
+		if (hammer != null && Dungeon.hero.hasTalent(Talent.WANDTROLL) && hammer.getBoost() >= 1){
+			hammer.spend(1);
 		}
 
 		//if the wand is owned by the hero, but not in their inventory, it must be in the staff

@@ -29,6 +29,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
@@ -43,6 +46,14 @@ public class PotionOfCleansing extends ExoticPotion {
 		identify();
 		
 		cleanse( hero );
+
+		if (hero.hasTalent(Talent.PACT_OF_KNOT)) {
+			for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+				if (m != null && m instanceof HereticSummon) {
+					cleanse( m );
+				}
+			}
+		}
 	}
 	
 	@Override

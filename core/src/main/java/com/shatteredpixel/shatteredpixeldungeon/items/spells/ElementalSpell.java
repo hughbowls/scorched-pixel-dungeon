@@ -22,8 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
@@ -35,36 +35,42 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GarmentChange;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GarmentCooldown;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SpellWeave;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.elementalist.Resonance;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EnergyParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.RainbowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.ConeAOE;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -113,10 +119,7 @@ public class ElementalSpell extends TargetedSpell {
 	public int value() { return 0; }
 
 	@Override
-	public int level() { return Statistics.bossSlained; }
-
-	@Override
-	public boolean isUpgradable() { return false; }
+	public boolean isUpgradable() { return true; }
 
 	@Override
 	public boolean isIdentified() { return true; }
@@ -131,26 +134,35 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		private float left;
-		private static final String LEFT = "left";
+		private int ardent;
+		private static final String LEFT 	= "left";
+		private static final String ARDENT  = "ardent";
 
 		@Override
 		public void storeInBundle( Bundle bundle ) {
 			super.storeInBundle( bundle );
 			bundle.put( LEFT, left );
+			bundle.put( ARDENT, ardent );
 		}
 
 		@Override
 		public void restoreFromBundle( Bundle bundle ) {
 			super.restoreFromBundle(bundle);
 			left = bundle.getFloat( LEFT );
+			ardent = bundle.getInt( ARDENT );
 		}
 
 		public void set( Char ch ) {
 			set( ch, DURATION );
 		}
 		public void set( Char ch, float duration ) {
-			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS);
+			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS)
+							+ (curUser.subClass == HeroSubClass.BINDER ? 10 : 0);
 		}
+		public void ardent(int num) {
+			ardent += num;
+		}
+		public int getArdent() { return ardent; }
 
 		@Override
 		public boolean act() {
@@ -161,6 +173,7 @@ public class ElementalSpell extends TargetedSpell {
 			spend( TICK );
 			left -= TICK;
 			if (left <= 0) {
+				ardent = 0;
 				detach();
 				return true;
 			}
@@ -204,7 +217,7 @@ public class ElementalSpell extends TargetedSpell {
 						} else Dungeon.level.setCellToWater(false, target.pos);
 					}
 				} else {
-					if (Dungeon.level.map[target.pos] == Terrain.WATER){
+					if (Dungeon.level != null && Dungeon.level.map[target.pos] == Terrain.WATER){
 						Level.set( target.pos, Terrain.EMPTY );
 						GameScene.updateMap( target.pos );
 						CellEmitter.get( target.pos ).burst( Speck.factory( Speck.STEAM ), 10 );
@@ -215,12 +228,34 @@ public class ElementalSpell extends TargetedSpell {
 				return false;
 		}
 
-		@Override public int icon() { return BuffIndicator.SC_FIRE; }
+		@Override public int icon() {
+			if (((Hero)target).subClass == HeroSubClass.BINDER)
+				return BuffIndicator.SC_FIRE_BIND;
+			return BuffIndicator.SC_FIRE;
+		}
+		@Override public float iconFadePercent() {
+			if (target instanceof Hero){
+				float max = DURATION
+						+ ((Hero) target).pointsInTalent(Talent.EXTENDED_FOCUS)
+						+ (((Hero) target).subClass == HeroSubClass.BINDER ? 10f : 0f);
+				return Math.max(0, (max-left)/max);
+			}
+			return 0;
+		}
 		@Override public String toString() {
 			return Messages.get(this, "name");
 		}
 		@Override public String desc() {
-			return Messages.get(this, "desc", left, ElementalSpellFire.min(), ElementalSpellFire.max() );
+			String desc = Messages.get(this, "desc", left, ElementalSpellFire.min(), ElementalSpellFire.max() );
+
+			if (((Hero)target).subClass == HeroSubClass.BINDER){
+				ElementalSpell fire = curUser.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
+				int lvl = fire.buffedLvl();
+				int tier = Math.max(1, Math.round(fire.buffedLvl() * 0.5f));
+
+				desc += "\n\n" + Messages.get(this, "desc_bind",tier+lvl, 5*(tier+1)+lvl*(tier+1));
+			}
+			return desc;
 		}
 
 	};
@@ -252,7 +287,8 @@ public class ElementalSpell extends TargetedSpell {
 			set( ch, DURATION );
 		}
 		public void set( Char ch, float duration ) {
-			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS);
+			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS)
+					+ (curUser.subClass == HeroSubClass.BINDER ? 10 : 0);
 		}
 
 		@Override
@@ -314,15 +350,66 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		@Override public int icon() {
+			if (((Hero)target).subClass == HeroSubClass.BINDER)
+				return BuffIndicator.SC_ICE_BIND;
 			return BuffIndicator.SC_ICE;
+		}
+		@Override public float iconFadePercent() {
+			if (target instanceof Hero){
+				float max = DURATION
+						+ ((Hero) target).pointsInTalent(Talent.EXTENDED_FOCUS)
+						+ (((Hero) target).subClass == HeroSubClass.BINDER ? 10f : 0f);
+				return Math.max(0, (max-left)/max);
+			}
+			return 0;
 		}
 		@Override public String toString() {
 			return Messages.get(this, "name");
 		}
 		@Override public String desc() {
-			return Messages.get(this, "desc", left, ElementalSpellIce.min(), ElementalSpellIce.max());
+			String desc = Messages.get(this, "desc", left, ElementalSpellIce.min(), ElementalSpellIce.max() );
+
+			if (((Hero)target).subClass == HeroSubClass.BINDER){
+				desc += "\n\n" + Messages.get(this, "desc_bind", DRMin(), DRMax());
+			}
+			return desc;
 		}
 
+		public int DRMax(){
+			ElementalSpell ice = curUser.belongings.getItem(ElementalSpell.ElementalSpellIce.class);
+			int lvl = ice.buffedLvl();
+			int tier = Math.max(1, Math.round(ice.buffedLvl() * 0.5f));
+
+			if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
+				return 1 + tier + lvl;
+			}
+
+			int max = tier * (2 + lvl);
+
+			if (lvl > max){
+				return ((lvl - max)+1)/2;
+			} else {
+				return max;
+			}
+		}
+
+		public int DRMin(){
+			if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
+				return 0;
+			}
+
+			int max = DRMax();
+
+			ElementalSpell ice = curUser.belongings.getItem(ElementalSpell.ElementalSpellIce.class);
+			int lvl = ice.buffedLvl();
+			int tier = Math.max(1, Math.round(ice.buffedLvl() * 0.5f));
+
+			if (lvl >= max){
+				return (lvl - max);
+			} else {
+				return lvl;
+			}
+		}
 	};
 
 	public static class ElecFocus extends Buff {
@@ -352,7 +439,9 @@ public class ElementalSpell extends TargetedSpell {
 			set( ch, DURATION );
 		}
 		public void set( Char ch, float duration ) {
-			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS);
+			Hero hero = Dungeon.hero;
+			left = duration + (float)hero.pointsInTalent(Talent.EXTENDED_FOCUS)
+					+ (hero.subClass == HeroSubClass.BINDER ? 10 : 0);
 		}
 
 		@Override
@@ -382,10 +471,33 @@ public class ElementalSpell extends TargetedSpell {
 			return true;
 		}
 
-		@Override public int icon() { return BuffIndicator.SC_ELEC; }
+		@Override public int icon() {
+			if (((Hero)target).subClass == HeroSubClass.BINDER)
+				return BuffIndicator.SC_ELEC_BIND;
+			return BuffIndicator.SC_ELEC;
+		}
+		@Override public float iconFadePercent() {
+			if (target instanceof Hero){
+				float max = DURATION
+						 	+ ((Hero) target).pointsInTalent(Talent.EXTENDED_FOCUS)
+							+ (((Hero) target).subClass == HeroSubClass.BINDER ? 10f : 0f);
+				return Math.max(0, (max-left)/max);
+			}
+			return 0;
+		}
 		@Override public String toString() { return Messages.get(this, "name"); }
 		@Override public String desc() {
-			return Messages.get(this, "desc", left, ElementalSpellElec.min(), ElementalSpellElec.max());
+			String desc = Messages.get(this, "desc", left, ElementalSpellElec.min(), ElementalSpellElec.max() );
+
+			if (((Hero)target).subClass == HeroSubClass.BINDER){
+				ElementalSpell elec = curUser.belongings.getItem(ElementalSpell.ElementalSpellElec.class);
+				int lvl = elec.buffedLvl();
+				int tier = Math.max(1, Math.round(elec.buffedLvl() * 0.5f));
+
+				desc += "\n\n" + Messages.get(this, "desc_bind",
+						2*tier+(tier == 1 ? lvl : 2*lvl), 5*tier+(tier == 1 ? 2*lvl : tier*lvl));
+			}
+			return desc;
 		}
 	};
 
@@ -424,7 +536,8 @@ public class ElementalSpell extends TargetedSpell {
 			set( ch, DURATION );
 		}
 		public void set( Char ch, float duration ) {
-			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS);
+			left = duration + (float)Dungeon.hero.pointsInTalent(Talent.EXTENDED_FOCUS)
+					+ (curUser.subClass == HeroSubClass.BINDER ? 10 : 0);
 		}
 		public void check( ElementalSpell element ) {
 			left += 2f;
@@ -462,6 +575,15 @@ public class ElementalSpell extends TargetedSpell {
 			if (state == FocusType.ELEC) return BuffIndicator.SC_ELEC;
 			else return BuffIndicator.SC_CHAOS;
 		}
+		@Override public float iconFadePercent() {
+			if (target instanceof Hero){
+				float max = DURATION
+						+ ((Hero) target).pointsInTalent(Talent.EXTENDED_FOCUS)
+						+ (((Hero) target).subClass == HeroSubClass.BINDER ? 10f : 0f);
+				return Math.max(0, (max-left)/max);
+			}
+			return 0;
+		}
 		@Override public String toString() { return Messages.get(this, "name"); }
 		@Override public String desc() {
 			String desc = Messages.get(this, "desc", left);
@@ -488,8 +610,33 @@ public class ElementalSpell extends TargetedSpell {
 			image = ItemSpriteSheet.ELEMENT_FIRE;
 		}
 
-		public static int min() { return (2 + Dungeon.hero.lvl/5) * (int)((1+Statistics.bossSlained)*1.2f); }
-		public static int max() { return (4 + (int)(Dungeon.hero.lvl/2.5f)) * (int)((1+Statistics.bossSlained)*1.2f); }
+		@Override
+		public int buffedLvl(){
+			Hero hero = Dungeon.hero;
+			FireFocus focus = hero.buff(FireFocus.class);
+			if (focus != null && focus.getArdent() > 1
+					&& hero.pointsInTalent(Talent.ARDENT_BLADE) == 3){
+				return super.buffedLvl() + focus.getArdent();
+			}
+
+			return super.buffedLvl();
+		}
+
+		public static int min() {
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellFire.class);
+			int bonus = 1+(hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
+			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
+			return 2+(int)(1.5f*item.buffedLvl())+(2*bonus);
+		}
+		public static int max() {
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellFire.class);
+			int bonus = 1 + (hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
+			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
+			return 4+(int)(2.5f*item.buffedLvl())+(2+(2*bonus));
+		}
+
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
 		@Override
@@ -503,9 +650,16 @@ public class ElementalSpell extends TargetedSpell {
 				Buff.affect(hero, FireFocus.class).set(hero, FireFocus.DURATION);
 				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				curUser.busy();
-				Invisibility.dispel();
+
+				SpellWeave weave = hero.buff(SpellWeave.class);
+				if (weave != null && weave.checkBendTime()){
+					Invisibility.dispel_bendTime();
+				} else {
+					Invisibility.dispel();
+				}
+
 				updateQuickslot();
-				curUser.spendAndNext(1f);
+				curUser.spendAndNext(Actor.TICK);
 			}
 		}
 
@@ -530,37 +684,28 @@ public class ElementalSpell extends TargetedSpell {
 			}
 
 			if (target != null) {
-					if (target == curUser && curUser.subClass == HeroSubClass.TEMPEST
-							&& !(curUser.belongings.armor instanceof ElementalArmor.ElementalArmorFire)
-							&& curUser.buff(GarmentCooldown.class) == null
-							&& curUser.buff(GarmentChange.class) == null) {
-						Buff.affect(curUser, GarmentChange.class, 30f);
-						ElementalArmor.doChange(this, curUser.belongings.armor);
-						GLog.p(Messages.get(ElementalArmor.class, "change_msg_fire"));
+					Buff.affect(target, Burning.class).reignite(target);
+					target.damage(damageRoll(), this);
 
-						target.sprite.emitter().burst(FlameParticle.FACTORY, 5);
-
-						for (int i : PathFinder.NEIGHBOURS9) {
-							Freezing freezing = (Freezing) Dungeon.level.blobs.get(Freezing.class);
-							if (freezing != null) {
-								freezing.clear(cell + i);
-							}
-							Electricity electricity = (Electricity) Dungeon.level.blobs.get(Electricity.class);
-							if (electricity != null) {
-								electricity.clear(cell + i);
-							}
-						}
-
-					} else {
-						Buff.affect(target, Burning.class).reignite(target);
-						target.damage(damageRoll(), this);
-						if (!target.isAlive() && Dungeon.hero.hasTalent(Talent.WILDFIRE)
-								&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)) {
-							float extend = 3f + Dungeon.hero.pointsInTalent(Talent.WILDFIRE);
-							Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero, extend);
-						}
+					if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+						Buff.affect(curUser, SpellWeave.class).gainCount();
+						SpellWeave weave = hero.buff(SpellWeave.class);
+						weave.addCount(1);
 					}
-				} else GameScene.add(Blob.seed(cell, 2, Fire.class));
+
+					if (!target.isAlive() && Dungeon.hero.hasTalent(Talent.WILDFIRE)
+							&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)) {
+						float extend = 3f + Dungeon.hero.pointsInTalent(Talent.WILDFIRE);
+						Buff.affect(Dungeon.hero, ElementalSpell.FireFocus.class).set(Dungeon.hero, extend);
+					}
+
+			} else GameScene.add(Blob.seed(cell, 2, Fire.class));
+
+			Resonance.ResonaceTracker resonanceTracker = hero.buff(Resonance.ResonaceTracker.class);
+			if (resonanceTracker != null && resonanceTracker.count() > 0){
+				Resonance.castResonace(this, hero);
+				resonanceTracker.countDown(1);
+			}
 		}
 		@Override public String desc() {
 			return Messages.get(this, "desc", ElementalSpellFire.min(), ElementalSpellFire.max());
@@ -574,9 +719,19 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		public static int min() {
-			return (1 + Dungeon.hero.lvl/6) * (int)((1+Statistics.bossSlained)*1.1f);
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellIce.class);
+			int bonus = 1+(hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
+			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
+			return 1+(int)(0.5f*item.buffedLvl())+(2*bonus);
 		}
-		public static int max() { return (3 + (int)(Dungeon.hero.lvl/3f)) * (int)((1+Statistics.bossSlained)*1.1f); }
+		public static int max() {
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellIce.class);
+			int bonus = 1 + (hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
+			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
+			return 2+(int)(1.5f*item.buffedLvl())+(2+(2*bonus));
+		}
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
 		@Override
@@ -591,9 +746,16 @@ public class ElementalSpell extends TargetedSpell {
 				Buff.affect(hero, IceFocus.class).set(hero, IceFocus.DURATION);
 				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				curUser.busy();
-				Invisibility.dispel();
+
+				SpellWeave weave = hero.buff(SpellWeave.class);
+				if (weave != null && weave.checkBendTime()){
+					Invisibility.dispel_bendTime();
+				} else {
+					Invisibility.dispel();
+				}
+
 				updateQuickslot();
-				curUser.spendAndNext(1f);
+				curUser.spendAndNext(Actor.TICK);
 			}
 		}
 
@@ -630,36 +792,32 @@ public class ElementalSpell extends TargetedSpell {
 
 			Char target = Actor.findChar(cell);
 			if (target != null) {
-				if (target == curUser && curUser.subClass == HeroSubClass.TEMPEST
-						&& !(curUser.belongings.armor instanceof ElementalArmor.ElementalArmorIce)
-						&& curUser.buff(GarmentCooldown.class) == null
-						&& curUser.buff(GarmentChange.class) == null)
-				{
-					Buff.affect(curUser, GarmentChange.class, 30f);
-					ElementalArmor.doChange(this, curUser.belongings.armor);
-					GLog.p(Messages.get(ElementalArmor.class, "change_msg_ice"));
-
-					Splash.at(cell, 0xFF8EE3FF, 10);
-
-					for (int i : PathFinder.NEIGHBOURS9) {
-						if (fire != null) { fire.clear( cell+i ); }
-						Electricity electricity = (Electricity)Dungeon.level.blobs.get( Electricity.class );
-						if (electricity != null) { electricity.clear( cell+i ); }
-					}
-
-				} else if (target.buff(Frost.class) != null) {
+				if (target.buff(Frost.class) != null) {
 					Buff.affect(target, Frost.class, 2f);
 				} else {
 					Chill chill = target.buff(Chill.class);
 					if (target == hero && hero.hasTalent(Talent.ICEMAIL)) {
 						// do not damage herself
 					} else target.damage(damageRoll(), this);
+
+					if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+						Buff.affect(curUser, SpellWeave.class).gainCount();
+						SpellWeave weave = hero.buff(SpellWeave.class);
+						weave.addCount(1);
+					}
+
 					Buff.affect(target, Chill.class, 3f);
 
 					if (chill != null && chill.cooldown() >= 5f) {
 						Buff.affect(target, Frost.class, Frost.DURATION);
 					}
 				}
+			}
+
+			Resonance.ResonaceTracker resonanceTracker = hero.buff(Resonance.ResonaceTracker.class);
+			if (resonanceTracker != null && resonanceTracker.count() > 0){
+				Resonance.castResonace(this, hero);
+				resonanceTracker.countDown(1);
 			}
 		}
 
@@ -674,8 +832,20 @@ public class ElementalSpell extends TargetedSpell {
 			image = ItemSpriteSheet.ELEMENT_ELEC;
 		}
 
-		public static int min() { return (3 + Dungeon.hero.lvl/4) * (int)((1+Statistics.bossSlained)*1.333f); }
-		public static int max() { return (8 + Dungeon.hero.lvl/2) * (int)((1+Statistics.bossSlained)*1.333f); }
+		public static int min() {
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellElec.class);
+			int bonus = 1+(hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
+			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
+			return 3+(int)(1.5f*item.buffedLvl())+(2*bonus);
+		}
+		public static int max() {
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellElec.class);
+			int bonus = 1+(hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
+			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
+			return 8+(3*item.buffedLvl())+(2+(2*bonus));
+		}
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
 		@Override
@@ -690,9 +860,16 @@ public class ElementalSpell extends TargetedSpell {
 				Buff.affect(hero, ElecFocus.class).set(hero, ElecFocus.DURATION);
 				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				curUser.busy();
-				Invisibility.dispel();
+
+				SpellWeave weave = hero.buff(SpellWeave.class);
+				if (weave != null && weave.checkBendTime()){
+					Invisibility.dispel_bendTime();
+				} else {
+					Invisibility.dispel();
+				}
+
 				updateQuickslot();
-				curUser.spendAndNext(1f);
+				curUser.spendAndNext(Actor.TICK);
 			}
 		}
 
@@ -717,27 +894,8 @@ public class ElementalSpell extends TargetedSpell {
 					multipler += (multipler*0.1f)*affected.size();
 			}
 
-			Char t = Actor.findChar( bolt.collisionPos );
-			if (t == curUser && curUser.subClass == HeroSubClass.TEMPEST
-					&& !(curUser.belongings.armor instanceof ElementalArmor.ElementalArmorElec)
-					&& curUser.buff(GarmentCooldown.class) == null
-					&& curUser.buff(GarmentChange.class) == null)
-			{
-				Buff.affect(curUser, GarmentChange.class, 30f);
-				ElementalArmor.doChange(this, curUser.belongings.armor);
-				GLog.p(Messages.get(ElementalArmor.class, "change_msg_elec"));
-
-				t.sprite.centerEmitter().burst(EnergyParticle.BURST, 10);
-
-				for (int i : PathFinder.NEIGHBOURS9) {
-					Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
-					if (fire != null) { fire.clear( curUser.pos+i ); }
-					Freezing freezing = (Freezing)Dungeon.level.blobs.get( Freezing.class );
-					if (freezing != null) { freezing.clear( curUser.pos+i ); }
-				}
-			}
-
 			for (Char ch : affected){
+
 				if (ch == hero) Camera.main.shake(2, 0.3f);
 				ch.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);
 				ch.sprite.flash();
@@ -746,11 +904,19 @@ public class ElementalSpell extends TargetedSpell {
 						&& ch.pos != bolt.collisionPos) {
 					continue;
 				}
+				ch.damage((int) (damageRoll() * multipler), this);
 
-				if (ch == hero && curUser.belongings.armor
-						instanceof ElementalArmor.ElementalArmorElec) {
-					// immune to damage
-				} else ch.damage((int) (damageRoll() * multipler), this);
+				if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+					Buff.affect(curUser, SpellWeave.class).gainCount();
+					SpellWeave weave = hero.buff(SpellWeave.class);
+					weave.addCount(1);
+				}
+
+				Resonance.ResonaceTracker resonanceTracker = hero.buff(Resonance.ResonaceTracker.class);
+				if (resonanceTracker != null && resonanceTracker.count() > 0){
+					Resonance.castResonace(this, hero);
+					resonanceTracker.countDown(1);
+				}
 			}
 		}
 
@@ -808,6 +974,37 @@ public class ElementalSpell extends TargetedSpell {
 		}
 
 		@Override
+		public boolean isUpgradable() { return false; }
+
+		@Override
+		public int buffedLvl() {
+			Hero hero = Dungeon.hero;
+			Item item = hero.belongings.getItem(ElementalSpellChaos.class);
+			ChaosFocus focus = hero.buff(ChaosFocus.class);
+			if (hero.pointsInTalent(Talent.ELEMENT_OF_CHAOS) == 2 && focus != null) {
+				switch (focus.state) {
+					case NORMAL:
+					default:
+						return 0;
+					case FIRE:
+						return hero.belongings.getItem(ElementalSpellFire.class).buffedLvl();
+					case ICE:
+						return hero.belongings.getItem(ElementalSpellIce.class).buffedLvl();
+					case ELEC:
+						return hero.belongings.getItem(ElementalSpellElec.class).buffedLvl();
+				}
+			}
+			if (hero.pointsInTalent(Talent.ELEMENT_OF_CHAOS) == 3) {
+				int firelvl = hero.belongings.getItem(ElementalSpellFire.class).buffedLvl();
+				int icelvl  = hero.belongings.getItem(ElementalSpellIce.class).buffedLvl();
+				int eleclvl = hero.belongings.getItem(ElementalSpellElec.class).buffedLvl();
+				return Math.max(Math.max(Math.max(firelvl, icelvl), Math.max(icelvl, eleclvl)),
+								Math.max(Math.max(firelvl, icelvl), Math.max(firelvl, eleclvl)));
+			}
+			return 0;
+		}
+
+		@Override
 		protected void onCast(Hero hero) {
 			if (hero.buff(ChaosFocus.class) != null) {
 				super.onCast(hero);
@@ -818,9 +1015,16 @@ public class ElementalSpell extends TargetedSpell {
 				Buff.affect(hero, ChaosFocus.class).set(hero, ChaosFocus.DURATION);
 				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				curUser.busy();
-				Invisibility.dispel();
+
+				SpellWeave weave = hero.buff(SpellWeave.class);
+				if (weave != null && weave.checkBendTime()){
+					Invisibility.dispel_bendTime();
+				} else {
+					Invisibility.dispel();
+				}
+
 				updateQuickslot();
-				curUser.spendAndNext(1f);
+				curUser.spendAndNext(Actor.TICK);
 			}
 		}
 
@@ -904,13 +1108,18 @@ public class ElementalSpell extends TargetedSpell {
 				int cell = bolt.collisionPos;
 				Char target = Actor.findChar(cell);
 				if (focus.state == ChaosFocus.FocusType.FIRE) {
-					Buff.detach(hero, ChaosFocus.class);
-
 					Splash.at(cell, 0xFFFFBB33, 10);
 
 					if (target != null) {
 						Buff.affect(target, Burning.class).reignite(target);
 						target.damage(ElementalSpellFire.damageRoll(), this);
+
+						if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+							Buff.affect(curUser, SpellWeave.class).gainCount();
+							SpellWeave weave = hero.buff(SpellWeave.class);
+							weave.addCount(1);
+						}
+
 						if (!target.isAlive() && Dungeon.hero.hasTalent(Talent.WILDFIRE)
 								&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.WILDFIRE)) {
 							float extend = 3f + Dungeon.hero.pointsInTalent(Talent.WILDFIRE);
@@ -919,8 +1128,6 @@ public class ElementalSpell extends TargetedSpell {
 					} else GameScene.add(Blob.seed(cell, 2, Fire.class));
 				}
 				else if (focus.state == ChaosFocus.FocusType.ICE) {
-					Buff.detach(hero, ChaosFocus.class);
-
 					Splash.at(cell, 0xFF8EE3FF, 10);
 					Heap heap = Dungeon.level.heaps.get(bolt.collisionPos);
 					if (heap != null) {
@@ -935,6 +1142,7 @@ public class ElementalSpell extends TargetedSpell {
 					}
 
 					if (target != null) {
+
 						if (target.buff(Frost.class) != null) {
 							Buff.affect(target, Frost.class, 2f);
 						} else {
@@ -944,6 +1152,12 @@ public class ElementalSpell extends TargetedSpell {
 							} else target.damage(ElementalSpellIce.damageRoll(), this);
 							Buff.affect(target, Chill.class, 3f);
 
+							if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+								Buff.affect(curUser, SpellWeave.class).gainCount();
+								SpellWeave weave = hero.buff(SpellWeave.class);
+								weave.addCount(1);
+							}
+
 							if (chill != null && chill.cooldown() >= 5f) {
 								Buff.affect(target, Frost.class, Frost.DURATION);
 							}
@@ -951,8 +1165,6 @@ public class ElementalSpell extends TargetedSpell {
 					}
 				}
 				else if (focus.state == ChaosFocus.FocusType.ELEC) {
-
-					Buff.detach(curUser, ChaosFocus.class);
 					//lightning deals less damage per-target, the more targets that are hit.
 					float multipler = 0.4f + (0.6f/affected.size());
 					//if the main target is in water, all affected take full damage
@@ -972,12 +1184,20 @@ public class ElementalSpell extends TargetedSpell {
 								&& ch.pos != bolt.collisionPos) {
 							continue;
 						}
+						ch.damage((int) (ElementalSpellElec.damageRoll() * multipler), this);
 
-						if (ch == hero && curUser.belongings.armor
-								instanceof ElementalArmor.ElementalArmorElec) {
-							// immune to damage
-						} else ch.damage((int) (ElementalSpellElec.damageRoll() * multipler), this);
+						if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+							Buff.affect(curUser, SpellWeave.class).gainCount();
+							SpellWeave weave = hero.buff(SpellWeave.class);
+							weave.addCount(1);
+						}
 					}
+					Resonance.ResonaceTracker resonanceTracker = hero.buff(Resonance.ResonaceTracker.class);
+					if (resonanceTracker != null && resonanceTracker.count() > 0){
+						Resonance.castResonace(this, hero);
+						resonanceTracker.countDown(1);
+					}
+					Buff.detach(hero, ChaosFocus.class);
 				}
 
 				else {
@@ -1004,7 +1224,14 @@ public class ElementalSpell extends TargetedSpell {
 						electricity.clear(cell);
 						Char elec = Actor.findChar(cell);
 						if (elec != null) {
+
 							elec.damage(Random.NormalIntRange((int) (vol * 1.5f), vol * 2), Electricity.class);
+							if (curUser.subClass == HeroSubClass.SPELLWEAVER){
+								Buff.affect(curUser, SpellWeave.class).gainCount();
+								SpellWeave weave = hero.buff(SpellWeave.class);
+								weave.addCount(1);
+							}
+
 							CharSprite s = elec.sprite;
 							if (s != null && s.parent != null) {
 								ArrayList<Lightning.Arc> arcs = new ArrayList<>();
@@ -1058,4 +1285,172 @@ public class ElementalSpell extends TargetedSpell {
 			}
 		}
 	}
+
+	// binder
+	public static class BinderFire extends MeleeWeapon {
+
+		{
+			image = ItemSpriteSheet.WEAPON_HOLDER;
+			hitSound = Assets.Sounds.BURNING;
+			hitSoundPitch = 1.2f;
+
+			tier = 1;
+		}
+
+		@Override
+		public int min(int lvl) {
+			Hero hero = Dungeon.hero;
+			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
+			lvl = fire.buffedLvl();
+			int tier = Math.max(1, Math.round(fire.buffedLvl() * 0.5f));
+
+			return  tier +  //base
+					lvl;    //level scaling
+		}
+
+		@Override
+		public int max(int lvl) {
+			Hero hero = Dungeon.hero;
+			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
+			lvl = fire.buffedLvl();
+			int tier = Math.max(1, Math.round(fire.buffedLvl() * 0.5f));
+
+			return  5*(tier+1) +    //base
+					lvl*(tier+1);   //level scaling
+		}
+
+		@Override
+		public int STRReq(int lvl){
+			Hero hero = Dungeon.hero;
+			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
+			lvl = fire.buffedLvl();
+			int tier = Math.max(1, Math.round(fire.buffedLvl() * 0.5f));
+
+			return STRReq(tier, lvl) - 2; //2 less str than normal for their tier
+		}
+
+		@Override
+		public int proc( Char attacker, Char defender, int damage ) {
+			Hero hero = Dungeon.hero;
+			Buff.affect(defender, Burning.class).reignite(defender);
+			if (hero.pointsInTalent(Talent.ARDENT_BLADE) >= 2
+					&& defender.buff(Burning.class) != null){
+				defender.sprite.emitter().burst( ElmoParticle.FACTORY, 6 );
+				damage *= 2;
+
+				FireFocus focus = hero.buff(FireFocus.class);
+				if (hero.pointsInTalent(Talent.ARDENT_BLADE) == 3 && focus != null){
+					focus.ardent(1);
+				}
+			}
+			return super.proc( attacker, defender, damage );
+		}
+	}
+
+	//Armor with IceFocus: see Hero.defenseProc()
+
+	public static class BinderElec extends MissileWeapon {
+		{
+			image = ItemSpriteSheet.BINDER_ELEC;
+			hitSound = Assets.Sounds.LIGHTNING;
+			hitSoundPitch = 1.2f;
+
+			tier = 1;
+			baseUses = 1;
+		}
+
+		@Override
+		public int min(int lvl) {
+			Hero hero = Dungeon.hero;
+			ElementalSpell elec = hero.belongings.getItem(ElementalSpell.ElementalSpellElec.class);
+			lvl = elec.buffedLvl();
+			int tier = Math.max(1, Math.round(elec.buffedLvl() * 0.5f));
+
+			return  2 * tier +                      //base
+					(tier == 1 ? lvl : 2*lvl);      //level scaling
+		}
+
+		@Override
+		public int max(int lvl) {
+			Hero hero = Dungeon.hero;
+			ElementalSpell elec = hero.belongings.getItem(ElementalSpell.ElementalSpellElec.class);
+			lvl = elec.buffedLvl();
+			int tier = Math.max(1, Math.round(elec.buffedLvl() * 0.5f));
+
+			return  5 * tier +                      //base
+					(tier == 1 ? 2*lvl : tier*lvl); //level scaling
+		}
+
+		@Override
+		public int STRReq(int lvl){
+			Hero hero = Dungeon.hero;
+			ElementalSpell elec = hero.belongings.getItem(ElementalSpell.ElementalSpellElec.class);
+			lvl = elec.buffedLvl();
+			int tier = Math.max(1, Math.round(elec.buffedLvl() * 0.5f));
+
+			return STRReq(tier, lvl) - 3; //3 less str than normal for their tier
+		}
+
+		@Override
+		public int proc( Char attacker, Char defender, int damage ) {
+			Hero hero = Dungeon.hero;
+			if (defender != null && hero.hasTalent(Talent.MIGHTY_THUNDER)) {
+				int cell = defender.pos;
+
+				final Ballistica bolt = new Ballistica(curUser.pos, cell,
+						Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID);
+
+				int maxDist = 6;
+				int dist = Math.min(bolt.dist, maxDist);
+
+				final ConeAOE cone = new ConeAOE(bolt, 6, 60,
+						Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID);
+
+				//cast to cells at the tip, rather than all cells, better performance.
+				for (Ballistica ray : cone.outerRays){
+					((MagicMissile)curUser.sprite.parent.recycle( MagicMissile.class )).reset(
+							MagicMissile.SPARK_CONE,
+							curUser.sprite,
+							ray.path.get(ray.dist),
+							null
+					);
+				}
+
+				MagicMissile.boltFromChar(curUser.sprite.parent,
+				MagicMissile.SPARK_CONE,
+				curUser.sprite,
+				bolt.path.get(dist / 2),
+				new Callback() {
+					@Override
+					public void call() {
+						for (int cell : cone.cells){
+							if (cell == bolt.sourcePos){
+								continue;
+							}
+
+							int count = 0;
+							Char ch = Actor.findChar( cell );
+							if (ch != null) {
+								int dmg = Random.NormalIntRange(min(), max());
+								dmg *= hero.pointsInTalent(Talent.MIGHTY_THUNDER) >= 2 ? 0.4f : 0.6f;
+
+								if (ch != defender) {
+									ch.damage((int)dmg, BinderElec.class);
+									count++;
+								}
+							}
+							if (count >= 2 && curUser.pointsInTalent(Talent.MIGHTY_THUNDER) == 3){
+								Buff.affect(defender, Paralysis.class, 2f);
+								if (ch != null && ch != defender)
+									Buff.affect(ch, Paralysis.class, 2f);
+							}
+						}
+					}
+				});
+			}
+
+			return super.proc( attacker, defender, damage );
+		}
+	}
+
 }

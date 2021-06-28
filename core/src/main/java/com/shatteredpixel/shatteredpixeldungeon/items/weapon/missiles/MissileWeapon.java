@@ -30,11 +30,15 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.MountNLoad;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -162,6 +166,19 @@ abstract public class MissileWeapon extends Weapon {
 			}
 		}
 
+		if (this instanceof Pistol.PistolShot
+				&& user.hasTalent(Talent.TRENCH_WARFARE)
+				&& user.buff(MountNLoad.MountNLoadTracker.class) != null){
+			if (!Dungeon.level.solid[dst]
+					&& Dungeon.level.distance(user.pos, dst)
+					<= 1+user.pointsInTalent(Talent.TRENCH_WARFARE)){
+				return dst;
+			}
+
+			else
+				return super.throwPos(user, dst);
+		}
+
 		if (projecting && !Dungeon.level.solid[dst] && Dungeon.level.distance(user.pos, dst) <= 4){
 			return dst;
 		} else {
@@ -213,7 +230,6 @@ abstract public class MissileWeapon extends Weapon {
 				}
 			}
 		}
-
 		return super.proc(attacker, defender, damage);
 	}
 
@@ -240,8 +256,10 @@ abstract public class MissileWeapon extends Weapon {
 	}
 	
 	protected void rangedHit( Char enemy, int cell ){
+
 		decrementDurability();
-		if (durability > 0){
+		if (durability > 0
+				&& !(this instanceof ElementalSpell.BinderElec)){
 			//attempt to stick the missile weapon to the enemy, just drop it if we can't.
 			if (sticky && enemy != null && enemy.isAlive() && enemy.buff(Corruption.class) == null){
 				PinCushion p = Buff.affect(enemy, PinCushion.class);

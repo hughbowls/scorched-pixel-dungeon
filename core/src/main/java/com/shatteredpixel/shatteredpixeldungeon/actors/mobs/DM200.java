@@ -26,13 +26,17 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DM200Sprite;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -136,6 +140,13 @@ public class DM200 extends Mob {
 				Buff.affect(this, TrollJump.class).setJump(2f);
 			if (enemy.buff(TrollJump.class) == null)
 				Buff.affect(enemy, TrollJump.class).setJump(2f);
+		}
+
+		if (Dungeon.hero.buff(MetamorphosisBuff.class) != null
+				&& Dungeon.hero.hasTalent(Talent.CRIPPLING_STING)
+				&& enemy.isAlive() && enemy == Dungeon.hero
+				&& Dungeon.level.distance(enemy.pos, pos) > 1) {
+			Metamorphosis.CripplingStingFire(pos);
 		}
 
 		GLog.w(Messages.get(this, "vent"));

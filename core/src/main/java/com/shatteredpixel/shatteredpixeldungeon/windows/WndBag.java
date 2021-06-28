@@ -39,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.WeaponRack;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
@@ -180,8 +179,7 @@ public class WndBag extends WndTabbed {
 			stuff.getItem( VelvetPouch.class ),
 			stuff.getItem( ScrollHolder.class ),
 			stuff.getItem( PotionBandolier.class ),
-			stuff.getItem( MagicalHolster.class ),
-			stuff.getItem( WeaponRack.class )};
+			stuff.getItem( MagicalHolster.class )};
 
 		for (Bag b : bags) {
 			if (b != null) {
@@ -336,8 +334,6 @@ public class WndBag extends WndTabbed {
 			return Icons.get( Icons.WAND_HOLSTER );
 		} else if (bag instanceof PotionBandolier) {
 			return Icons.get( Icons.POTION_BANDOLIER );
-		} else if (bag instanceof WeaponRack) {
-			return Icons.get( Icons.WEAPON_RACK );
 		} else {
 			return Icons.get( Icons.BACKPACK );
 		}

@@ -33,11 +33,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.AlchemistArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Pistol;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ElementalSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -51,6 +51,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndAnvil;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
@@ -74,6 +76,8 @@ public class Item implements Bundlable {
 
 	public static final String AC_DROP		= "DROP";
 	public static final String AC_THROW		= "THROW";
+	//Scorched
+	public static final String AC_REFORGE	= "REFORGE";
 
 	public String defaultAction;
 	public boolean usesTargeting;
@@ -110,9 +114,17 @@ public class Item implements Bundlable {
 		ArrayList<String> actions = new ArrayList<>();
 		actions.add( AC_DROP );
 		actions.add( AC_THROW );
+
+		Talent.UpgradeMasterTracker tracker = hero.buff(Talent.UpgradeMasterTracker.class);
+		if (isUpgradable() && hero.hasTalent(Talent.UPGRADE_MASTERY)
+				&& hero.pointsInTalent(Talent.UPGRADE_MASTERY) == 3){
+			if (tracker != null) actions.add( AC_REFORGE );
+			else actions.remove( AC_REFORGE );
+		}
+
 		return actions;
 	}
-public String actionName(String action, Hero hero){
+	public String actionName(String action, Hero hero){
 		return Messages.get(this, "ac_" + action);
 	}
 
@@ -121,15 +133,13 @@ public String actionName(String action, Hero hero){
 
 			GameScene.pickUp( this, hero.pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
-			hero.spendAndNext( TIME_TO_PICK_UP );
-			Talent.onItemCollected( hero, this );
 
-			if (hero.hasTalent(Talent.INDUSTRIOUS_HANDS)
-				&& (this instanceof MeleeWeapon || this instanceof MissileWeapon)) {
+			if (hero.hasTalent(Talent.INDUSTRIOUS_HANDS))
 				hero.spendAndNext( 0f );
-			}
+			else
+				hero.spendAndNext( TIME_TO_PICK_UP );
 
-			else hero.spendAndNext( TIME_TO_PICK_UP );
+			Talent.onItemCollected( hero, this );
 
 			return true;
 
@@ -169,6 +179,14 @@ public String actionName(String action, Hero hero){
 				doThrow(hero);
 			}
 
+		} else if (action.equals( AC_REFORGE )) {
+
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show( new WndAnvil( hero ) );
+				}
+			});
 		}
 	}
 
@@ -587,86 +605,10 @@ public String actionName(String action, Hero hero){
 							if (user.buff(Talent.LethalMomentumTracker.class) != null){
 								user.buff(Talent.LethalMomentumTracker.class).detach();
 										user.next();
-									}else {
-
-									boolean isTroll = false;
-									boolean hit = false;
-									float DLY;
-									if (curUser.heroClass == HeroClass.TROLL
-											&& Item.this instanceof MeleeWeapon){
-
-										Char ch = Actor.findChar(cell);
-										if (ch != null && ch.alignment != curUser.alignment) {
-											curUser.belongings.stashedWeapon = curUser.belongings.weapon;
-											curUser.belongings.weapon = ((Weapon)(Item.this));
-											DLY = curUser.attackDelay();
-											if (curUser.hasTalent(Talent.SWIFTY_PROJECTILES)
-												&& curUser.buff(Talent.SwiftyProjectilesTracker.class) != null) {
-												DLY = curUser.pointsInTalent(Talent.SWIFTY_PROJECTILES) == 2 ? 0 : DLY*0.5f;
-											}
-
-											if (curUser.attack( enemy )) hit = true;
-
-											if (hit) {
-												if (curUser.hasTalent(Talent.ARTISANS_INTUITION)) {
-													Item.this.cursedKnown = true;
-													if (curUser.pointsInTalent(Talent.ARTISANS_INTUITION) == 2)
-														Item.this.identify();
-												}
-											}
-
-											Invisibility.dispel();
-											curUser.belongings.weapon = curUser.belongings.stashedWeapon;
-											curUser.belongings.stashedWeapon = null;
-											isTroll = true;
-											user.spendAndNext(DLY);
-											Buff.detach(curUser, Talent.SwiftyProjectilesTracker.class);
-										}
-									}
-
-									// hidden usage for anvil!
-									if (Item.this instanceof Anvil){
-										Char ch = Actor.findChar(cell);
-										boolean visibleFight = Dungeon.level.heroFOV[curUser.pos] || Dungeon.level.heroFOV[ch.pos];
-										if (ch != null && ch.alignment != curUser.alignment){
-
-											if (ch.isInvulnerable(getClass())) {
-												if (visibleFight) {
-													ch.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable") );
-													Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1f, Random.Float(0.96f, 1.05f));
-												}
-
-											} else if (Char.hit(curUser, ch, false)) {
-												Sample.INSTANCE.play(Assets.Sounds.EVOKE, 1f, 0.8f);
-												ch.damage((int) ((Random.NormalFloat(curUser.STR * 0.5f, curUser.STR * 1.5f)
-																- ch.drRoll()) * (ch.buff(Vulnerable.class) != null ? 1.333f : 1f)),
-														Item.this);
-
-												ch.sprite.bloodBurstA( ch.sprite.center(), 1 );
-												ch.sprite.flash();
-												if (!ch.isAlive() && visibleFight) {
-													GLog.i( Messages.capitalize(Messages.get(Char.class, "defeat", ch.name())) );
-												}
-												Invisibility.dispel();
-
-											} else {
-												if (visibleFight) {
-													String defense = ch.defenseVerb();
-													ch.sprite.showStatus( CharSprite.NEUTRAL, defense );
-													Sample.INSTANCE.play(Assets.Sounds.MISS);
-												}
-											}
-										}
-									}
-
-									AlchemistArmor.Showdown showdown = enemy.buff(AlchemistArmor.Showdown.class);
-									if (Item.this instanceof Pistol.PistolShot && showdown != null){
-										user.spendAndNext(0f);
-									}
-
-									else if (!isTroll) user.spendAndNext(delay);
-								}
-							}});
+							} else {
+								user.spendAndNext(delay);
+							}
+					}});
 		} else {
 			((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
 					reset(user.sprite,
@@ -703,7 +645,16 @@ public String actionName(String action, Hero hero){
 		@Override
 		public void onSelect( Integer target ) {
 			if (target != null) {
-				curItem.cast( curUser, target );
+
+				Hero hero = Dungeon.hero;
+				ElementalSpell.ElecFocus focus = hero.buff(ElementalSpell.ElecFocus.class);
+				if (!(curItem instanceof ElementalSpell.BinderElec)
+						&& focus != null && hero.subClass == HeroSubClass.BINDER){
+					MissileWeapon elec = new ElementalSpell.BinderElec();
+					elec.cast( curUser, target );
+				}
+				else
+					curItem.cast( curUser, target );
 			}
 		}
 		@Override

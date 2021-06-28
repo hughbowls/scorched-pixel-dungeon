@@ -44,63 +44,29 @@ public class AlchemistArmor extends ClassArmor {
 		image = ItemSpriteSheet.ARMOR_ALCHEMIST;
 	}
 
-	@Override
-	public void doSpecial() {
+	//// Legacy
+	//public void doSpecial() {
+	//
+	//	charge -= 35;
+	//	updateQuickslot();
+	//
+	//	for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+	//		if (Dungeon.level.heroFOV[mob.pos]
+	//				&& mob.alignment != Char.Alignment.ALLY) {
+	//			Buff.prolong( mob, MountNLoad.class, MountNLoad.DURATION );
+	//		}
+	//	}
+	//
+	//	curUser.spendAndNext( 0f );
+	//	curUser.sprite.operate( curUser.pos );
+	//	curUser.sprite.showStatus( CharSprite.POSITIVE, Messages.get(AlchemistArmor.class, "ac_special") );
+	//
+	//	Invisibility.dispel();
+	//	curUser.busy();
+	//
+	//	curUser.sprite.emitter().start(MagicMissile.MagicParticle.ATTRACTING, 0.025f, 20 );
+	//	Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
+	//}
 
-		charge -= 35;
-		updateQuickslot();
 
-		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-			if (Dungeon.level.heroFOV[mob.pos]
-					&& mob.alignment != Char.Alignment.ALLY) {
-				Buff.prolong( mob, Showdown.class, Showdown.DURATION );
-			}
-		}
-
-		curUser.spendAndNext( 0f );
-		curUser.sprite.operate( curUser.pos );
-		curUser.sprite.showStatus( CharSprite.POSITIVE, Messages.get(AlchemistArmor.class, "ac_special") );
-
-		Invisibility.dispel();
-		curUser.busy();
-
-		curUser.sprite.emitter().start(MagicMissile.MagicParticle.ATTRACTING, 0.025f, 20 );
-		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
-	}
-
-	public static class Showdown extends FlavourBuff {
-
-		public static final float DURATION	= 2f;
-
-		@Override
-		public int icon() {
-			return BuffIndicator.MARK;
-		}
-
-		@Override
-		public void tintIcon(Image icon) {
-			icon.hardlight(0x336666);
-		}
-
-		@Override
-		public float iconFadePercent() {
-			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
-		}
-
-		@Override
-		public void fx(boolean on) {
-			if (on) target.sprite.aura( 0x336666 );
-			else target.sprite.clearAura();
-		}
-
-		@Override
-		public String toString() {
-			return Messages.get(AlchemistArmor.class, "showdown_name");
-		}
-
-		@Override
-		public String desc() {
-			return Messages.get(AlchemistArmor.class, "showdown_desc", dispTurns());
-		}
-	}
 }

@@ -27,6 +27,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Healing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.HereticSummon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
@@ -89,7 +92,17 @@ public class Sungrass extends Plant {
 			
 			//for the hero, full heal takes ~50/93/111/120 turns at levels 1/10/20/30
 			partialHeal += (40 + target.HT)/150f;
-			
+
+			if (((Hero)target).pointsInTalent(Talent.PACT_OF_KNOT) >= 2) {
+				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+					if (m != null && m instanceof HereticSummon) {
+						m.HP += (int)partialHeal;
+						if (m.HP >= m.HT) m.HP = m.HT;
+						target.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+					}
+				}
+			}
+
 			if (partialHeal > 1){
 				target.HP += (int)partialHeal;
 				level -= (int)partialHeal;

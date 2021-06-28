@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -77,6 +78,9 @@ public class CurseInfusion extends InventorySpell {
 		}
 		Badges.validateItemLevelAquired(item);
 		updateQuickslot();
+
+		if (curUser.hasTalent(Talent.ARTISANS_INTUITION))
+			item.identify();
 	}
 	
 	@Override

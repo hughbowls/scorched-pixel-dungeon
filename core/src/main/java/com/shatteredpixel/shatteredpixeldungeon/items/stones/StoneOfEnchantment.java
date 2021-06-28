@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.stones;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Enchanting;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -63,7 +64,9 @@ public class StoneOfEnchantment extends InventoryStone {
 		}
 		
 		useAnimation();
-		
+
+		if (curUser.hasTalent(Talent.ARTISANS_INTUITION))
+			item.identify();
 	}
 	
 	@Override

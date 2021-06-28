@@ -26,8 +26,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.DeathGazeAbility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
@@ -197,6 +200,13 @@ public class Eye extends Mob {
 						Buff.affect(ch, TrollJump.class).setJump(2f);
 				}
 
+				if (Dungeon.hero.buff(MetamorphosisBuff.class) != null
+						&& Dungeon.hero.hasTalent(Talent.CRIPPLING_STING)
+						&& enemy.isAlive() && enemy == Dungeon.hero
+						&& Dungeon.level.distance(enemy.pos, pos) > 1) {
+					Metamorphosis.CripplingStingFire(pos);
+				}
+
 				if (!ch.isAlive() && ch == Dungeon.hero) {
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "deathgaze_kill") );
@@ -264,6 +274,7 @@ public class Eye extends Mob {
 
 	{
 		resistances.add( WandOfDisintegration.class );
+		resistances.add( DeathGazeAbility.class );
 	}
 	
 	{

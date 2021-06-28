@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -47,6 +49,7 @@ public class TrollGeomancy extends Buff {
 	
 	private int stacks = 0;
 	private int step = 0;
+	private int partialStacks = 0;
 
 	@Override
 	public boolean act() {
@@ -65,6 +68,17 @@ public class TrollGeomancy extends Buff {
 					walls.add( w );
 				}
 			}
+
+			if (((Hero)target).hasTalent(Talent.HARMONY)){
+				if (walls.size() > 0){
+					partialStacks++;
+					if (partialStacks >= (4-((Hero)target).pointsInTalent(Talent.HARMONY))){
+						partialStacks = 0;
+						gainStack();
+					}
+				}
+			}
+
 			if (walls.size() <= 0) {
 				fall();
 				detach();
@@ -78,12 +92,19 @@ public class TrollGeomancy extends Buff {
 		step = cell;
 	}
 
-	public int min() { return Math.max((int)(Dungeon.depth * 0.75f), 1); }
-	public int max() { return (int)(Dungeon.depth * 1.25f); }
+	public int min() {
+		float avalanche = stacks * ((Hero)target).pointsInTalent(Talent.AVALANCHE) >= 2 ? 1.333f : 1.25f;
+		return Math.max((int)(Dungeon.depth * 0.75f), 2) * Math.max((int)avalanche, 1);
+	}
+	public int max() {
+		float avalanche = stacks * ((Hero)target).pointsInTalent(Talent.AVALANCHE) >= 2 ? 1.333f : 1.25f;
+		return Math.max((int)(Dungeon.depth * 1.25f), 4) * Math.max((int)avalanche, 1);
+	}
 
 	public void fall() {
+		int distance = ((Hero)target).pointsInTalent(Talent.AVALANCHE) == 3 ? 2 : 1;
 		for (Mob ch : Dungeon.level.mobs.toArray(new Mob[0])){
-			if (Dungeon.level.distance(step, ch.pos) <= 1){
+			if (Dungeon.level.distance(step, ch.pos) <= distance){
 				if (ch != null && ch != target && ch.alignment != Char.Alignment.ALLY
 						&& ch.alignment != Char.Alignment.NEUTRAL) {
 
@@ -99,6 +120,11 @@ public class TrollGeomancy extends Buff {
 						Camera.main.shake( 3, 0.7f );
 						Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
+						if (((Hero)target).pointsInTalent(Talent.LANDSLIDER) >= 1
+								&& target.buff(Stamina.class) == null){
+							Buff.affect(target, Stamina.class, 10f);
+						}
+
 					} else if (stacks >= 6) {
 						CellEmitter.floor( ch.pos ).start( Speck.factory( Speck.ROCK ), 0.07f, 6 );
 
@@ -109,6 +135,11 @@ public class TrollGeomancy extends Buff {
 						Camera.main.shake( 1, 0.5f );
 						Sample.INSTANCE.play( Assets.Sounds.ROCKS, 0.666f );
 
+						if (((Hero)target).pointsInTalent(Talent.LANDSLIDER) >= 2
+								&& target.buff(Stamina.class) == null){
+							Buff.affect(target, Stamina.class, 10f);
+						}
+
 					} else if (stacks >= 3) {
 						CellEmitter.floor( ch.pos ).start( Speck.factory( Speck.ROCK ), 0.07f, 3 );
 
@@ -116,6 +147,11 @@ public class TrollGeomancy extends Buff {
 						ch.damage(damage, this);
 
 						Sample.INSTANCE.play( Assets.Sounds.ROCKS, 0.333f );
+
+						if (((Hero)target).pointsInTalent(Talent.LANDSLIDER) == 3
+								&& target.buff(Stamina.class) == null){
+							Buff.affect(target, Stamina.class, 10f);
+						}
 					}
 				}
 			}
@@ -172,16 +208,22 @@ public class TrollGeomancy extends Buff {
 	}
 	
 	private static final String STACKS = "stacks";
-	
+	private static final String STEP   = "step";
+	private static final String PARTIAL_STACKS   = "partialStacks";
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(STACKS, stacks);
+		bundle.put(STEP, step);
+		bundle.put(PARTIAL_STACKS, partialStacks);
 	}
 	
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		stacks = bundle.getInt(STACKS);
+		step = bundle.getInt(STEP);
+		partialStacks = bundle.getInt(PARTIAL_STACKS);
 	}
 }

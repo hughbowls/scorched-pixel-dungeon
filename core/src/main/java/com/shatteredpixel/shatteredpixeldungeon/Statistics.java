@@ -40,8 +40,6 @@ public class Statistics {
 	//...and also for scorched
 	public static boolean emberblood = false;
 	public static int alchemyEnergyUsed;
-	public static int bossSlained;
-	public static int challengerSlained;
 
 	public static int spawnersAlive;
 	
@@ -77,8 +75,6 @@ public class Statistics {
 		//scorched
 		emberblood = false;
 		alchemyEnergyUsed = 0;
-		bossSlained = 0;
-		challengerSlained = 0;
 
 	}
 	
@@ -105,7 +101,6 @@ public class Statistics {
 	//scorched
 	private static final String EMBERBLOOD	= "emberblood";
 	private static final String ENERGY  	= "alchemyEnergyUsed";
-	private static final String BOSSES  	= "bossSlained";
 	private static final String CHALLENGER  = "challengerSlained";
 
 	public static void storeInBundle( Bundle bundle ) {
@@ -132,8 +127,6 @@ public class Statistics {
 		//scorched
 		bundle.put( EMBERBLOOD,	emberblood );
 		bundle.put( ENERGY,	alchemyEnergyUsed );
-		bundle.put( BOSSES,	bossSlained );
-		bundle.put( CHALLENGER,	challengerSlained );
 	}
 	
 	public static void restoreFromBundle( Bundle bundle ) {
@@ -160,8 +153,6 @@ public class Statistics {
 		//scorched
 		emberblood		= bundle.getBoolean( EMBERBLOOD );
 		alchemyEnergyUsed = bundle.getInt( ENERGY );
-		bossSlained		 = bundle.getInt( BOSSES );
-		challengerSlained= bundle.getInt( CHALLENGER );
 	}
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ){

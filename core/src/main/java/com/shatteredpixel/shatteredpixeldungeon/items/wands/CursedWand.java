@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ParalyticGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Regrowth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
@@ -43,7 +42,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WarpBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -56,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
@@ -163,6 +162,7 @@ public class CursedWand {
 						if (ch instanceof Mob) {
 							if (((Mob) ch).state == ((Mob) ch).HUNTING) ((Mob) ch).state = ((Mob) ch).WANDERING;
 							((Mob) ch).beckon(Dungeon.level.randomDestination( ch ));
+							Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, 4f).charID = ch.id();
 						}
 						ScrollOfTeleportation.teleportChar(ch);
 					} else {
@@ -236,6 +236,9 @@ public class CursedWand {
 					if (Random.Int(2) == 0){
 						toHeal = user;
 						toDamage = target;
+						if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2){
+							damage *= 2;
+						}
 					} else {
 						toHeal = target;
 						toDamage = user;
@@ -269,6 +272,9 @@ public class CursedWand {
 
 			//Bomb explosion
 			case 2:
+				if (Dungeon.hero.pointsInTalent(Talent.CHAOS_ADEPT) == 2) {
+					Buff.affect(user, Bomb.BombResist.class, 1f);
+				}
 				new Bomb().explode(targetPos);
 				tryForWandProc(Actor.findChar(targetPos), origin);
 				return true;

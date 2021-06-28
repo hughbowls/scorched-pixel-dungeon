@@ -24,8 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -99,7 +101,13 @@ public class Fire extends Blob {
 	public static void burn( int pos ) {
 		Char ch = Actor.findChar( pos );
 		if (ch != null && !ch.isImmune(Fire.class)) {
-			Buff.affect( ch, Burning.class ).reignite( ch );
+			if (ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REBREATHER)
+					&& Dungeon.hero.buff(Talent.RebreatherCooldown.class) == null){
+				Buff.affect(ch, BlobImmunity.class,
+						1+(2*Dungeon.hero.pointsInTalent(Talent.REBREATHER)));
+				Buff.affect(ch, Talent.RebreatherCooldown.class, 20f);
+			} else
+				Buff.affect( ch, Burning.class ).reignite( ch );
 		}
 		
 		Heap heap = Dungeon.level.heaps.get( pos );

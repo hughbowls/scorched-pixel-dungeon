@@ -29,9 +29,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
@@ -141,6 +142,13 @@ public abstract class Elemental extends Mob {
 					Buff.affect(this, TrollJump.class).setJump(2f);
 				if (enemy.buff(TrollJump.class) == null)
 					Buff.affect(enemy, TrollJump.class).setJump(2f);
+			}
+
+			if (Dungeon.hero.buff(MetamorphosisBuff.class) != null
+					&& Dungeon.hero.hasTalent(Talent.CRIPPLING_STING)
+					&& enemy.isAlive() && enemy == Dungeon.hero
+					&& Dungeon.level.distance(enemy.pos, pos) > 1) {
+				Metamorphosis.CripplingStingFire(pos);
 			}
 
 		} else {

@@ -24,9 +24,11 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SnowParticle;
@@ -67,13 +69,22 @@ public class Freezing extends Blob {
 	public static void freeze( int cell ){
 		Char ch = Actor.findChar( cell );
 		if (ch != null && !ch.isImmune(Freezing.class)) {
-			if (ch.buff(Frost.class) != null){
-				Buff.affect(ch, Frost.class, 2f);
+			if (ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REBREATHER)
+					&& Dungeon.hero.buff(Talent.RebreatherCooldown.class) == null){
+				Buff.affect(ch, BlobImmunity.class,
+						1+(2*Dungeon.hero.pointsInTalent(Talent.REBREATHER)));
+				Buff.affect(ch, Talent.RebreatherCooldown.class, 20f);
+
 			} else {
-				Buff.affect(ch, Chill.class, Dungeon.level.water[cell] ? 5f : 3f);
-				Chill chill = ch.buff(Chill.class);
-				if (chill != null && chill.cooldown() >= Chill.DURATION){
-					Buff.affect(ch, Frost.class, Frost.DURATION);
+
+				if (ch.buff(Frost.class) != null){
+					Buff.affect(ch, Frost.class, 2f);
+				} else {
+					Buff.affect(ch, Chill.class, Dungeon.level.water[cell] ? 5f : 3f);
+					Chill chill = ch.buff(Chill.class);
+					if (chill != null && chill.cooldown() >= Chill.DURATION){
+						Buff.affect(ch, Frost.class, Frost.DURATION);
+					}
 				}
 			}
 		}

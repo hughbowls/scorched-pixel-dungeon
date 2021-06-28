@@ -26,8 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MetamorphosisBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollJump;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -122,6 +124,13 @@ public class Warlock extends Mob implements Callback {
 					Buff.affect(this, TrollJump.class).setJump(2f);
 				if (enemy.buff(TrollJump.class) == null)
 					Buff.affect(enemy, TrollJump.class).setJump(2f);
+			}
+
+			if (Dungeon.hero.buff(MetamorphosisBuff.class) != null
+					&& Dungeon.hero.hasTalent(Talent.CRIPPLING_STING)
+					&& enemy.isAlive() && enemy == Dungeon.hero
+					&& Dungeon.level.distance(enemy.pos, pos) > 1) {
+				Metamorphosis.CripplingStingFire(pos);
 			}
 			
 			if (enemy == Dungeon.hero && !enemy.isAlive()) {

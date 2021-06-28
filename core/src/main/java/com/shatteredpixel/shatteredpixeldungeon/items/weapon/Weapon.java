@@ -24,9 +24,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -135,7 +135,17 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 
 		if (this instanceof MeleeWeapon && ((MeleeWeapon)this).innovationBonus != 0){
-			innovationLeft--;
+
+			if (curUser.hasTalent(Talent.CATALYST_MK2)){
+				innovationPartialLeft++;
+				if (innovationPartialLeft >= 1 + curUser.pointsInTalent(Talent.CATALYST_MK2)){
+					innovationPartialLeft = 0;
+					innovationLeft--;
+				}
+			} else {
+				innovationLeft--;
+			}
+
 			if (innovationLeft == 5) GLog.w(Messages.get(Weapon.class, "innovation_msg"));
 			if (innovationLeft <= 0) innovationBonus = 0;
 			updateQuickslot();
@@ -160,8 +170,10 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public int innovationBonus = 0;
 	public int innovationLeft = 0;
+	public int innovationPartialLeft = 0;
 	private static final String INNOVATION_BONUS	 = "innovation_bonus";
 	private static final String INNOVATION_LEFT 	 = "innovation_left";
+	private static final String INNOVATION_PARTIAL_LEFT = "innovation_partial_lLeft";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -174,6 +186,7 @@ abstract public class Weapon extends KindOfWeapon {
 
 		bundle.put( INNOVATION_BONUS, innovationBonus );
 		bundle.put( INNOVATION_LEFT, innovationLeft );
+		bundle.put( INNOVATION_PARTIAL_LEFT, innovationPartialLeft );
 	}
 	
 	@Override
@@ -188,6 +201,7 @@ abstract public class Weapon extends KindOfWeapon {
 
 		innovationBonus = bundle.getInt( INNOVATION_BONUS );
 		innovationLeft = bundle.getInt( INNOVATION_LEFT );
+		innovationPartialLeft = bundle.getInt( INNOVATION_PARTIAL_LEFT );
 	}
 	
 	@Override
@@ -198,6 +212,7 @@ abstract public class Weapon extends KindOfWeapon {
 		// for Innovator
 		innovationBonus = 0;
 		innovationLeft = 0;
+		innovationPartialLeft = 0;
 	}
 	
 	@Override
@@ -270,8 +285,13 @@ abstract public class Weapon extends KindOfWeapon {
 	public int buffedLvl() {
 		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
 			if (innovationBonus != 0) {
-				return super.buffedLvl()+innovationBonus;
+				return super.buffedLvl() + innovationBonus;
 			}
+
+			if ((cursed || hasCurseEnchant()) && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
+				return super.buffedLvl() + Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
+			}
+
 			return super.buffedLvl();
 		} else {
 			return level();
@@ -281,6 +301,7 @@ abstract public class Weapon extends KindOfWeapon {
 	public void setInnovation(int bonus, int left) {
 		this.innovationBonus = bonus;
 		this.innovationLeft = left;
+		this.innovationPartialLeft = 0;
 		if (this.level() >= 4){
 			this.innovationBonus--;
 			if (this.level() >= 8){
@@ -302,10 +323,26 @@ abstract public class Weapon extends KindOfWeapon {
 				enchant(Enchantment.random());
 			}
 		} else {
-			if (hasCurseEnchant() && curUser.hasTalent(Talent.ENHANCED_CURSE)){
-				// preserve it
+			//Scorched: Troll's T2
+			Hero hero = Dungeon.hero;
+			if (hero != null && hero.hasTalent(Talent.UPGRADE_MASTERY)){
+				//same as Vanilla
+				cursed = false;
+				//if talent is LV2, enchant it randomly if it isn't good-enchanted
+				if (!hasGoodEnchant() && hero.pointsInTalent(Talent.UPGRADE_MASTERY) == 2){
+					enchant(Enchantment.random());
+				}
+				//Always preserve good-enchantments
 				return super.upgrade();
-			} else if (hasCurseEnchant() && !curUser.hasTalent(Talent.ENHANCED_CURSE)){
+			}
+
+			//Scorched: Heretic; preserve curse-enchantments (NOT boolean 'cursed')
+			if (hero != null && (hasCurseEnchant() && hero.heroClass == HeroClass.HERETIC)){
+				return super.upgrade();
+			}
+
+			//Vanilla
+			else if (hasCurseEnchant()){
 				if (Random.Int(3) == 0) enchant(null);
 			} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
 				enchant(null);
@@ -410,10 +447,23 @@ abstract public class Weapon extends KindOfWeapon {
 
 		protected float procChanceMultiplier( Char attacker ){
 			float multi = 1f;
-			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST)){
-				Berserk rage = attacker.buff(Berserk.class);
-				if (rage != null) {
-					multi += (rage.rageAmount() / 6f) * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST);
+			if (attacker instanceof Hero) {
+				if (((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST)) {
+					Berserk rage = attacker.buff(Berserk.class);
+					if (rage != null) {
+						multi += (rage.rageAmount() / 6f) * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST);
+					}
+				}
+
+				if (((Hero) attacker).hasTalent(Talent.ARCANESMITH)
+						&& ((Hero) attacker).pointsInTalent(Talent.ARCANESMITH) >= 2) {
+					TrollHammer hammer = attacker.buff(TrollHammer.class);
+					if (hammer != null) {
+						multi += 0.05f * hammer.boost;
+						if (hammer.getBoost() >= 10 && ((Hero) attacker).pointsInTalent(Talent.ARCANESMITH) == 3){
+							multi += 10f; //a.k.a. "always activates enchantment"
+						}
+					}
 				}
 			}
 			return multi;

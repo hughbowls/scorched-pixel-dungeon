@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
@@ -65,7 +66,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 			w.upgrade();
 
-			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant() && !curUser.hasTalent(Talent.ENHANCED_CURSE)){
+			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant() && curUser.heroClass != HeroClass.HERETIC){
 				removeCurse( Dungeon.hero );
 			} else if (w.cursedKnown && wasCursed && !w.cursed){
 				weakenCurse( Dungeon.hero );
@@ -82,7 +83,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 
 			a.upgrade();
 
-			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph() && !curUser.hasTalent(Talent.ENHANCED_CURSE)){
+			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph() && curUser.heroClass != HeroClass.HERETIC){
 				removeCurse( Dungeon.hero );
 			} else if (a.cursedKnown && wasCursed && !a.cursed){
 				weakenCurse( Dungeon.hero );
@@ -103,6 +104,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		} else {
 			item.upgrade();
 		}
+
+		if (curUser.hasTalent(Talent.ARTISANS_INTUITION))
+			item.identify();
 
 		Talent.onUpgradeScrollUsed( Dungeon.hero );
 

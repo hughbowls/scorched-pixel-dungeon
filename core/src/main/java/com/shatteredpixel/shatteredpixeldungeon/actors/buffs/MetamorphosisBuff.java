@@ -22,8 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.heretic.Metamorphosis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.HereticArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
@@ -33,13 +33,12 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
-public class Metamorphosis extends Buff {
+public class MetamorphosisBuff extends Buff {
+
+    public static final float DURATION = 20f;
 
     {
         type = buffType.POSITIVE;
@@ -69,11 +68,16 @@ public class Metamorphosis extends Buff {
         armorTier = bundle.getInt( ARMOR_TIER );
     }
 
-    public void set( float left ) {
+    public void set( float left, int tier) {
         this.left = Math.max(this.left, left);
-        //((Hero)target).belongings.armor.tier = armorTier;
-        //((Hero)target).belongings.armor.tier = 7;
+        ((Hero)target).belongings.armor.tier = 7;
         ((HeroSprite)target.sprite).updateArmor();
+        ((Hero)target).belongings.armor.tier = tier;
+        armorTier = tier;
+    }
+
+    public void extend( float left ) {
+        this.left += left;
     }
 
     @Override
@@ -85,6 +89,9 @@ public class Metamorphosis extends Buff {
                     detach();
                     return true;
                 }
+                if (((Hero)target).belongings.armor.tier != armorTier){
+                    ((Hero)target).belongings.armor.tier = armorTier;
+                }
                 spend(TICK);
             } else detach();
         } else detach();
@@ -93,65 +100,31 @@ public class Metamorphosis extends Buff {
 
     @Override
     public void detach() {
-       //((Hero)target).belongings.armor.tier = 6;
+        ((Hero)target).belongings.armor.tier = armorTier;
         Sample.INSTANCE.play( Assets.Sounds.BADGE );
         GameScene.flash(0x404040);
         super.detach();
         ((HeroSprite)target.sprite).updateArmor();
     }
 
-    public void attackproc(Char enemy){
-        if (target.buff(ExtraHitCooldown.class) == null && enemy.isAlive()){
-            Buff.affect(target, ExtraHitCooldown.class, ((Hero)target).attackDelay()+target.cooldown());
-            target.sprite.attack(enemy.pos);
-
-            int dmg = target.damageRoll();
-            dmg = enemy.defenseProc(target, dmg);
-            dmg -= enemy.drRoll();
-
-            if ( enemy.buff( Vulnerable.class ) != null){
-                dmg *= 1.33f;
-            }
-            if ( target.buff(Weakness.class) != null ){
-                dmg *= 0.67f;
-            }
-            enemy.damage( dmg, target );
-            if (enemy.HP <= dmg) {
-                enemy.die(Hero.class);
-            }
-
-            if (enemy.isAlive()) {
-                target.hitSound(Random.Float(0.87f, 1.15f));
-                enemy.sprite.bloodBurstA( target.sprite.center(), dmg );
-                enemy.sprite.flash();
-            }
-            ((Hero) target).spendAndNext(0f);
-        }
-    }
-
     @Override
     public int icon() {
-        return BuffIndicator.CORRUPT;
-    }
-
-    @Override
-    public void tintIcon(Image icon) {
-        icon.hardlight(1f, 0f, 0f);
+        return BuffIndicator.SC_METAMORPHOSIS;
     }
 
     @Override
     public float iconFadePercent() {
-        return (20-left)/20;
+        return Math.max(0, (DURATION - left) / DURATION);
     }
 
     @Override
     public String toString() {
-        return Messages.get(HereticArmor.class, "metamorphosis_name");
+        return Messages.get(Metamorphosis.class, "buff_name");
     }
 
     @Override
     public String desc() {
-        return Messages.get(HereticArmor.class, "metamorphosis_desc", left);
+        return Messages.get(Metamorphosis.class, "buff_desc", left);
     }
 
     {
@@ -176,6 +149,4 @@ public class Metamorphosis extends Buff {
         resistances.add( Grim.class );
         resistances.add( GrimTrap.class );
     }
-
-    public static class ExtraHitCooldown extends FlavourBuff {};
 }

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.Exoskeleton;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -127,8 +128,10 @@ public class Armor extends EquipableItem {
 
 	public int innovationBonus = 0;
 	public int innovationLeft = 0;
+	public int innovationPartialLeft = 0;
 	private static final String INNOVATION_BONUS	 = "innovation_bonus";
 	private static final String INNOVATION_LEFT 	 = "innovation_left";
+	private static final String INNOVATION_PARTIAL_LEFT = "innovation_partial_left";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -142,6 +145,7 @@ public class Armor extends EquipableItem {
 
 		bundle.put( INNOVATION_BONUS, innovationBonus );
 		bundle.put( INNOVATION_LEFT, innovationLeft );
+		bundle.put( INNOVATION_PARTIAL_LEFT, innovationPartialLeft );
 	}
 
 	@Override
@@ -157,6 +161,7 @@ public class Armor extends EquipableItem {
 
 		innovationBonus = bundle.getInt( INNOVATION_BONUS );
 		innovationLeft = bundle.getInt( INNOVATION_LEFT );
+		innovationPartialLeft = bundle.getInt( INNOVATION_PARTIAL_LEFT );
 	}
 
 	@Override
@@ -306,6 +311,11 @@ public class Armor extends EquipableItem {
 		}
 
 		int max = tier * (2 + lvl) + augment.defenseFactor(lvl);
+
+		if (this instanceof ClothArmorVariant){
+			max = Math.max(0, max-1);
+		}
+
 		if (lvl > max){
 			return ((lvl - max)+1)/2;
 		} else {
@@ -323,6 +333,11 @@ public class Armor extends EquipableItem {
 		}
 
 		int max = DRMax(lvl);
+
+		if (this instanceof ClothArmorVariant){
+			max = Math.max(0, max-1);
+		}
+
 		if (lvl >= max){
 			return (lvl - max);
 		} else {
@@ -401,6 +416,11 @@ public class Armor extends EquipableItem {
 			if (innovationBonus != 0) {
 				return super.buffedLvl()+innovationBonus;
 			}
+
+			if ((cursed || hasCurseGlyph()) && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
+				return super.buffedLvl() + Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
+			}
+
 			return super.buffedLvl();
 		} else {
 			return level();
@@ -429,7 +449,7 @@ public class Armor extends EquipableItem {
 		if (inscribe && (glyph == null || glyph.curse())){
 			inscribe( Glyph.random() );
 		} else {
-			if (hasCurseGlyph() && curUser.hasTalent(Talent.ENHANCED_CURSE)){
+			if (hasCurseGlyph() && hero.heroClass == HeroClass.HERETIC){
 				// preserve it
 				return super.upgrade();
 			} else if (!inscribe && level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)) {
@@ -463,7 +483,17 @@ public class Armor extends EquipableItem {
 		}
 
 		if (innovationBonus != 0){
-			innovationLeft--;
+
+			if (curUser.hasTalent(Talent.CATALYST_MK2)) {
+				innovationPartialLeft++;
+				if (innovationPartialLeft >= 1 + curUser.pointsInTalent(Talent.CATALYST_MK2)) {
+					innovationPartialLeft = 0;
+					innovationLeft--;
+				} else {
+					innovationLeft--;
+				}
+			}
+
 			if (innovationLeft == 5) GLog.w(Messages.get(Armor.class, "innovation_msg"));
 			if (innovationLeft <= 0) innovationBonus = 0;
 			updateQuickslot();

@@ -58,11 +58,6 @@ public abstract class EquipableItem extends Item {
 				&& !(this instanceof MissileWeapon)) {
 			actions.add( AC_CURSE );
 		}
-		if (hero.heroClass == HeroClass.ELEMENTALIST
-				&& this instanceof Armor) {
-			actions.remove(AC_EQUIP);
-			actions.remove(AC_UNEQUIP);
-		}
 		return actions;
 	}
 
@@ -83,30 +78,13 @@ public abstract class EquipableItem extends Item {
 		} else if (action.equals( AC_UNEQUIP )) {
 			doUnequip( hero, true );
 
-		} else if (action.equals( AC_CURSE )) {
-
-			if (!isEquipped( hero )) {
-				GLog.w(Messages.get(this, "heretic_need_equip"));
-			} else if (!isIdentified()) {
-				GLog.w(Messages.get(this, "heretic_fail_curse"));
-			} else {
+		} else if (action.equals( AC_CURSE ))
+		{
 
 			if (this instanceof MeleeWeapon) {
 				Weapon w = (Weapon) this;
 				if (w.hasCurseEnchant()) {
-					if (hero.pointsInTalent(Talent.ENHANCED_CURSE) == 2){
-						w.enchant(Weapon.Enchantment.randomCurse(w.enchantment.getClass()));
-						GLog.p( Messages.get(this, "heretic_weapon_curse", w.name()));
-						hero.spend( 1f );
-						hero.busy();
-
-						hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-						Sample.INSTANCE.play(Assets.Sounds.CURSED);
-						Dungeon.hero.sprite.operate(Dungeon.hero.pos);
-
-						updateQuickslot();
-					} else GLog.w(Messages.get(this, "heretic_fail_curse"));
-
+					GLog.w(Messages.get(this, "heretic_fail_curse"));
 				} else {
 					cursed = true;
 					if (w.enchantment != null) {
@@ -128,20 +106,7 @@ public abstract class EquipableItem extends Item {
 			} else if (this instanceof Armor){
 				Armor a = (Armor) this;
 				if (a.hasCurseGlyph()) {
-					if (hero.pointsInTalent(Talent.ENHANCED_CURSE) == 2){
-						a.inscribe(Armor.Glyph.randomCurse(a.glyph.getClass()));
-						GLog.p( Messages.get(this, "heretic_armor_curse", a.name()));
-						hero.spend( 1f );
-						hero.busy();
-
-						hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-						Sample.INSTANCE.play(Assets.Sounds.CURSED);
-						Dungeon.hero.sprite.operate(Dungeon.hero.pos);
-
-						updateQuickslot();
-					}
-					else GLog.w(Messages.get(this, "heretic_fail_curse"));
-
+					GLog.w(Messages.get(this, "heretic_fail_curse"));
 				} else {
 					cursed = true;
 					if (a.glyph != null){
@@ -172,7 +137,11 @@ public abstract class EquipableItem extends Item {
 				Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 
 				updateQuickslot();
-			} }
+			}
+
+			if (!cursedKnown){
+				cursedKnown = true;
+			}
 		}
 	}
 
@@ -201,7 +170,7 @@ public abstract class EquipableItem extends Item {
 	}
 
 	protected float time2equip( Hero hero ) {
-		if (this instanceof MeleeWeapon && hero.pointsInTalent(Talent.INDUSTRIOUS_HANDS) == 2) {
+		if (hero.pointsInTalent(Talent.INDUSTRIOUS_HANDS) == 2) {
 			return 0;
 		}
 		return 1;
@@ -211,7 +180,8 @@ public abstract class EquipableItem extends Item {
 
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
 
-		if (cursed && hero.buff(MagicImmune.class) == null) {
+		if (cursed && hero.buff(MagicImmune.class) == null
+				&& hero.pointsInTalent(Talent.ENHANCED_CURSE) != 3) {
 			GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
 			return false;
 		}

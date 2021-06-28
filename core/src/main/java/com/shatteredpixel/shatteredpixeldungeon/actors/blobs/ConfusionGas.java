@@ -24,8 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -44,7 +46,14 @@ public class ConfusionGas extends Blob {
 				cell = i + j*Dungeon.level.width();
 				if (cur[cell] > 0 && (ch = Actor.findChar( cell )) != null) {
 					if (!ch.isImmune(this.getClass())) {
-						Buff.prolong(ch, Vertigo.class, 2);
+
+						if (ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REBREATHER)
+								&& Dungeon.hero.buff(Talent.RebreatherCooldown.class) == null){
+							Buff.affect(ch, BlobImmunity.class,
+									1+(2*Dungeon.hero.pointsInTalent(Talent.REBREATHER)));
+							Buff.affect(ch, Talent.RebreatherCooldown.class, 20f);
+						} else
+							Buff.prolong(ch, Vertigo.class, 2);
 					}
 				}
 			}

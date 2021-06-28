@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.MountNLoad;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
@@ -121,6 +122,9 @@ public class Pistol extends Weapon {
 	private int round;
 	private float reload_time;
 	private static final String TXT_STATUS = "%d/%d";
+	private int infused_gunsmith;
+
+	public boolean showdownAimed = false;
 
 	{
 		image = ItemSpriteSheet.PISTOL;
@@ -136,10 +140,10 @@ public class Pistol extends Weapon {
 	private static final String MAX_ROUND = "max_round";
 	private static final String RELOAD_TIME = "reload_time";
 	public static final String POTIONATTRIB = "potionattrib";
-	public static final String WAS_POTIONATTRIB = "was_potionattrib";
+
+	public static final String INFUSED_GUNSMITH = "infused_gunsmith";
 
 	public Potion potionAttrib = null;
-	public Potion was_potionAttrib = null;
 	public ItemSprite.Glowing potionGlow = null;
 
 	@Override
@@ -149,7 +153,7 @@ public class Pistol extends Weapon {
 		bundle.put(ROUND, round);
 		bundle.put(RELOAD_TIME, reload_time);
 		bundle.put(POTIONATTRIB, potionAttrib);
-		bundle.put(WAS_POTIONATTRIB, was_potionAttrib);
+		bundle.put(INFUSED_GUNSMITH, infused_gunsmith);
 	}
 
 	@Override
@@ -159,11 +163,9 @@ public class Pistol extends Weapon {
 		round = bundle.getInt(ROUND);
 		reload_time = bundle.getFloat(RELOAD_TIME);
 		if (bundle.contains(POTIONATTRIB) && round <= max_round) {
-			infusePotion((Potion) bundle.get(POTIONATTRIB), true, level(), reload_time, null);
+			infusePotion((Potion) bundle.get(POTIONATTRIB), level(), reload_time);
 		}
-		if (bundle.contains(WAS_POTIONATTRIB)) {
-			setWasPotion((Potion) bundle.get(WAS_POTIONATTRIB));
-		}
+		infused_gunsmith = bundle.getInt(INFUSED_GUNSMITH);
 	}
 
 	@Override
@@ -196,8 +198,12 @@ public class Pistol extends Weapon {
 	}
 
 	public void reload() {
-		curUser.spend(reload_time);
-		curUser.busy();
+		if (curUser.buff(Reaction.class) == null) {
+			curUser.spend(reload_time);
+			curUser.busy();
+		}
+		Buff.detach(curUser, Reaction.class);
+		Buff.detach(curUser, MountNLoad.MountNLoadTracker.class);
 
 		Sample.INSTANCE.play(Assets.Sounds.UNLOCK, 2, 1.1f);
 		curUser.sprite.operate(curUser.pos);
@@ -205,26 +211,34 @@ public class Pistol extends Weapon {
 
 		GLog.i(Messages.get(this, "reloading"));
 
-		potionAttrib = null;
-		potionGlow = null;
+		if (curUser.hasTalent(Talent.INFUSED_GUNSMITH)){
+			infused_gunsmith++;
+			if (infused_gunsmith > curUser.pointsInTalent(Talent.INFUSED_GUNSMITH)) {
+				infused_gunsmith = 0;
+				potionAttrib = null;
+				potionGlow = null;
+			}
+		} else {
+			potionAttrib = null;
+			potionGlow = null;
+		}
 
 		if (curUser.subClass == HeroSubClass.INNOVATOR){
-			potionAttrib = was_potionAttrib;
-			was_potionAttrib = null;
 			potionGlow = setPotionGlow(potionAttrib);
 		}
 
 		updateQuickslot();
-
-		if (curUser.subClass == HeroSubClass.TRAILBLAZER){
-			Buff.affect(curUser, Reaction.class);
-		}
 	}
 
 	public void reload_talent() {
 		if (curUser.pointsInTalent(Talent.RELOADING_UPGRADE) == 2){
 			round = max_round + 1;
 		} else round = Math.max(max_round, round);
+		updateQuickslot();
+	}
+
+	public void reload_ability() {
+		round = Math.max(max_round, round);
 		updateQuickslot();
 	}
 
@@ -242,43 +256,30 @@ public class Pistol extends Weapon {
 	public void setReloadTime(float time) {
 		reload_time = time;
 	}
-	public void setWasPotion(Potion was) {
-		if (was == null) was_potionAttrib = null;
-		else was_potionAttrib = was;
-	}
 
-	public Item infusePotion(Potion potion, boolean restore, int upgrade, float time, Potion second) {
+	public Item infusePotion(Potion potion, int upgrade, float time) {
 
 		potionAttrib = potion;
 		potionAttrib.anonymize();
 		this.level(upgrade);
 		this.reload_time = time;
-		if (!restore) {
-			if (curUser.subClass == HeroSubClass.INNOVATOR) {
-				was_potionAttrib = second;
-			}
-		}
-
 		this.identify();
 
-		if (potionAttrib instanceof PotionOfStrength) {
-			if (!restore) {
-				upgrade();
-				max_round = level() + 4;
-				round = max_round;
-			}
+		if (potion instanceof PotionOfStrength) {
+			upgrade();
+			max_round = level() + 4;
+			round = max_round;
 			potionAttrib = null;
 			potionGlow = null;
 
-		} else if (potionAttrib instanceof PotionOfAdrenalineSurge) {
-			if (!restore) {
-				max_round = level() + 4;
-				round = max_round * 3;
-			}
+		} else if (potion instanceof PotionOfAdrenalineSurge) {
+			upgrade();
+			max_round = level() + 4;
+			round = max_round * 2;
 			potionAttrib = null;
 			potionGlow = null;
 
-		} else if (!restore) {
+		} else {
 			max_round = level() + 4;
 			round = Math.max(round, max_round);
 		}
@@ -313,6 +314,15 @@ public class Pistol extends Weapon {
 		if (potion instanceof CausticBrew) potionGlow = new ItemSprite.Glowing(0x000000);
 		if (potion instanceof InfernalBrew) potionGlow = new ItemSprite.Glowing(0xEE7722);
 		if (potion instanceof ShockingBrew) potionGlow = new ItemSprite.Glowing(0xFFFF00);
+
+		if (curUser.subClass == HeroSubClass.TRAILBLAZER
+				&& curUser.hasTalent(Talent.INFUSED_GUNSMITH)){
+			Buff.affect(curUser, Reaction.class);
+		}
+
+		if (curUser.pointsInTalent(Talent.ADVANCED_PISTOL) == 3){
+			setReloadTime(1f);
+		}
 
 		return this;
 	}
@@ -437,8 +447,8 @@ public class Pistol extends Weapon {
 				info += " " + Messages.get(Pistol.class, "shocking");
 		}
 
-		if (was_potionAttrib != null) {
-			info += " " + Messages.get(Pistol.class, "was_infused", was_potionAttrib.toString());
+		if (infused_gunsmith > 0) {
+			info += " " + Messages.get(Pistol.class, "infused_gunsmith", infused_gunsmith);
 		}
 
 		info += "\n\n" + Messages.get(Pistol.class, "no_ring");
@@ -469,13 +479,17 @@ public class Pistol extends Weapon {
 	private int targetPos;
 
 	@Override
-	public float speedFactor(Char owner) {
-		if (potionAttrib != null) {
-			if (potionAttrib instanceof PotionOfStamina)
-				return super.speedFactor(owner) * 0.5f;
+	public float delayFactor(Char owner) {
+		if (Dungeon.hero.buff(MountNLoad.MountNLoadTracker.class) != null){
+			return 0;
 		}
 
-		return super.speedFactor(owner);
+		if (potionAttrib != null) {
+			if (potionAttrib instanceof PotionOfStamina)
+				return super.delayFactor(owner) * 0.5f;
+		}
+
+		return super.delayFactor(owner);
 	}
 
 	@Override
@@ -498,6 +512,10 @@ public class Pistol extends Weapon {
 
 		@Override
 		public int damageRoll(Char owner) {
+			if (Dungeon.hero.hasTalent(Talent.ADVANCED_PISTOL)){
+				return Pistol.this.damageRoll(owner)
+						+ (int)(Pistol.this.level() * (Dungeon.hero.pointsInTalent(Talent.ADVANCED_PISTOL)*0.5f));
+			}
 			return Pistol.this.damageRoll(owner);
 		}
 
@@ -532,13 +550,13 @@ public class Pistol extends Weapon {
 				else if (Pistol.this.potionAttrib instanceof PotionOfFrost)
 					Buff.affect(defender, Chill.class, 4f);
 				else if (Pistol.this.potionAttrib instanceof PotionOfParalyticGas)
-					Buff.affect(defender, Paralysis.class, Pistol.this.speedFactor(curUser)+curUser.cooldown());
+					Buff.affect(defender, Paralysis.class, Pistol.this.delayFactor(curUser)+curUser.cooldown());
 				else if (Pistol.this.potionAttrib instanceof PotionOfToxicGas)
 					Buff.affect(defender, Poison.class).set(4f);
 				else if (Pistol.this.potionAttrib instanceof PotionOfMindVision)
 					Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, 10f).charID = defender.id();
 				else if (Pistol.this.potionAttrib instanceof PotionOfInvisibility)
-					Buff.affect(defender, Blindness.class, 1f+Pistol.this.speedFactor(curUser));
+					Buff.affect(defender, Blindness.class, 1f+Pistol.this.delayFactor(curUser));
 				else if (Pistol.this.potionAttrib instanceof PotionOfLevitation)
 					Buff.affect(defender, Vertigo.class, 2f);
 				else if (Pistol.this.potionAttrib instanceof PotionOfHaste)
@@ -573,22 +591,37 @@ public class Pistol extends Weapon {
 			}
 
 			if (curUser.subClass == HeroSubClass.TRAILBLAZER
-					&& defender.HP <= damage){
+					&& (defender.HP <= damage || !defender.isAlive())){
 				Buff.affect(curUser, Reaction.class);
+			}
+
+			if (curUser.buff(MountNLoad.MountNLoadTracker.class) != null
+					&& (defender.HP <= damage || !defender.isAlive())
+					&& curUser.hasTalent(Talent.HAIL_OF_SHOTS)){
+				round += 1 + curUser.pointsInTalent(Talent.HAIL_OF_SHOTS);
 			}
 
 			return Pistol.this.proc(attacker, defender, damage);
 		}
 
 		@Override
-		public float speedFactor(Char user) {
-			return Pistol.this.speedFactor(user);
+		public float delayFactor(Char user) {
+			return Pistol.this.delayFactor(user);
 		}
 
 		@Override
 		public float accuracyFactor(Char owner) {
 			if (Pistol.this.potionAttrib instanceof PotionOfExperience) {
 				return Float.POSITIVE_INFINITY;
+
+			} else if (owner.buff(Reaction.class) != null
+					&& ((Hero)owner).pointsInTalent(Talent.STEADY_AIM) >= 2) {
+
+				if (((Hero)owner).pointsInTalent(Talent.STEADY_AIM) == 2)
+					return super.accuracyFactor(owner)*1.25f;
+
+				return Float.POSITIVE_INFINITY;
+
 			} else {
 				return super.accuracyFactor(owner);
 			}
@@ -683,10 +716,6 @@ public class Pistol extends Weapon {
 							}
 							dmg -= ch.drRoll();
 
-							if (ch == Dungeon.hero && Dungeon.hero.pointsInTalent(Talent.GRENADIER) == 2) {
-								dmg /= 2;
-							}
-
 							if (dmg > 0) {
 								ch.damage(dmg, this);
 							}
@@ -755,7 +784,8 @@ public class Pistol extends Weapon {
 		public void cast(final Hero user, final int dst) {
 			final int cell = throwPos(user, dst);
 			Pistol.this.targetPos = cell;
-			if (Pistol.this.round == 1){
+
+			if (Pistol.this.round == 1) {
 				Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 0.33f, 1.1f);
 			}
 			Pistol.this.round--;
@@ -862,14 +892,13 @@ public class Pistol extends Weapon {
 
 			int upgrade = ingredients.get(0).level();
 			float time = ((Pistol)ingredients.get(0)).getReloadTime();
-			Potion second = ((Pistol) ingredients.get(0)).potionAttrib;
 
 			if (ingredients.get(0) instanceof Pistol){
 				ingredients.get(1).quantity(ingredients.get(1).quantity() - 1);
-				return ((Pistol) ingredients.get(0)).infusePotion((Potion) ingredients.get(1), false, upgrade, time, second);
+				return ((Pistol) ingredients.get(0)).infusePotion((Potion) ingredients.get(1), upgrade, time);
 			} else {
 				ingredients.get(0).quantity(ingredients.get(0).quantity() - 1);
-				return ((Pistol) ingredients.get(0)).infusePotion((Potion) ingredients.get(1), false, upgrade, time, second);
+				return ((Pistol) ingredients.get(0)).infusePotion((Potion) ingredients.get(1), upgrade, time);
 			}
 		}
 
@@ -879,9 +908,8 @@ public class Pistol extends Weapon {
 
 			int upgrade = ingredients.get(0).level();
 			float time = ((Pistol)ingredients.get(0)).getReloadTime();
-			Potion second = ((Pistol) ingredients.get(0)).was_potionAttrib;
 
-			return new Pistol().infusePotion((Potion) ingredients.get(1), false, upgrade, time, second);
+			return new Pistol().infusePotion((Potion) ingredients.get(1), upgrade, time);
 		}
 	}
 }

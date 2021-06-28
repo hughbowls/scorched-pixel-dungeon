@@ -26,8 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -46,7 +48,7 @@ public class BloodKnightTrigger extends Buff implements ActionIndicator.Action {
 	
 	@Override
 	public int icon() {
-		return BuffIndicator.TERROR;
+		return BuffIndicator.SC_DROP;
 	}
 	
 	@Override
@@ -132,6 +134,7 @@ public class BloodKnightTrigger extends Buff implements ActionIndicator.Action {
 
 			Bleeding b = enemy.buff(Bleeding.class);
 			int dmg = (int)((b.level + (enemy.HT-enemy.HP)*b.level*0.1));
+			if (Dungeon.hero.hasTalent(Talent.PREDATOR)) dmg += dmg*0.25;
 
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				Char nearby = Actor.findChar(enemy.pos + PathFinder.NEIGHBOURS8[i]);
@@ -151,7 +154,14 @@ public class BloodKnightTrigger extends Buff implements ActionIndicator.Action {
 				ScrollOfTeleportation.teleportToLocation((Hero)target, enemy.pos);
 				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
 					if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
-						Buff.affect( mob, Paralysis.class, mob.cooldown()*2 );
+						if (Dungeon.hero.pointsInTalent(Talent.PREDATOR) >= 2){
+							int dur = Dungeon.hero.pointsInTalent(Talent.PREDATOR) == 2 ? 1 : 3;
+							Buff.affect( mob, Paralysis.class, dur + mob.cooldown() );
+						}
+						if (Dungeon.hero.hasTalent(Talent.SERUM)){
+							Dewdrop dewdrop = new Dewdrop();
+							Dungeon.level.drop( dewdrop, Dungeon.hero.pos ).sprite.drop();
+						}
 					}
 				}
 			}

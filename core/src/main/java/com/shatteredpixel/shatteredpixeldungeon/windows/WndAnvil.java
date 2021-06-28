@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Anvil;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -249,12 +249,17 @@ public class WndAnvil extends Window {
 			first.upgrade();
 		}
 
-		Anvil anvil = null;
-		for (Item item : Dungeon.hero.belongings){
-			if (item instanceof Anvil) {
-				anvil = (Anvil) item;
-				anvil.detach(Dungeon.hero.belongings.backpack);
-			}
+		//Anvil anvil = null;
+		//for (Item item : Dungeon.hero.belongings){
+		//	if (item instanceof Anvil) {
+		//		anvil = (Anvil) item;
+		//		anvil.detach(Dungeon.hero.belongings.backpack);
+		//	}
+		//}
+
+		Talent.UpgradeMasterTracker tracker = Dungeon.hero.buff(Talent.UpgradeMasterTracker.class);
+		if (tracker != null) {
+			tracker.detach();
 		}
 
 		if (!Dungeon.hero.belongings.contains(first)) {

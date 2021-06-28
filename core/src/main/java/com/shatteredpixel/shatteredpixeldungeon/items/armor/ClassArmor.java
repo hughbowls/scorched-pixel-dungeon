@@ -108,8 +108,10 @@ abstract public class ClassArmor extends Armor {
 			classArmor = new AlchemistArmor();
 			break;
 		case ELEMENTALIST:
+			classArmor = new ElementalArmor();
+			break;
 		case TROLL:
-			// works different way
+			classArmor = new TrollArmor();
 			break;
 		}
 		

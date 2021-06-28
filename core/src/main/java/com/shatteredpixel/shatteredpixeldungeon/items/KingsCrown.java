@@ -24,10 +24,12 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -98,18 +100,17 @@ public class KingsCrown extends Item {
 				GLog.p(Messages.get(this, "upgraded"));
 			}
 
-		ClassArmor classArmor = ClassArmor.upgrade( hero, armor);
+			ClassArmor classArmor = ClassArmor.upgrade(hero, armor);
 			if (hero.belongings.armor == armor) {
 
-			hero.belongings.armor = classArmor;
+				hero.belongings.armor = classArmor;
 				((HeroSprite) hero.sprite).updateArmor();
 				classArmor.activate(hero);
 
-		} else {
+			} else {
 
-			armor.detach( hero.belongings.backpack);
-				classArmor.collect(hero.belongings.backpack );
-
+				armor.detach(hero.belongings.backpack);
+				classArmor.collect(hero.belongings.backpack);
 
 			}
 		}

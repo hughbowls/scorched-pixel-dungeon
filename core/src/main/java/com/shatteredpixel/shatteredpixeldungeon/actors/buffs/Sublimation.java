@@ -21,31 +21,61 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ElementalArmor;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
-public class GarmentCooldown extends FlavourBuff {
+public class Sublimation extends Buff {
 	{
 		type = buffType.POSITIVE;
 	}
 
 	@Override
-	public int icon() {
-		return BuffIndicator.SC_CLOCK;
-	}
+	public boolean act() {
+		if (target.HP > target.HT/2){
+			detach();
+		}
 
+		boolean pain = target.HP <= target.HT/5;
+
+		float WandCharge = pain && Dungeon.hero.pointsInTalent(Talent.SUBLIMATION) == 2 ? 0.666f : 0.25f;
+		float ArtifactCharge = pain && Dungeon.hero.pointsInTalent(Talent.SUBLIMATION) == 2 ? 0.333f : 0.1f;
+
+		for (Buff b : target.buffs()) {
+			((Hero) target).belongings.charge(WandCharge);
+			if (b instanceof Artifact.ArtifactBuff) {
+				((Artifact.ArtifactBuff) b).charge((Hero) target, ArtifactCharge);
+			}
+		}
+
+		spend(TICK);
+		return true;
+	}
+	
+	@Override
+	public int icon() {
+		return BuffIndicator.RECHARGING;
+	}
+	
 	@Override
 	public void tintIcon(Image icon) {
-		icon.hardlight(0x00FFB8);
+		icon.hardlight(1f, 0, 0);
 	}
 
 	@Override
 	public String toString() {
-		return Messages.get(ElementalArmor.class, "cooldown_name");
+		return Messages.get(this, "name");
 	}
-
+	
 	@Override
-	public String desc() { return Messages.get(ElementalArmor.class, "cooldown_desc", dispTurns()); }
+	public String desc() {
+		if (target.HP <= target.HT/5)
+			return Messages.get(this, "desc2");
+		else
+			return Messages.get(this, "desc1");
+	}
 }

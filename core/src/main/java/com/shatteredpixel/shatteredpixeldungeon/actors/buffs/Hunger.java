@@ -129,7 +129,7 @@ public class Hunger extends Buff implements Hero.Doom {
 		}
 
 		Metabolism.HereticMetabolismProc m = target.buff( Metabolism.HereticMetabolismProc.class );
-		if (buff != null && buff.isCursed()){
+		if (buff != null && buff.isCursed() && m != null){
 			m.detach();
 		}
 

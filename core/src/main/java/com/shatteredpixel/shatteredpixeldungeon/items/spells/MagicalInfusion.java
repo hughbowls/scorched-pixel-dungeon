@@ -65,6 +65,9 @@ public class MagicalInfusion extends InventorySpell {
 		Badges.validateItemLevelAquired(item);
 
 		Statistics.upgradesUsed++;
+
+		if (curUser.hasTalent(Talent.ARTISANS_INTUITION))
+			item.identify();
 	}
 	
 	@Override

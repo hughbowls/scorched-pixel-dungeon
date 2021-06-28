@@ -103,14 +103,23 @@ public class BuffIndicator extends Component {
 	public static final int SC_AIM	    = 90;
 	public static final int SC_PUNCH    = 91;
 	public static final int SC_CLOCK    = 92;
-	public static final int SC_FORM     = 93;
-	public static final int SC_FIRE     = 94;
-	public static final int SC_ICE      = 95;
-	public static final int SC_ELEC     = 96;
-	public static final int SC_CHAOS    = 97;
-	public static final int SC_EARTH    = 98;
-	public static final int SC_HAMMER   = 99;
-	public static final int SC_ANVIL    = 100;
+	public static final int SC_DROP     = 93;
+	public static final int SC_FORM     = 94;
+	public static final int SC_FIRE     = 95;
+	public static final int SC_ICE      = 96;
+	public static final int SC_ELEC     = 97;
+	public static final int SC_CHAOS    = 98;
+	public static final int SC_ARCANE   = 99;
+	public static final int SC_FIRE_BIND   	 = 100;
+	public static final int SC_ICE_BIND   	 = 101;
+	public static final int SC_ELEC_BIND   	 = 102;
+	public static final int SC_EARTH    = 103;
+	public static final int SC_HAMMER   = 104;
+	public static final int SC_ANVIL  	= 105;
+	public static final int SC_METAMORPHOSIS = 106;
+	public static final int SC_EXOSKELETON 	 = 107;
+	public static final int SC_MOUNTNLOAD 	 = 108;
+	public static final int SC_RESONANCE 	 = 109;
 
 	public static final int SIZE    = 7;
 	

@@ -715,7 +715,7 @@ public class ItemSpriteSheet {
 	public static final int TROLL_HAMMER	  	= SCORCHED +5;
 	public static final int TROLL_ANVIL		  	= SCORCHED +6;
 	public static final int TROLL_LETTER		= SCORCHED +7;
-	public static final int TROLL_RACK			= SCORCHED +8;
+	public static final int BINDER_ELEC			= SCORCHED +8;
 	static{
 		assignItemRect(ELEMENT_FIRE, 16, 16);
 		assignItemRect(ELEMENT_ICE,  16, 16);
@@ -725,7 +725,7 @@ public class ItemSpriteSheet {
 		assignItemRect(TROLL_HAMMER, 14, 14);
 		assignItemRect(TROLL_ANVIL, 16, 10);
 		assignItemRect(TROLL_LETTER, 10, 11);
-		assignItemRect(TROLL_RACK, 16, 10);
+		assignItemRect(BINDER_ELEC, 16, 15);
 	}
 
 	                                                                                    //16 free slots

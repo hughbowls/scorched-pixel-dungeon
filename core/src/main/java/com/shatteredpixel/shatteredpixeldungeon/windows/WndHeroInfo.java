@@ -69,6 +69,19 @@ public class WndHeroInfo extends WndTabbed {
 			case HUNTRESS:
 				tabIcon = new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null);
 				break;
+
+			case HERETIC:
+				tabIcon = new ItemSprite(ItemSpriteSheet.BONE_BLADE, null);
+				break;
+			case ALCHEMIST:
+				tabIcon = new ItemSprite(ItemSpriteSheet.PISTOL, null);
+				break;
+			case ELEMENTALIST:
+				tabIcon = new ItemSprite(ItemSpriteSheet.ELEMENT_FIRE, null);
+				break;
+			case TROLL:
+				tabIcon = new ItemSprite(ItemSpriteSheet.TROLL_HAMMER, null);
+				break;
 		}
 
 		int finalHeight = MIN_HEIGHT;
@@ -180,6 +193,34 @@ public class WndHeroInfo extends WndTabbed {
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
 							new Image(Assets.Environment.TILES_SEWERS, 112, 96, 16, 16),
 							new ItemSprite(ItemSpriteSheet.GLOVES),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+					break;
+
+				case HERETIC:
+					icons = new Image[]{ new Image(Assets.Interfaces.BUFFS_LARGE, 240, 32, 16, 16),
+							new ItemSprite(ItemSpriteSheet.BONE_BLADE),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+					break;
+
+				case ALCHEMIST:
+					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.PISTOL),
+							new ItemSprite(ItemSpriteSheet.ARTIFACT_TOOLKIT),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+					break;
+
+				case ELEMENTALIST:
+					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER),
+							new ItemSprite(ItemSpriteSheet.ELEMENT_FIRE),
+							new ItemSprite(ItemSpriteSheet.ELEMENT_ICE),
+							new ItemSprite(ItemSpriteSheet.ELEMENT_ELEC),
+							new ItemSprite(ItemSpriteSheet.ARMOR_ELEMENTALIST_BASIC),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),};
+					break;
+
+				case TROLL:
+					icons = new Image[]{ new Image(Assets.Interfaces.TALENT_ICONS, 48, 112, 16, 16),
+							new Image(Assets.Environment.TILES_CAVES, 0, 80, 16, 16),
+							new ItemSprite(ItemSpriteSheet.TROLL_HAMMER),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 			}

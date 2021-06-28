@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
@@ -46,12 +47,12 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HereticSummonSprite;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public abstract class HereticSummon extends NPC {
 	}
 
 	@Override
-	protected float attackDelay() {
+	public float attackDelay() {
 		if (this instanceof BloodSummon){
 		    return super.attackDelay()*0.5f;
 		} else return super.attackDelay();
@@ -150,7 +151,6 @@ public abstract class HereticSummon extends NPC {
 		}
 
 		if (Dungeon.level.adjacent( pos, enemy.pos ) || rangedCooldown > 0 || canzap) {
-
 			return super.doAttack( enemy );
 
 		} else {
@@ -170,7 +170,13 @@ public abstract class HereticSummon extends NPC {
 		damage = super.attackProc( enemy, damage );
 		meleeProc( enemy, damage );
 
-		return damage;
+		if (Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CURSED_CLAW)
+				&& Dungeon.hero.belongings.weapon != null
+				&& ((MeleeWeapon)Dungeon.hero.belongings.weapon).hasCurseEnchant()){
+			return Dungeon.hero.belongings.weapon.proc( this, enemy, damage );
+		} else {
+			return damage;
+		}
 	}
 
 	private void zap() {
@@ -207,11 +213,13 @@ public abstract class HereticSummon extends NPC {
 	protected ArrayList<Class<? extends Buff>> harmfulBuffs = new ArrayList<>();
 
 	private static final String COOLDOWN = "cooldown";
+	private static final String CANZAP   = "canzap";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( COOLDOWN, rangedCooldown );
+		bundle.put( CANZAP, canzap );
 	}
 
 	@Override
@@ -220,6 +228,7 @@ public abstract class HereticSummon extends NPC {
 		if (bundle.contains( COOLDOWN )){
 			rangedCooldown = bundle.getInt( COOLDOWN );
 		}
+		canzap = bundle.getBoolean( CANZAP );
 	}
 
 	private class Wandering extends Mob.Wandering {
