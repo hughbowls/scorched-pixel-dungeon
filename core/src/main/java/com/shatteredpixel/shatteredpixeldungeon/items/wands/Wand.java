@@ -292,11 +292,18 @@ public abstract class Wand extends Item {
 	
 	@Override
 	public int level() {
+		int trueLevel = super.level();
+
+		if (cursed && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
+			trueLevel += Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
+		}
+
 		if (!cursed && curseInfusionBonus){
 			curseInfusionBonus = false;
-			updateLevel();
 		}
-		return super.level() + (curseInfusionBonus ? 1 : 0);
+
+		updateLevel();
+		return trueLevel + (curseInfusionBonus ? 1 : 0);
 	}
 	
 	@Override
@@ -338,10 +345,6 @@ public abstract class Wand extends Item {
 
 			if (charger.target.buff(ScrollEmpower.class) != null){
 				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
-			}
-
-			if (cursed && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
-				lvl += Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
 			}
 
 			TrollHammer hammer = charger.target.buff(TrollHammer.class);

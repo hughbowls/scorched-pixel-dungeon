@@ -632,14 +632,6 @@ public class Hero extends Char {
 
 		float speed = super.speed();
 
-		if (heroClass == HeroClass.TROLL){
-			if ((Dungeon.level.map[pos] == Terrain.DOOR
-					|| Dungeon.level.map[pos] == Terrain.OPEN_DOOR )
-					|| !(Dungeon.level.openSpace[pos])){
-				speed /= 2;
-			}
-		}
-
 		speed *= RingOfHaste.speedMultiplier(this);
 
 		if (belongings.armor != null) {
@@ -666,6 +658,14 @@ public class Hero extends Char {
 				blood = true;
 			}
 			if (blood) speed *= pointsInTalent(Talent.RUSH_OF_BLOOD) >= 2 ? 1.5f : 1.333f;
+		}
+
+		if (heroClass == HeroClass.TROLL){
+			if ((Dungeon.level.map[pos] == Terrain.DOOR
+					|| Dungeon.level.map[pos] == Terrain.OPEN_DOOR )
+					|| !(Dungeon.level.openSpace[pos])){
+				speed *= 0.5f;
+			}
 		}
 
 		return speed;

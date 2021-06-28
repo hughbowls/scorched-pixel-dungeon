@@ -113,7 +113,7 @@ public class Dewdrop extends Item {
 		} else if (!force) {
 			AlchemistsToolkit.kitEnergy kit = hero.buff(AlchemistsToolkit.kitEnergy.class);
 			if (hero.pointsInTalent(Talent.DEWCHEMY) >= 2 && kit != null){
-				kit.gainCharge(1 + 2*(hero.pointsInTalent(Talent.DEWCHEMY) == 3 ? 1 : 0));
+				kit.gainCharge(0.1f*(1 + 2*(hero.pointsInTalent(Talent.DEWCHEMY) == 3 ? 1 : 0)));
 				return true;
 			}
 

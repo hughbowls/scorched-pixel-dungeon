@@ -341,10 +341,6 @@ public class Ring extends KindofMisc {
 			lvl++;
 		}
 
-		if (cursed && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
-			lvl += Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
-		}
-
 		return lvl;
 	}
 

@@ -406,7 +406,13 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public int level() {
-		return super.level() + (curseInfusionBonus ? 1 : 0);
+		int trueLevel = super.level();
+
+		if ((cursed || hasCurseGlyph()) && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
+			trueLevel += Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
+		}
+
+		return trueLevel + (curseInfusionBonus ? 1 : 0);
 	}
 	
 	//other things can equip these, for now we assume only the hero can be affected by levelling debuffs
@@ -415,10 +421,6 @@ public class Armor extends EquipableItem {
 		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
 			if (innovationBonus != 0) {
 				return super.buffedLvl()+innovationBonus;
-			}
-
-			if ((cursed || hasCurseGlyph()) && Dungeon.hero.hasTalent(Talent.ENHANCED_CURSE)){
-				return super.buffedLvl() + Dungeon.hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2 ? 2 : 1;
 			}
 
 			return super.buffedLvl();

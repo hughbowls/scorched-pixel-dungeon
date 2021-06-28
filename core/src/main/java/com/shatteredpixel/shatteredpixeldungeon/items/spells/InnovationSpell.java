@@ -87,6 +87,7 @@ public class InnovationSpell extends InventorySpell {
 		if (item instanceof MeleeWeapon) {
 			Weapon w = (Weapon) item;
 			w.setInnovation(3, 50);
+			//Of course he can't use staff
 			if (w instanceof MagesStaff){
 				((MagesStaff) w).updateWand(true);
 			}

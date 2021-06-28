@@ -1137,6 +1137,11 @@ public abstract class Mob extends Char {
 		for (Mob mob : level.mobs.toArray( new Mob[0] )) {
 			//preserve directable allies no matter where they are
 			if (mob instanceof DirectableAlly) {
+				//except siege machine
+				if (mob instanceof SiegeMachine.SiegeAlly) {
+					return;
+				}
+
 				((DirectableAlly) mob).clearDefensingPos();
 				level.mobs.remove(mob);
 				heldAllies.add(mob);
@@ -1148,9 +1153,7 @@ public abstract class Mob extends Char {
 			//preserve intelligent allies if they are near the hero
 			} else if (mob.alignment == Alignment.ALLY
 					&& mob.intelligentAlly
-					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5
-					//except Siege Machine
-					&& !(mob instanceof SiegeMachine.SiegeAlly)){
+					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5){
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 			}
