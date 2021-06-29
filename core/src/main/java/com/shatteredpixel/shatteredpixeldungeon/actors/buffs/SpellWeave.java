@@ -63,7 +63,7 @@ public class SpellWeave extends Buff implements ActionIndicator.Action {
 	public float timeLeft = 0f;
 	private float initialCountTime = 10f;
 
-	public int clairvoyance_left;
+	public int clairvoyance_left = 0;
 
 	@Override
 	public int icon() {
@@ -313,9 +313,9 @@ public class SpellWeave extends Buff implements ActionIndicator.Action {
 				if (hero.hasTalent(Talent.DEVASTATOR)) {
 					switch (hero.pointsInTalent(Talent.DEVASTATOR)) {
 						case 1:
-							factor = 1.5f; break;
+							factor = 1.75f; break;
 						case 2: case 3:
-							factor = 2f;   break;
+							factor = 2.5f;   break;
 					}
 				}
 

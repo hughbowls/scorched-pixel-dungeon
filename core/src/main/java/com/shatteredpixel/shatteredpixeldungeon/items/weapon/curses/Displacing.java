@@ -23,18 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Displacing extends Weapon.Enchantment {
 
@@ -67,12 +61,7 @@ public class Displacing extends Weapon.Enchantment {
 				defender.sprite.place( defender.pos );
 				defender.sprite.visible = Dungeon.level.heroFOV[defender.pos];
 
-				if (hero.heroClass == HeroClass.HERETIC){
-					float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
-					Buff.affect(defender, Blindness.class, pow);
-					Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, pow).charID = defender.id();
-				}
-
+				damage = weapon.hereticProc(weapon, attacker, defender, damage);
 				return 0;
 
 			}

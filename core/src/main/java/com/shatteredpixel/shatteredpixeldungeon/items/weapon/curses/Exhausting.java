@@ -25,13 +25,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Exhausting extends Weapon.Enchantment {
 
@@ -42,14 +38,9 @@ public class Exhausting extends Weapon.Enchantment {
 
 		float procChance = 1/15f * procChanceMultiplier(attacker);
 		if (attacker == Dungeon.hero && Random.Float() < procChance) {
-			int rand = Random.NormalIntRange(5, 20);
-			Buff.affect(attacker, Weakness.class, rand);
+			Buff.affect(attacker, Weakness.class, Random.NormalIntRange(5, 20));
 
-			if (hero.heroClass == HeroClass.HERETIC){
-				float pow = rand + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
-				Buff.affect(defender, Weakness.class, pow);
-				defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-			}
+			damage = weapon.hereticProc(weapon, attacker, defender, damage);
 		}
 
 		return damage;

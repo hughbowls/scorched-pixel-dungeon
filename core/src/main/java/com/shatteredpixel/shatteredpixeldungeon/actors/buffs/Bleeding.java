@@ -91,21 +91,24 @@ public class Bleeding extends Buff {
 
 			if (dmg > 0) {
 
+				if (target.alignment != Dungeon.hero.alignment) {
+					if (Dungeon.hero.pointsInTalent(Talent.SERUM) == 3) {
+						Dewdrop dewdrop = new Dewdrop();
+						if (Random.NormalIntRange(0, 3) == 3)
+							Dungeon.level.drop(dewdrop, target.pos).sprite.drop();
+					}
+				}
+
 				target.damage( dmg, this );
 				if (target.sprite.visible) {
 					Splash.at( target.sprite.center(), -PointF.PI / 2, PointF.PI / 6,
 							target.sprite.blood(), Math.min( 10 * dmg / target.HT, 10 ) );
 				}
 
-				if (target.alignment != Dungeon.hero.alignment){
+				if (target.alignment != Dungeon.hero.alignment) {
 					if (!target.isAlive() && Dungeon.hero.pointsInTalent(Talent.SERUM) >= 2) {
 						Dewdrop dewdrop = new Dewdrop();
-						Dungeon.level.drop(dewdrop, Dungeon.hero.pos).sprite.drop();
-					}
-					if (target.isAlive() && Dungeon.hero.pointsInTalent(Talent.SERUM) == 2) {
-						Dewdrop dewdrop = new Dewdrop();
-						if (Random.Int(0, 3) == 3)
-						Dungeon.level.drop(dewdrop, Dungeon.hero.pos).sprite.drop();
+						Dungeon.level.drop(dewdrop, target.pos).sprite.drop();
 					}
 				}
 

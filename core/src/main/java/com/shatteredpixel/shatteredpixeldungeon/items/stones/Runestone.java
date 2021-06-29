@@ -179,7 +179,7 @@ public abstract class Runestone extends Item {
 						}
 
 						@Override
-						public void onBackPressed() { }
+						public void onBackPressed() { super.onBackPressed(); }
 					});
 
 				}
@@ -219,7 +219,7 @@ public abstract class Runestone extends Item {
 						}
 
 						@Override
-						public void onBackPressed() { }
+						public void onBackPressed() { super.onBackPressed(); }
 					});
 				}
 
@@ -256,7 +256,7 @@ public abstract class Runestone extends Item {
 						}
 
 						@Override
-						public void onBackPressed() { }
+						public void onBackPressed() { super.onBackPressed(); }
 					});
 
 				}
@@ -290,7 +290,7 @@ public abstract class Runestone extends Item {
 						}
 
 						@Override
-						public void onBackPressed() { }
+						public void onBackPressed() { super.onBackPressed(); }
 					});
 				}
 

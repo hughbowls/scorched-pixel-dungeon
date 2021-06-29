@@ -111,10 +111,16 @@ public class Dewdrop extends Item {
 			}
 
 		} else if (!force) {
+
 			AlchemistsToolkit.kitEnergy kit = hero.buff(AlchemistsToolkit.kitEnergy.class);
-			if (hero.pointsInTalent(Talent.DEWCHEMY) >= 2 && kit != null){
-				kit.gainCharge(0.1f*(1 + 2*(hero.pointsInTalent(Talent.DEWCHEMY) == 3 ? 1 : 0)));
-				return true;
+			if (kit != null) {
+				if (hero.hasTalent(Talent.DEWCHEMY) && hero.pointsInTalent(Talent.DEWCHEMY) >= 2) {
+					kit.gainChargeDirectly(hero.pointsInTalent(Talent.DEWCHEMY) == 3 ? 1f : 0.5f);
+
+					hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(AlchemistsToolkit.class,
+							"energy", hero.pointsInTalent(Talent.DEWCHEMY) == 3 ? 1f : 0.5f));
+					return true;
+				}
 			}
 
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );

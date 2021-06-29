@@ -1856,6 +1856,30 @@ public class Hero extends Char {
 		Berserk berserk = buff(Berserk.class);
 		if (berserk != null) berserk.recover(percent);
 
+		if (belongings.ring != null) {
+			if (belongings.ring.innovationBonus != 0) {
+				belongings.ring.innovationLeft--;
+				if (kit != null) kit.gainChargeDirectly(1f);
+				if (belongings.ring.innovationLeft == 1)
+					GLog.w(Messages.get(Ring.class, "innovation_msg"));
+				if (belongings.ring.innovationLeft <= 0) {
+					belongings.ring.innovationBonus = 0;
+					if (belongings.ring instanceof RingOfMight) updateHT(false);
+				}
+			}
+		}
+		if (belongings.misc != null && belongings.misc instanceof Ring) {
+			if (((Ring) belongings.misc).innovationBonus != 0) {
+				((Ring) belongings.misc).innovationLeft--;
+				if (kit != null) kit.gainChargeDirectly(1f);
+				if (((Ring) belongings.misc).innovationLeft == 1)
+					GLog.w(Messages.get(Ring.class, "innovation_msg"));
+				if (((Ring) belongings.misc).innovationLeft <= 0)
+					((Ring) belongings.misc).innovationBonus = 0;
+				if (belongings.misc instanceof RingOfMight) updateHT(false);
+			}
+		}
+
 		if (source != PotionOfExperience.class) {
 			for (Item i : belongings) {
 				i.onHeroGainExp(percent, this);
@@ -1884,55 +1908,6 @@ public class Hero extends Char {
 
 		boolean levelUp = false;
 		while (this.exp >= maxExp()) {
-
-			if (belongings.ring != null) {
-				if (belongings.ring.innovationBonus != 0) {
-					if (belongings.ring.innovationBonus != 0) {
-
-						if (hasTalent(Talent.CATALYST_MK2)) {
-							belongings.ring.innovationPartialLeft++;
-							if (belongings.ring.innovationPartialLeft >= 1
-									+ pointsInTalent(Talent.CATALYST_MK2)) {
-								belongings.ring.innovationPartialLeft = 0;
-								belongings.ring.innovationLeft--;
-							}
-
-						} else {
-							belongings.ring.innovationLeft--;
-						}
-
-						if (belongings.ring.innovationLeft == 1)
-							GLog.w(Messages.get(Ring.class, "innovation_msg"));
-						if (belongings.ring.innovationLeft <= 0)
-							belongings.ring.innovationBonus = 0;
-						updateQuickslot();
-					}
-				}
-			}
-			if (belongings.misc != null && belongings.misc instanceof Ring) {
-				if (((Ring) belongings.misc).innovationBonus != 0) {
-					if (((Ring) belongings.misc).innovationBonus != 0) {
-
-						if (hasTalent(Talent.CATALYST_MK2)) {
-							((Ring) belongings.misc).innovationPartialLeft++;
-							if (((Ring) belongings.misc).innovationPartialLeft >= 1
-									+ pointsInTalent(Talent.CATALYST_MK2)) {
-								((Ring) belongings.misc).innovationPartialLeft = 0;
-								((Ring) belongings.misc).innovationLeft--;
-							}
-
-						} else {
-							((Ring) belongings.misc).innovationLeft--;
-						}
-
-						if (((Ring) belongings.misc).innovationLeft == 1)
-							GLog.w(Messages.get(Ring.class, "innovation_msg"));
-						if (((Ring) belongings.misc).innovationLeft <= 0)
-							((Ring) belongings.misc).innovationBonus = 0;
-						updateQuickslot();
-					}
-				}
-			}
 
 			this.exp -= maxExp();
 			if (lvl < MAX_LEVEL) {

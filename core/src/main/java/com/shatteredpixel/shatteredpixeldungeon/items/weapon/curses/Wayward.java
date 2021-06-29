@@ -21,18 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.watabou.utils.Random;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Wayward extends Weapon.Enchantment {
 
@@ -42,18 +33,7 @@ public class Wayward extends Weapon.Enchantment {
 	public int proc( Weapon weapon, Char attacker, Char defender, int damage ) {
 		//no proc effect, see weapon.accuracyFactor for effect
 
-		if (hero.heroClass == HeroClass.HERETIC){
-			for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
-				float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
-				if (mob.alignment != Char.Alignment.ALLY
-						&& mob.alignment != Char.Alignment.NEUTRAL
-						&& Dungeon.level.heroFOV[mob.pos]) {
-					Buff.affect(mob, Hex.class, pow);
-					mob.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-				}
-			}
-		}
-
+		damage = weapon.hereticProc(weapon, attacker, defender, damage);
 		return damage;
 	}
 

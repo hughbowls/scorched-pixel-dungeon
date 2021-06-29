@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -114,8 +115,19 @@ abstract public class ClassArmor extends Armor {
 			classArmor = new TrollArmor();
 			break;
 		}
-		
-		classArmor.level(armor.level() - (armor.curseInfusionBonus ? 1 : 0));
+
+		Hero hero = Dungeon.hero;
+		int lvl = armor.level() - (armor.curseInfusionBonus ? 1 : 0);
+		if (hero.hasTalent(Talent.ENHANCED_CURSE)
+				&& (armor.cursed || armor.hasCurseGlyph())) {
+			if (hero.pointsInTalent(Talent.ENHANCED_CURSE) >= 2){
+				lvl -= 2;
+			} if (hero.pointsInTalent(Talent.ENHANCED_CURSE) == 1){
+				lvl -= 1;
+			}
+		}
+
+		classArmor.level(lvl);
 		classArmor.tier = armor.tier;
 		classArmor.augment = armor.augment;
 		classArmor.inscribe( armor.glyph );

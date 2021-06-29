@@ -205,7 +205,7 @@ public class AlchemistsToolkit extends Artifact {
 				chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
 
 				if (!isEquipped((Hero)target)) {
-					chargeGain *= 0.4f*((Hero)target).pointsInTalent(Talent.PORTABLE_KIT)/3f;
+					chargeGain *= 0.4f*(((Hero)target).pointsInTalent(Talent.PORTABLE_KIT)/3f);
 				}
 
 				partialCharge += chargeGain;
@@ -224,6 +224,21 @@ public class AlchemistsToolkit extends Artifact {
 				}
 			} else
 				partialCharge = 0;
+		}
+
+		public void gainChargeDirectly(float num) {
+			if (num < 1) {
+				partialCharge += num;
+				if (partialCharge >= 1) {
+					charge++;
+					partialCharge -= 1;
+				}
+			} else charge += num;
+
+			if (charge >= chargeCap) {
+				charge = chargeCap;
+				partialCharge = 0;
+			}
 		}
 		
 		@Override

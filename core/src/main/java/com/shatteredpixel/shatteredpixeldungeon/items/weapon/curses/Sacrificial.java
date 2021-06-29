@@ -24,12 +24,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Sacrificial extends Weapon.Enchantment {
 
@@ -42,11 +39,7 @@ public class Sacrificial extends Weapon.Enchantment {
 		if (Random.Float() < procChance) {
 			Buff.affect(attacker, Bleeding.class).set(Math.max(1, attacker.HP/6));
 
-			if (hero.heroClass == HeroClass.HERETIC){
-				int pow = Math.max(1, attacker.HP/6)
-						+ (int) (Random.NormalFloat(weapon.buffedLvl()*0.2f, weapon.buffedLvl()*0.5f));
-				Buff.affect(defender, Bleeding.class).set(Math.max(1, pow));
-			}
+			damage = weapon.hereticProc(weapon, attacker, defender, damage);
 		}
 
 		return damage;

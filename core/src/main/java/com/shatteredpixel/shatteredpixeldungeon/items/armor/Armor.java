@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.alchemist.Exoskeleton;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -73,8 +72,6 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Armor extends EquipableItem {
 
@@ -128,10 +125,8 @@ public class Armor extends EquipableItem {
 
 	public int innovationBonus = 0;
 	public int innovationLeft = 0;
-	public int innovationPartialLeft = 0;
 	private static final String INNOVATION_BONUS	 = "innovation_bonus";
 	private static final String INNOVATION_LEFT 	 = "innovation_left";
-	private static final String INNOVATION_PARTIAL_LEFT = "innovation_partial_left";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -145,7 +140,6 @@ public class Armor extends EquipableItem {
 
 		bundle.put( INNOVATION_BONUS, innovationBonus );
 		bundle.put( INNOVATION_LEFT, innovationLeft );
-		bundle.put( INNOVATION_PARTIAL_LEFT, innovationPartialLeft );
 	}
 
 	@Override
@@ -161,7 +155,6 @@ public class Armor extends EquipableItem {
 
 		innovationBonus = bundle.getInt( INNOVATION_BONUS );
 		innovationLeft = bundle.getInt( INNOVATION_LEFT );
-		innovationPartialLeft = bundle.getInt( INNOVATION_PARTIAL_LEFT );
 	}
 
 	@Override
@@ -451,6 +444,7 @@ public class Armor extends EquipableItem {
 		if (inscribe && (glyph == null || glyph.curse())){
 			inscribe( Glyph.random() );
 		} else {
+			Hero hero = Dungeon.hero;
 			if (hasCurseGlyph() && hero.heroClass == HeroClass.HERETIC){
 				// preserve it
 				return super.upgrade();
@@ -485,16 +479,7 @@ public class Armor extends EquipableItem {
 		}
 
 		if (innovationBonus != 0){
-
-			if (curUser.hasTalent(Talent.CATALYST_MK2)) {
-				innovationPartialLeft++;
-				if (innovationPartialLeft >= 1 + curUser.pointsInTalent(Talent.CATALYST_MK2)) {
-					innovationPartialLeft = 0;
-					innovationLeft--;
-				} else {
-					innovationLeft--;
-				}
-			}
+			innovationLeft--;
 
 			if (innovationLeft == 5) GLog.w(Messages.get(Armor.class, "innovation_msg"));
 			if (innovationLeft <= 0) innovationBonus = 0;
@@ -554,6 +539,7 @@ public class Armor extends EquipableItem {
 			info += "\n\n" +  Messages.get(Armor.class, "inscribed", glyph.name());
 			info += " " + glyph.desc();
 
+			Hero hero = Dungeon.hero;
 			if (hero.heroClass == HeroClass.HERETIC && hasCurseGlyph()){
 				info += "\n- " + Messages.get(glyph, "heretic_desc");
 			}
@@ -611,6 +597,11 @@ public class Armor extends EquipableItem {
 
 	public int STRReq(){
 		if (innovationBonus != 0){
+			Hero hero = Dungeon.hero;
+			if (hero.hasTalent(Talent.CATALYST_MK2)
+					&& hero.pointsInTalent(Talent.CATALYST_MK2) >= 2){
+				return STRReq(level()+innovationBonus)-1;
+			}
 			return STRReq(level()+innovationBonus);
 		}
 
@@ -710,6 +701,12 @@ public class Armor extends EquipableItem {
 		};
 		
 		public abstract int proc( Armor armor, Char attacker, Char defender, int damage );
+
+		protected float procChanceMultiplier( Char defender ) {
+			float multi = 1f;
+
+			return multi;
+		}
 		
 		public String name() {
 			if (!curse())

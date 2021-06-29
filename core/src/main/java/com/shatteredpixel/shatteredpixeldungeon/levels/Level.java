@@ -1116,8 +1116,8 @@ public abstract class Level implements Bundlable {
 				sense *= 1.5f;
 			}
 			SpellWeave weave = c.buff(SpellWeave.class);
-			if (weave != null && weave.clairvoyance_left > 0){
-				sense = Math.max(sense, weave.clairvoyance_left);
+			if (weave != null && weave.clairvoyance_left > 0) {
+				sense += weave.clairvoyance_left;
 			}
 		}
 		

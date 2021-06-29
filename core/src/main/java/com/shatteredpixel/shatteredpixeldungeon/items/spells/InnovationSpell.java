@@ -96,7 +96,7 @@ public class InnovationSpell extends InventorySpell {
 			a.setInnovation(3, 50);
 		} else if (item instanceof Ring){
 			Ring r = (Ring) item;
-			r.setInnovation(3, 2);
+			r.setInnovation(3, 50);
 			if (item instanceof RingOfMight){
 				curUser.updateHT(false);
 			}

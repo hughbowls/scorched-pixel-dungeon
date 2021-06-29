@@ -627,14 +627,14 @@ public class ElementalSpell extends TargetedSpell {
 			Item item = hero.belongings.getItem(ElementalSpellFire.class);
 			int bonus = 1+(hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
 			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
-			return 2+(int)(1.5f*item.buffedLvl())+(2*bonus);
+			return 2+(int)(0.8f*item.buffedLvl())+(2*bonus);
 		}
 		public static int max() {
 			Hero hero = Dungeon.hero;
 			Item item = hero.belongings.getItem(ElementalSpellFire.class);
 			int bonus = 1 + (hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
 			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
-			return 4+(int)(2.5f*item.buffedLvl())+(2+(2*bonus));
+			return 4+(int)(1.6f*item.buffedLvl())+(2+(2*bonus));
 		}
 
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
@@ -723,14 +723,14 @@ public class ElementalSpell extends TargetedSpell {
 			Item item = hero.belongings.getItem(ElementalSpellIce.class);
 			int bonus = 1+(hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
 			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
-			return 1+(int)(0.5f*item.buffedLvl())+(2*bonus);
+			return 1+(int)(0.4f*item.buffedLvl())+(2*bonus);
 		}
 		public static int max() {
 			Hero hero = Dungeon.hero;
 			Item item = hero.belongings.getItem(ElementalSpellIce.class);
 			int bonus = 1 + (hero.pointsInTalent(Talent.ELEMENTAL_MASTER));
 			if (!hero.hasTalent(Talent.ELEMENTAL_MASTER)) bonus = 0;
-			return 2+(int)(1.5f*item.buffedLvl())+(2+(2*bonus));
+			return 2+(int)(1.25f*item.buffedLvl())+(2+(2*bonus));
 		}
 		public static int damageRoll() { return Random.NormalIntRange( min(), max() ); }
 
@@ -1302,7 +1302,7 @@ public class ElementalSpell extends TargetedSpell {
 			Hero hero = Dungeon.hero;
 			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
 			lvl = fire.buffedLvl();
-			int tier = Math.max(1, Math.round(fire.buffedLvl() * 0.5f));
+			int tier = Math.min(1 + (int)(lvl*0.5f), 5);
 
 			return  tier +  //base
 					lvl;    //level scaling
@@ -1313,7 +1313,7 @@ public class ElementalSpell extends TargetedSpell {
 			Hero hero = Dungeon.hero;
 			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
 			lvl = fire.buffedLvl();
-			int tier = Math.max(1, Math.round(fire.buffedLvl() * 0.5f));
+			int tier = Math.min(1 + (int)(lvl*0.5f), 5);
 
 			return  5*(tier+1) +    //base
 					lvl*(tier+1);   //level scaling
@@ -1364,7 +1364,7 @@ public class ElementalSpell extends TargetedSpell {
 			Hero hero = Dungeon.hero;
 			ElementalSpell elec = hero.belongings.getItem(ElementalSpell.ElementalSpellElec.class);
 			lvl = elec.buffedLvl();
-			int tier = Math.max(1, Math.round(elec.buffedLvl() * 0.5f));
+			int tier = Math.min(1 + (int)(lvl*0.5f), 5);
 
 			return  2 * tier +                      //base
 					(tier == 1 ? lvl : 2*lvl);      //level scaling
@@ -1375,7 +1375,7 @@ public class ElementalSpell extends TargetedSpell {
 			Hero hero = Dungeon.hero;
 			ElementalSpell elec = hero.belongings.getItem(ElementalSpell.ElementalSpellElec.class);
 			lvl = elec.buffedLvl();
-			int tier = Math.max(1, Math.round(elec.buffedLvl() * 0.5f));
+			int tier = Math.min(1 + (int)(lvl*0.5f), 5);
 
 			return  5 * tier +                      //base
 					(tier == 1 ? 2*lvl : tier*lvl); //level scaling

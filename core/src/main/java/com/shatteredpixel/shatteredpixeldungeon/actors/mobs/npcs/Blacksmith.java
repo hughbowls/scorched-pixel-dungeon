@@ -158,7 +158,7 @@ public class Blacksmith extends NPC {
 			if (Statistics.amuletObtained && !Quest.surfacing) {
 				Quest.surfacing = true;
 
-				tell( Messages.get(this, "surfacing") );
+				tell( Messages.get(Letter.class, "surfacing") );
 
 				Letter letter = new Letter();
 				if (letter.doPickUp( Dungeon.hero )) {

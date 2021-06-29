@@ -14,7 +14,7 @@ allprojects {
         appName = 'Scorched Pixel Dungeon'
         appPackageName = 'com.scorchedpixel.scorchedpixeldungeon'
 
-        appVersionCode = 555
+        appVersionCode = 556
         appVersionName = '0.9.3c_based'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8

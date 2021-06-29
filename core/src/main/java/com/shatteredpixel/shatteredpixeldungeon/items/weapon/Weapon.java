@@ -24,16 +24,29 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Metabolism;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Annoying;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Exhausting;
@@ -56,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocki
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstable;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -106,11 +120,11 @@ abstract public class Weapon extends KindOfWeapon {
 
 	@Override
 	public int proc( Char attacker, Char defender, int damage ) {
-		
+
 		if (enchantment != null && attacker.buff(MagicImmune.class) == null) {
 			damage = enchantment.proc( this, attacker, defender, damage );
 		}
-		
+
 		if (!levelKnown && attacker == Dungeon.hero) {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
 			availableUsesToID -= uses;
@@ -135,20 +149,122 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 
 		if (this instanceof MeleeWeapon && ((MeleeWeapon)this).innovationBonus != 0){
-
-			if (curUser.hasTalent(Talent.CATALYST_MK2)){
-				innovationPartialLeft++;
-				if (innovationPartialLeft >= 1 + curUser.pointsInTalent(Talent.CATALYST_MK2)){
-					innovationPartialLeft = 0;
-					innovationLeft--;
-				}
-			} else {
-				innovationLeft--;
-			}
-
+			innovationLeft--;
 			if (innovationLeft == 5) GLog.w(Messages.get(Weapon.class, "innovation_msg"));
 			if (innovationLeft <= 0) innovationBonus = 0;
 			updateQuickslot();
+		}
+
+		return damage;
+	}
+
+	public int hereticProc(Weapon weapon, Char attacker, Char defender, int damage) {
+		Hero hero = Dungeon.hero;
+		Level l = Dungeon.level;
+		if (hero != null || hero.heroClass != HeroClass.HERETIC) return damage;
+
+		if (weapon == null) weapon = (Weapon)hero.belongings.weapon;
+		Enchantment type = weapon.enchantment;
+		if (defender == null || !defender.isAlive()) return damage;
+		if (type == null || !weapon.hasCurseEnchant()) return damage;
+
+		if (type instanceof Annoying){
+			for (Mob mob : l.mobs.toArray(new Mob[0])) {
+				float pow = 5f + Random.NormalFloat(weapon.buffedLvl() * 0.5f, weapon.buffedLvl() * 1.5f);
+				if (mob.alignment != hero.alignment && l.heroFOV[mob.pos]) {
+					Buff.affect(mob, Amok.class, pow);
+				}
+			}
+			return damage;
+		}
+
+		if (type instanceof Displacing){
+			float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+			Buff.affect(defender, Blindness.class, pow);
+			Buff.append(hero, TalismanOfForesight.CharAwareness.class, pow).charID = defender.id();
+
+			return damage;
+		}
+
+		if (type instanceof Exhausting){
+			int dur = Random.NormalIntRange(5, 20);
+			float pow = dur + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+			Buff.affect(defender, Weakness.class, pow);
+			defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+
+			return damage;
+		}
+
+		if (type instanceof Fragile){
+			int hits = ((Fragile) type).getHits();
+
+			int enemyHealth = defender.HP - damage;
+			if (enemyHealth <= 0) return damage; //no point in proccing if they're already dead.
+
+			// BaseMax at 150 hits = 10%, +1% per lvl, activates only after 50 hits+
+			// Limited at 25%
+			int chanceGrim = Math.max(0, (hits + (int) (weapon.buffedLvl()*1.5f) - 50));
+			float res = defender.resist(Grim.class);
+			if (chanceGrim > (int) (250*1.5)) chanceGrim = 250;
+			if (Random.Int( 1500 ) <= chanceGrim
+					&& !(defender.isImmune(Grim.class)
+					|| defender.isInvulnerable(attacker.getClass()))){
+				defender.damage( defender.HP * (int) (res), Grim.class );
+				defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				((Fragile) type).setHits(Math.max(0, hits-50));
+
+			} else {
+				// BaseMax at 150 hits = 20%, +2% per lvl
+				// Limited at 66%
+				int chanceDoom = Math.max(0, (hits + (int) (weapon.buffedLvl()*2f)));
+				if (chanceDoom > 660) chanceDoom = 660;
+				if (Random.Int( 1000 ) <= chanceDoom){
+					Buff.affect(defender, Doom.class);
+					defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				}
+			}
+
+			return damage;
+		}
+
+		if (type instanceof Friendly){
+			float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+			Buff.prolong(defender, StoneOfAggression.Aggression.class, pow);
+			defender.sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.3f, 3 );
+
+			return damage;
+		}
+
+		if (type instanceof Polarized){
+			for (Mob mob : l.mobs.toArray( new Mob[0] )) {
+				float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+				if (mob.alignment != hero.alignment && l.heroFOV[mob.pos]) {
+					Buff.affect(mob, Vulnerable.class, pow);
+					mob.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				}
+			}
+
+			return damage;
+		}
+
+		if (type instanceof Sacrificial){
+			int pow = Math.max(1, attacker.HP/6)
+					+ (int) (Random.NormalFloat(weapon.buffedLvl()*0.2f, weapon.buffedLvl()*0.5f));
+			Buff.affect(defender, Bleeding.class).set(Math.max(1, pow));
+
+			return damage;
+		}
+
+		if (type instanceof Wayward){
+			for (Mob mob : l.mobs.toArray( new Mob[0] )) {
+				float pow = 5f + Random.NormalFloat(weapon.buffedLvl()*0.5f, weapon.buffedLvl()*1.5f);
+				if (mob.alignment != hero.alignment && l.heroFOV[mob.pos]) {
+					Buff.affect(mob, Hex.class, pow);
+					mob.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
+				}
+			}
+
+			return damage;
 		}
 
 		return damage;
@@ -170,10 +286,8 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public int innovationBonus = 0;
 	public int innovationLeft = 0;
-	public int innovationPartialLeft = 0;
 	private static final String INNOVATION_BONUS	 = "innovation_bonus";
 	private static final String INNOVATION_LEFT 	 = "innovation_left";
-	private static final String INNOVATION_PARTIAL_LEFT = "innovation_partial_lLeft";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -186,7 +300,6 @@ abstract public class Weapon extends KindOfWeapon {
 
 		bundle.put( INNOVATION_BONUS, innovationBonus );
 		bundle.put( INNOVATION_LEFT, innovationLeft );
-		bundle.put( INNOVATION_PARTIAL_LEFT, innovationPartialLeft );
 	}
 	
 	@Override
@@ -201,7 +314,6 @@ abstract public class Weapon extends KindOfWeapon {
 
 		innovationBonus = bundle.getInt( INNOVATION_BONUS );
 		innovationLeft = bundle.getInt( INNOVATION_LEFT );
-		innovationPartialLeft = bundle.getInt( INNOVATION_PARTIAL_LEFT );
 	}
 	
 	@Override
@@ -212,7 +324,6 @@ abstract public class Weapon extends KindOfWeapon {
 		// for Innovator
 		innovationBonus = 0;
 		innovationLeft = 0;
-		innovationPartialLeft = 0;
 	}
 	
 	@Override
@@ -303,15 +414,13 @@ abstract public class Weapon extends KindOfWeapon {
 	public void setInnovation(int bonus, int left) {
 		this.innovationBonus = bonus;
 		this.innovationLeft = left;
-		this.innovationPartialLeft = 0;
-		if (this.level() >= 4){
-			this.innovationBonus--;
-			if (this.level() >= 8){
-				this.innovationBonus--;
-			}
-		}
+		if (this.level() >= 4) this.innovationBonus--;
+		if (this.level() >= 8) this.innovationBonus--;
 		if (this.innovationBonus < 0) this.innovationBonus = 0;
 	}
+
+	public int getInnovationBonus(){ return this.innovationBonus; }
+	public int getInnovationLeft(){ return this.innovationLeft; }
 
 	@Override
 	public Item upgrade() {
@@ -328,14 +437,11 @@ abstract public class Weapon extends KindOfWeapon {
 			//Scorched: Troll's T2
 			Hero hero = Dungeon.hero;
 			if (hero != null && hero.hasTalent(Talent.UPGRADE_MASTERY)){
-				//same as Vanilla
-				cursed = false;
+				cursed = false; //same as Vanilla
 				//if talent is LV2, enchant it randomly if it isn't good-enchanted
-				if (!hasGoodEnchant() && hero.pointsInTalent(Talent.UPGRADE_MASTERY) == 2){
+				if (!hasGoodEnchant() && hero.pointsInTalent(Talent.UPGRADE_MASTERY) == 2)
 					enchant(Enchantment.random());
-				}
-				//Always preserve good-enchantments
-				return super.upgrade();
+				return super.upgrade(); //Always preserve good-enchantments
 			}
 
 			//Scorched: Heretic; preserve curse-enchantments (NOT boolean 'cursed')
@@ -457,17 +563,24 @@ abstract public class Weapon extends KindOfWeapon {
 					}
 				}
 
+				Weapon wep = ((Weapon)((Hero) attacker).belongings.weapon);
+				//Scorched: little trick to reach getInnovationLeft();
+				if (wep != null && wep.getInnovationLeft() > 0 && ((Hero) attacker).hasTalent(Talent.CATALYST_MK2)){
+					multi *= 1.3f;
+				}
+
 				if (((Hero) attacker).hasTalent(Talent.ARCANESMITH)
 						&& ((Hero) attacker).pointsInTalent(Talent.ARCANESMITH) >= 2) {
 					TrollHammer hammer = attacker.buff(TrollHammer.class);
 					if (hammer != null) {
 						multi += 0.05f * hammer.boost;
-						if (hammer.getBoost() >= 10 && ((Hero) attacker).pointsInTalent(Talent.ARCANESMITH) == 3){
+						if (hammer.getBoost() >= 10 && ((Hero) attacker).pointsInTalent(Talent.ARCANESMITH) == 3) {
 							multi += 10f; //a.k.a. "always activates enchantment"
 						}
 					}
 				}
 			}
+
 			return multi;
 		}
 

@@ -22,17 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Fragile extends Weapon.Enchantment {
 
@@ -45,36 +37,12 @@ public class Fragile extends Weapon.Enchantment {
 		damage *= (1f - hits*0.005f);
 		if (hits < 150) hits++;
 
-		if (hero.heroClass == HeroClass.HERETIC){
-
-			int enemyHealth = defender.HP - damage;
-			if (enemyHealth <= 0) return damage; //no point in proccing if they're already dead.
-
-			// BaseMax at 150 hits = 10%, +1% per lvl, activates only after 50 hits+
-			// Limited at 25%
-			int chanceGrim = Math.max(0, (hits + (int) (weapon.buffedLvl()*1.5f) - 50));
-			float res = defender.resist(Grim.class);
-			if (chanceGrim > (int) (250*1.5)) chanceGrim = 250;
-			if (Random.Int( 1500 ) <= chanceGrim
-				&& !(defender.isImmune(Grim.class)
-					|| defender.isInvulnerable(attacker.getClass()))){
-				defender.damage( defender.HP * (int) (res), Grim.class );
-				defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-				hits = Math.max(0, hits-50);
-
-			} else {
-				// BaseMax at 150 hits = 20%, +2% per lvl
-				// Limited at 66%
-				int chanceDoom = Math.max(0, (hits + (int) (weapon.buffedLvl()*2f)));
-				if (chanceDoom > 660) chanceDoom = 660;
-				if (Random.Int( 1000 ) <= chanceDoom){
-					Buff.affect(defender, Doom.class);
-					defender.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
-				}
-			}
-		}
+		damage = weapon.hereticProc(weapon, attacker, defender, damage);
 		return damage;
 	}
+
+	public int getHits() { return hits; }
+	public void setHits(int num) { hits = num; }
 
 	@Override
 	public boolean curse() {
