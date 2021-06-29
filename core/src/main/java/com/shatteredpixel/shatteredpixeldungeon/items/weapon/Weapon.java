@@ -426,31 +426,33 @@ abstract public class Weapon extends KindOfWeapon {
 	public Item upgrade() {
 		return upgrade(false);
 	}
-	
+
 	public Item upgrade(boolean enchant ) {
+
+		Hero hero = Dungeon.hero;
+		if (hero != null){
+			//Scorched: Heretic; preserve curse-enchantments (NOT boolean 'cursed')
+			if ((hasCurseEnchant() && hero.heroClass == HeroClass.HERETIC)){
+				return super.upgrade();
+			}
+
+			if (hero.hasTalent(Talent.UPGRADE_MASTERY)){
+				if (hasCurseEnchant()) enchant(null); //Remove curse-enchantments
+
+				if (enchantment == null && hero.pointsInTalent(Talent.UPGRADE_MASTERY) >= 2)
+					enchant(Enchantment.random()); //If LV2, get random good-enchantments
+
+				cursed = false;
+				return super.upgrade(); //Always preserve good-enchantments
+			}
+		}
 
 		if (enchant){
 			if (enchantment == null || hasCurseEnchant()){
 				enchant(Enchantment.random());
 			}
 		} else {
-			//Scorched: Troll's T2
-			Hero hero = Dungeon.hero;
-			if (hero != null && hero.hasTalent(Talent.UPGRADE_MASTERY)){
-				cursed = false; //same as Vanilla
-				//if talent is LV2, enchant it randomly if it isn't good-enchanted
-				if (!hasGoodEnchant() && hero.pointsInTalent(Talent.UPGRADE_MASTERY) == 2)
-					enchant(Enchantment.random());
-				return super.upgrade(); //Always preserve good-enchantments
-			}
-
-			//Scorched: Heretic; preserve curse-enchantments (NOT boolean 'cursed')
-			if (hero != null && (hasCurseEnchant() && hero.heroClass == HeroClass.HERETIC)){
-				return super.upgrade();
-			}
-
-			//Vanilla
-			else if (hasCurseEnchant()){
+			if (hasCurseEnchant()){
 				if (Random.Int(3) == 0) enchant(null);
 			} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
 				enchant(null);
@@ -458,7 +460,7 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 
 		cursed = false;
-		
+
 		return super.upgrade();
 	}
 	

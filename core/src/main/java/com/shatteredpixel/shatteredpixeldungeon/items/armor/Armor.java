@@ -438,19 +438,31 @@ public class Armor extends EquipableItem {
 	public Item upgrade() {
 		return upgrade( false );
 	}
-	
+
 	public Item upgrade( boolean inscribe ) {
+
+		Hero hero = Dungeon.hero;
+		if (hero != null){
+			//Scorched: Heretic; preserve curse-glyphs (NOT boolean 'cursed')
+			if ((hasCurseGlyph() && hero.heroClass == HeroClass.HERETIC)){
+				return super.upgrade();
+			}
+
+			if (hero.hasTalent(Talent.UPGRADE_MASTERY)){
+				if (hasCurseGlyph()) inscribe(null); //Remove curse-glyphs
+
+				if (glyph == null && hero.pointsInTalent(Talent.UPGRADE_MASTERY) >= 2)
+					inscribe(Glyph.random()); //If LV2, get random good-glyphs
+
+				cursed = false;
+				return super.upgrade(); //Always preserve good-glyphs
+			}
+		}
 
 		if (inscribe && (glyph == null || glyph.curse())){
 			inscribe( Glyph.random() );
-		} else {
-			Hero hero = Dungeon.hero;
-			if (hasCurseGlyph() && hero.heroClass == HeroClass.HERETIC){
-				// preserve it
-				return super.upgrade();
-			} else if (!inscribe && level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)) {
-				inscribe(null);
-			}
+		} else if (!inscribe && level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
+			inscribe(null);
 		}
 
 		cursed = false;
