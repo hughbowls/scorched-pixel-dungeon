@@ -21,12 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.armor.curses;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor.Glyph;
@@ -38,8 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
-
-import static com.shatteredpixel.shatteredpixeldungeon.Dungeon.hero;
 
 public class Metabolism extends Glyph {
 
@@ -81,13 +77,14 @@ public class Metabolism extends Glyph {
 		@Override
 		public boolean act() {
 			if (target.isAlive()) {
-				spend( TICK );
+
 				if (dmgBoost <= 0) {
 					detach();
 				}
 				if (((Hero)target).belongings.armor == null
 						|| ((Hero)target).belongings.armor.glyph == null
-						|| !(((Hero)target).belongings.armor.glyph instanceof Metabolism)) {
+						|| (((Hero)target).belongings.armor.glyph != null)
+							&& !(((Hero)target).belongings.armor.glyph instanceof Metabolism)) {
 					detach();
 				}
 
@@ -95,6 +92,7 @@ public class Metabolism extends Glyph {
 				detach();
 			}
 
+			spend( TICK );
 			return true;
 		}
 
