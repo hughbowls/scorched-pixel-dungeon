@@ -56,7 +56,10 @@ public class MountNLoad extends ArmorAbility {
 		hero.sprite.operate( hero.pos );
 		CellEmitter.bottom( hero.pos ).start( EarthParticle.FACTORY, 0.05f, 8 );
 		Camera.main.shake( 1, 0.4f );
-		Buff.affect(hero, MountNLoadTracker.class).attachTo(hero);
+
+		Buff.affect(hero, MountNLoadTracker.class);
+		MountNLoadTracker tracker = hero.buff(MountNLoadTracker.class);
+		tracker.setPos();
 
 		armor.charge -= chargeUse(hero);
 		armor.updateQuickslot();
@@ -91,10 +94,8 @@ public class MountNLoad extends ArmorAbility {
 		private static final String POS	= "pos";
 		private int pos;
 
-		@Override
-		public boolean attachTo( Char target ) {
-			pos = target.pos;
-			return super.attachTo( target );
+		public void setPos() {
+			target.pos = pos;
 		}
 
 		@Override
@@ -102,8 +103,7 @@ public class MountNLoad extends ArmorAbility {
 			if (target.pos != pos) {
 				detach();
 			}
-			spend( STEP );
-			return true;
+			return super.act();
 		}
 
 		@Override

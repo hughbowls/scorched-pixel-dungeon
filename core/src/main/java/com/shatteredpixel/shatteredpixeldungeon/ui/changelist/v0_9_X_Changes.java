@@ -27,14 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Displacement;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Metabolism;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -60,7 +57,30 @@ public class v0_9_X_Changes {
 
 	public static void add_v0_9_2_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
-		ChangeInfo changes = new ChangeInfo("v0.9.3", true, "");
+		//Scorched
+		//always top of "Shattered changelog", because Scorched is 'Extended Edition', not independent variant (e.g. YAPD)
+		//merging every updates from Shattered is the 0st priority, so display them the nearest position
+		ChangeInfo changes = new ChangeInfo("v0.9.3c_based", true, "");
+		changes.hardlight(Window.SCORCHED_COLOR);
+		changeInfos.add(changes);
+
+		changes = new ChangeInfo("2021-07-01", false, null);
+		changes.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes);
+
+		changes.addButton( new ChangeButton(Icons.get(Icons.LANGS), "ENG Translation",
+				"Translated from Korean (the native language of the developer) to English is finally done!\n\n" +
+						"Just for now, there aren't plans to other language or using TRANSFIX. If you have some interest in translation, visit github and check '~/core/src/main/assets/messages' folder."));
+
+		changes.addButton( new ChangeButton(Icons.get(Icons.PREFS), "Finish Pre-Release",
+				"The time spend until this phase: 14 days.\n\n" +
+						"_-_ Codes and reworks old features: 8 days.\n" +
+						"_-_ Pre-release and bugfixes at korean community: 4 days.\n" +
+						"_-_ Full-time Translation as a self-crunch: 2 days.\n" +
+						"Now the developer goes back to recuperation, to dealing with chronic illness. Please enjoy Scorched until Shattered 0.9.4, and take care yourself!"));
+
+		//Shattered
+		changes = new ChangeInfo("v0.9.3", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 

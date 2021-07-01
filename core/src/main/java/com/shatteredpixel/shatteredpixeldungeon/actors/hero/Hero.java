@@ -1261,7 +1261,11 @@ public class Hero extends Char {
 				Buff.affect(this, HoldFast.class);
 			}
 			if (hasTalent(Talent.STEADY_AIM)) {
+				Reaction reaction = buff(Reaction.class);
 				Buff.affect(this, Reaction.class);
+				reaction.removeTap();
+
+				if (hasTalent(Talent.DOUBLE_TAB)) reaction.setTap();
 			}
 			if (sprite != null) {
 				sprite.showStatus(CharSprite.DEFAULT, Messages.get(this, "wait"));

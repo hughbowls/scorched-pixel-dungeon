@@ -378,22 +378,26 @@ public abstract class Char extends Actor {
 				dmg = charging.adjustDamageTaken(dmg);
 			}
 
-			if (this instanceof Hero && (Dungeon.hero.belongings.weapon instanceof Pistol
-					|| Dungeon.hero.belongings.weapon instanceof Pistol.PistolShot)
-					&& Dungeon.hero.subClass == HeroSubClass.TRAILBLAZER
-					&& Dungeon.hero.buff(Reaction.class) != null){
+			if (this instanceof Hero && (hero.belongings.weapon instanceof Pistol
+					|| hero.belongings.weapon instanceof Pistol.PistolShot)
+					&& hero.subClass == HeroSubClass.TRAILBLAZER
+					&& hero.buff(Reaction.class) != null){
 				dr = 0;
 				Sample.INSTANCE.play(Assets.Sounds.CHAINS, 0.66f, 0.66f);
 
-				if (Dungeon.hero.hasTalent(Talent.DOUBLE_TAB)
-						&& Dungeon.hero.buff(Talent.DoubleTabTracker.class) != null) {
-					if (Dungeon.hero.pointsInTalent(Talent.DOUBLE_TAB) >= 2)
+				Reaction reaction = hero.buff(Reaction.class);
+				if (hero.hasTalent(Talent.DOUBLE_TAB) && reaction.getTap()) {
+
+					if (hero.pointsInTalent(Talent.DOUBLE_TAB) >= 2)
 						dmg += dmg * 0.5;
-					if (Dungeon.hero.pointsInTalent(Talent.DOUBLE_TAB) == 3)
-						Buff.affect(enemy, Paralysis.class, 1f);
-					Buff.detach(this, Talent.DoubleTabTracker.class);
+					if (hero.pointsInTalent(Talent.DOUBLE_TAB) == 3)
+						Buff.affect(enemy, Paralysis.class, (2f*hero.cooldown())+1f);
+
+					reaction.removeTap();
+
 				} else {
-					Buff.detach(this, Reaction.class);
+					Buff.detach(hero, Reaction.class);
+					reaction.removeTap();
 				}
 
 				if (enemy.isAlive()){
@@ -709,8 +713,12 @@ public abstract class Char extends Actor {
 
 		if (HP < 0) HP = 0;
 
-		if (isAlive() && alignment != Alignment.ALLY && hero.pointsInTalent(Talent.OVERWHELM) == 2){
-			if (Random.Int(0,1) == 1) Buff.affect(this, Paralysis.class, this.cooldown()+1f);
+		if (isAlive() && hero != null
+				&& alignment != hero.alignment
+				&& hero.hasTalent(Talent.OVERWHELM)
+				&& hero.pointsInTalent(Talent.OVERWHELM) == 2){
+			if (Random.Int(0,1) == 1)
+				Buff.affect(this, Paralysis.class, (2f*this.cooldown())+1f);
 		}
 
 		if (!isAlive()) {

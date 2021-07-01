@@ -22,12 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 public class Reaction extends Buff {
 
@@ -35,32 +35,46 @@ public class Reaction extends Buff {
 		type = buffType.POSITIVE;
 	}
 
-	@Override
-	public boolean attachTo( Char target ) {
-		Hero hero = Dungeon.hero;
-		if (hero.buff(Talent.DoubleTabTracker.class) != null){
-			Buff.affect(hero, Talent.DoubleTabTracker.class);
-		}
-		return super.attachTo(target);
+	public boolean tap = false;
+
+	public void setTap() {
+		if (((Hero)target).hasTalent(Talent.DOUBLE_TAB))
+			tap = true;
+		else
+			tap = false;
 	}
+	public void removeTap() { tap = false; }
+	public boolean getTap() { return tap;  }
 
 	@Override
-	public int icon() {
-		return BuffIndicator.MOMENTUM;
-	}
+	public int icon() { return BuffIndicator.MOMENTUM; }
 
 	@Override
 	public void tintIcon(Image icon) {
-		icon.hardlight(0x00C7C7);
+		if (tap) icon.hardlight(1f, 0f, 0f);
+		else icon.hardlight(0x00C7C7);
 	}
 
 	@Override
 	public String toString() {
-		return Messages.get(this, "name");
+		if (tap) return Messages.get(this, "name_tap");
+		else return Messages.get(this, "name");
 	}
 
 	@Override
-	public String desc() {
-		return Messages.get(this, "desc");
+	public String desc() { return Messages.get(this, "desc"); }
+
+	private static final String TAP = "tap";
+
+	@Override
+	public void storeInBundle( Bundle bundle ) {
+		super.storeInBundle( bundle );
+		bundle.put( TAP, tap );
+	}
+
+	@Override
+	public void restoreFromBundle( Bundle bundle ) {
+		super.restoreFromBundle( bundle );
+		tap = bundle.getBoolean( TAP );
 	}
 }

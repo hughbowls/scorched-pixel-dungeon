@@ -315,12 +315,9 @@ public class Pistol extends Weapon {
 		if (potion instanceof InfernalBrew) potionGlow = new ItemSprite.Glowing(0xEE7722);
 		if (potion instanceof ShockingBrew) potionGlow = new ItemSprite.Glowing(0xFFFF00);
 
-		if (curUser.subClass == HeroSubClass.TRAILBLAZER
-				&& curUser.hasTalent(Talent.INFUSED_GUNSMITH)){
-			Buff.affect(curUser, Reaction.class);
-		}
-
-		if (curUser.pointsInTalent(Talent.ADVANCED_PISTOL) == 3){
+		Hero hero = Dungeon.hero;
+		if (hero != null && hero.hasTalent(Talent.ADVANCED_PISTOL)
+				&& hero.pointsInTalent(Talent.ADVANCED_PISTOL) == 3){
 			setReloadTime(1f);
 		}
 
@@ -593,6 +590,8 @@ public class Pistol extends Weapon {
 			if (curUser.subClass == HeroSubClass.TRAILBLAZER
 					&& (defender.HP <= damage || !defender.isAlive())){
 				Buff.affect(curUser, Reaction.class);
+				Reaction reaction = curUser.buff(Reaction.class);
+				reaction.setTap();
 			}
 
 			if (curUser.buff(MountNLoad.MountNLoadTracker.class) != null

@@ -203,6 +203,7 @@ public class ElementalSpell extends TargetedSpell {
 					for (int i : PathFinder.NEIGHBOURS8) {
 						if (Dungeon.hero.hasTalent(Talent.HYDROMANCER)) {
 							Dungeon.level.setCellToWater(false, target.pos + i);
+							Dungeon.level.setCellToWater(false, target.pos);
 
 							if (Dungeon.hero.pointsInTalent(Talent.HYDROMANCER) == 2) {
 								CellEmitter.center(target.pos).burst(Speck.factory(Speck.STEAM_BLAST), 2);
@@ -330,6 +331,7 @@ public class ElementalSpell extends TargetedSpell {
 					for (int i : PathFinder.NEIGHBOURS8) {
 						if (Dungeon.hero.hasTalent(Talent.HYDROMANCER)) {
 							Dungeon.level.setCellToWater(false, target.pos + i);
+							Dungeon.level.setCellToWater(false, target.pos);
 
 							if (Dungeon.hero.pointsInTalent(Talent.HYDROMANCER) == 2) {
 								CellEmitter.center(target.pos).burst(Speck.factory(Speck.STEAM_BLAST), 2);
@@ -1302,7 +1304,7 @@ public class ElementalSpell extends TargetedSpell {
 			Hero hero = Dungeon.hero;
 			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
 			lvl = fire.buffedLvl();
-			int tier = Math.min(1 + (int)(lvl*0.5f), 5);
+			int tier = Math.min(1 + (int)(lvl*0.25f), 5);
 
 			return  tier +  //base
 					lvl;    //level scaling
@@ -1313,7 +1315,7 @@ public class ElementalSpell extends TargetedSpell {
 			Hero hero = Dungeon.hero;
 			ElementalSpell fire = hero.belongings.getItem(ElementalSpell.ElementalSpellFire.class);
 			lvl = fire.buffedLvl();
-			int tier = Math.min(1 + (int)(lvl*0.5f), 5);
+			int tier = Math.min(1 + (int)(lvl*0.25f), 5);
 
 			return  5*(tier+1) +    //base
 					lvl*(tier+1);   //level scaling
