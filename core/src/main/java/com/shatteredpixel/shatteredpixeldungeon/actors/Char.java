@@ -386,12 +386,12 @@ public abstract class Char extends Actor {
 				Sample.INSTANCE.play(Assets.Sounds.CHAINS, 0.66f, 0.66f);
 
 				Reaction reaction = hero.buff(Reaction.class);
-				if (hero.hasTalent(Talent.DOUBLE_TAB) && reaction.getTap()) {
+				if (hero.hasTalent(Talent.DOUBLE_TAP) && reaction.getTap()) {
 
-					if (hero.pointsInTalent(Talent.DOUBLE_TAB) >= 2)
+					if (hero.pointsInTalent(Talent.DOUBLE_TAP) >= 2)
 						dmg += dmg * 0.5;
-					if (hero.pointsInTalent(Talent.DOUBLE_TAB) == 3)
-						Buff.affect(enemy, Paralysis.class, (2f*hero.cooldown())+1f);
+					if (hero.pointsInTalent(Talent.DOUBLE_TAP) == 3)
+						Buff.affect(enemy, Paralysis.class, 1f);
 
 					reaction.removeTap();
 
@@ -712,14 +712,6 @@ public abstract class Char extends Actor {
 		}
 
 		if (HP < 0) HP = 0;
-
-		if (isAlive() && hero != null
-				&& alignment != hero.alignment
-				&& hero.hasTalent(Talent.OVERWHELM)
-				&& hero.pointsInTalent(Talent.OVERWHELM) == 2){
-			if (Random.Int(0,1) == 1)
-				Buff.affect(this, Paralysis.class, (2f*this.cooldown())+1f);
-		}
 
 		if (!isAlive()) {
 			int summmonPos = this.pos;

@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -38,7 +37,7 @@ public class Reaction extends Buff {
 	public boolean tap = false;
 
 	public void setTap() {
-		if (((Hero)target).hasTalent(Talent.DOUBLE_TAB))
+		if (((Hero)target).hasTalent(Talent.DOUBLE_TAP))
 			tap = true;
 		else
 			tap = false;

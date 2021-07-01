@@ -60,11 +60,41 @@ public class v0_9_X_Changes {
 		//Scorched
 		//always top of "Shattered changelog", because Scorched is 'Extended Edition', not independent variant (e.g. YAPD)
 		//merging every updates from Shattered is the 0st priority, so display them the nearest position
-		ChangeInfo changes = new ChangeInfo("v0.9.3c_based", true, "");
+		ChangeInfo changes = new ChangeInfo("v0.9.3c based", true, "");
 		changes.hardlight(Window.SCORCHED_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo("2021-07-01", false, null);
+		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.CROWN, null), "Armor abilities and T4 Talents!",
+		"Including 13 abilities and 40 T4 talents from Shattered, Scorched now has _26 abilities and 80 T4 talents!_"));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Sprites.HERETIC, 0, 90, 12, 15), "Heretic and Curse",
+				"Due to his 'Enhanced Curse' talent, lots of heretics spend boring times to cherry picking until the curse which they're wanted. Now, he can curse unidentified items and has 3-5 choices, spend a runestone, requires 'Rune of Curse' talent.\n\n"+
+				"Also there are other changes related to curse-interactions:\n"+
+				"_-_ 'Transfer Harm' is now common T3 talent. New T3 talent 'Overwhelm' will replace it as a T2 talent.\n\n"+
+				"_-_ 'Wraith Deception' is now replaced by 'Rune of Curse'.\n\n"+
+				"_-_ 'Metamorphosis' is slightly reworked and now it is an armor ability."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Sprites.ALCHEMIST, 0, 90, 12, 15), "Alchemist tweaks",
+				"The Alchemist was balanced enough because his strength and pistol mechanism. So there are only few minor tweaks for him.\n\n"+
+				"_-_ 'Grenadier' is now replaced by 'Rebreather'.\n\n"+
+				"_-_ The Trailblazer is only gain at defeats enemy with pistol, and can be used to reload instantly.\n\n"+
+				"_-_ The Innovator lose his boons of pistol infusion, however becomes more specialized to 'alchemy' and recharge kit energy."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Sprites.ELEMENTALIST, 0, 90, 12, 15), "Elementalist overhaul",
+				"During the first showcase and latest pre-release, there are so much feedbacks require to nerf her. Including some reworks, now the Elementalist more environment-dependant.\n\n"+
+						"_-_ Elements are now upgradable, regardless her level or defeating bosses. Now requires some scrolls of upgrades to use her potential, otherwise damage calculation is highly nerf.\n\n"+
+						"_-_ Now she can wear armor freely, but starts with _8 Strength_. Starting armor is replaced light-variant of cloth armor. This change force her to act carefully to prevent lost potions or scrolls on the field, also spend all scrolls of upgrade into element of fire without solution to burn herself.\n\n"+
+						"_-_ Replace the Tempest into the _Binder_, maintain focus more longer and use her focused elements as weapon and armor. The Binder is more likely to close-combatant while focused on elements, but remember her focus is temporary and unable to maintain fire and frost, lightning on water.\n\n"+
+						"_-_ Rework the _Spellweaver_, now is gladiator-like subclass. Casting element to enemy directly will stacks arcane surge, can be used to cast AoE burst/custom time bubble/stack guaranteed chances to dodge. Talents offers various solutions in more diverse situations, so use your creativity!\n\n"+
+						"_-_ Element of Chaos is now common T3 talent.\n\n"+
+						"_-_ Her armor abilities are work as an trigger of nuking, a tool of hit-and-run, and a supporter to large area environment interaction."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Sprites.TROLL_HERO, 0, 90, 12, 15), "New 8th class: the Troll",
+				"The Troll converts 30% of damage taken into shielding, but moves on the narrow tunnels or doorways will halve speed. Receive an simple order from the blacksmith in caves while surfacing to unlock him!\n\n"+
+						"_-_ As you see; the Troll is the 'typical tanker' with some crowd-controlling talents and another form of passive shielding. Unlike the Warrior, this shielding makes the Troll more tougher, but only works after initiating battle.\n\n"+
+						"_-_ Because the familiar techniques such as surprise attacks with door dancing, the Troll requires to think in another view to manage resources."));
+
+		changes = new ChangeInfo("2021-07-02", false, null);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 

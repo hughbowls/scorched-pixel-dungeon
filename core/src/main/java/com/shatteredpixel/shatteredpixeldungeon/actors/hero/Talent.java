@@ -198,7 +198,7 @@ public enum Talent {
 	//Alchemist T3
 	ADVANCED_PISTOL(169, 3), PORTABLE_KIT(170, 3),
 	//Trailblazer T3
-	STEADY_AIM(171, 3), INFUSED_GUNSMITH(172, 3), DOUBLE_TAB(173, 3),
+	STEADY_AIM(171, 3), INFUSED_GUNSMITH(172, 3), DOUBLE_TAP(173, 3),
 	//Innovator T3
 	DEWCHEMY(174, 3), ARCANE_ENGINEER(175, 3), CATALYST_MK2(176, 3),
 	//Exoskeleton T4
@@ -1000,7 +1000,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, PREDATOR, RUSH_OF_BLOOD, SERUM);
 				break;
 			case TRAILBLAZER:
-				Collections.addAll(tierTalents, STEADY_AIM, INFUSED_GUNSMITH, DOUBLE_TAB);
+				Collections.addAll(tierTalents, STEADY_AIM, INFUSED_GUNSMITH, DOUBLE_TAP);
 				break;
 			case INNOVATOR:
 				Collections.addAll(tierTalents, DEWCHEMY, ARCANE_ENGINEER, CATALYST_MK2);

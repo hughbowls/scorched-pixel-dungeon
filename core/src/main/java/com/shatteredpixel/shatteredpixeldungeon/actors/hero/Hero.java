@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bless;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BloodKnightTrigger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
@@ -62,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sublimation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollAnvil;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollGeomancy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.TrollHammer;
@@ -1265,7 +1267,7 @@ public class Hero extends Char {
 				Buff.affect(this, Reaction.class);
 				reaction.removeTap();
 
-				if (hasTalent(Talent.DOUBLE_TAB)) reaction.setTap();
+				if (hasTalent(Talent.DOUBLE_TAP)) reaction.setTap();
 			}
 			if (sprite != null) {
 				sprite.showStatus(CharSprite.DEFAULT, Messages.get(this, "wait"));
@@ -1322,6 +1324,15 @@ public class Hero extends Char {
 				break;
 
 			default:
+		}
+
+		if (enemy.isAlive()
+				&& (enemy.buff(Terror.class) != null
+					|| enemy.buff(Charm.class) != null
+					|| enemy.buff(Vertigo.class) != null)
+				&& hero.hasTalent(Talent.OVERWHELM) && hero.pointsInTalent(Talent.OVERWHELM) == 2){
+			if (Random.Int(1) == 0)
+				Buff.affect(enemy, Paralysis.class, 1f);
 		}
 
 		if (!(wep instanceof MissileWeapon) && pointsInTalent(Talent.HYDRAULIC_PISTON) >= 3
