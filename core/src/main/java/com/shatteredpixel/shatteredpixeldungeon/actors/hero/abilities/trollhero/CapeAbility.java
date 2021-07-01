@@ -79,7 +79,7 @@ public class CapeAbility extends ArmorAbility {
 
 	@Override
 	public Talent[] talents() {
-		return new Talent[]{Talent.SHARP_THORNS, Talent.LETHAL_THORNS, Talent.ARCANE_CAPE, Talent.HEROIC_ENERGY };
+		return new Talent[]{Talent.SHARP_THORNS, Talent.CAPE_OF_VICTORIOUS, Talent.CAPE_OF_ARCANE, Talent.HEROIC_ENERGY };
 	}
 
 	public static class CapeAbilityTracker extends FlavourBuff{
@@ -103,8 +103,8 @@ public class CapeAbility extends ArmorAbility {
 			Armor armor = hero.belongings.armor;
 			Armor.Glyph glyph = armor.glyph;
 
-			if (hero.hasTalent(Talent.ARCANE_CAPE)
-					&& (4 - Random.Int(hero.pointsInTalent(Talent.ARCANE_CAPE)) == 0)) {
+			if (hero.hasTalent(Talent.CAPE_OF_ARCANE)
+					&& (4 - Random.Int(hero.pointsInTalent(Talent.CAPE_OF_ARCANE)) == 0)) {
 				if (glyph != null && defender.buff(MagicImmune.class) == null) {
 
 					int level = Math.max( 0, armor.buffedLvl() );

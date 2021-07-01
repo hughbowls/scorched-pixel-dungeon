@@ -715,8 +715,8 @@ public abstract class Mob extends Char {
 
 			CapeAbility.CapeAbilityTracker trollCape = buff(CapeAbility.CapeAbilityTracker.class);
 			if (trollCape != null){
-				if (Dungeon.hero.hasTalent(Talent.LETHAL_THORNS))
-					trollCape.extend(Dungeon.hero.pointsInTalent(Talent.LETHAL_THORNS));
+				if (Dungeon.hero.hasTalent(Talent.CAPE_OF_VICTORIOUS))
+					trollCape.extend(Dungeon.hero.pointsInTalent(Talent.CAPE_OF_VICTORIOUS));
 			}
 		}
 

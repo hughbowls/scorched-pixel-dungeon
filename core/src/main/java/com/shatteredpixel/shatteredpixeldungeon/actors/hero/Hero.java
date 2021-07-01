@@ -1455,7 +1455,7 @@ public class Hero extends Char {
 
 		CapeAbility.CapeAbilityTracker trollCape = buff(CapeAbility.CapeAbilityTracker.class);
 		if (trollCape != null){
-			if (hasTalent(Talent.LETHAL_THORNS)) trollCape.extend(pointsInTalent(Talent.LETHAL_THORNS));
+			if (hasTalent(Talent.CAPE_OF_VICTORIOUS)) trollCape.extend(pointsInTalent(Talent.CAPE_OF_VICTORIOUS));
 			dmg = trollCape.proc(dmg, (src instanceof Char ? (Char) src : null), this);
 		}
 
