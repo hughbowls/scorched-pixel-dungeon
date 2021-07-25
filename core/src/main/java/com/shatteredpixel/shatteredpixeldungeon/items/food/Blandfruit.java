@@ -275,7 +275,7 @@ public class Blandfruit extends Food {
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
 			if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 1){
-				return 2;
+				return 1;
 			} if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 2){
 				return 0;
 			}
