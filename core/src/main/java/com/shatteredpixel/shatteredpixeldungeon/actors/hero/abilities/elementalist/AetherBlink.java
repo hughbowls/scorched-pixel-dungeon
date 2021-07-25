@@ -165,7 +165,7 @@ public class AetherBlink extends ArmorAbility {
 
 					TetherTracker newTracker = new TetherTracker();
 					newTracker.pos = wasPos;
-					newTracker.duration = 2*hero.pointsInTalent(Talent.AETHER_TETHER);
+					newTracker.duration = 2*hero.pointsInTalent(Talent.AETHER_TETHER)+1;
 					newTracker.attachTo(hero);
 				}
 			}
