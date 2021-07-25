@@ -118,8 +118,8 @@ public class Pistol extends Weapon {
 	public static final String AC_SHOOT = "SHOOT";
 	public static final String AC_RELOAD = "RELOAD";
 
-	private int max_round;
-	private int round;
+	public int max_round;
+	public int round;
 	private float reload_time;
 	private static final String TXT_STATUS = "%d/%d";
 	private int infused_gunsmith;
@@ -232,8 +232,8 @@ public class Pistol extends Weapon {
 
 	public void reload_talent() {
 		if (curUser.pointsInTalent(Talent.RELOADING_UPGRADE) == 2){
-			round = max_round + 1;
-		} else round = Math.max(max_round, round);
+			round = max_round + 10;
+		} else round = Math.max(max_round, round)+5;
 		updateQuickslot();
 	}
 
@@ -765,7 +765,7 @@ public class Pistol extends Weapon {
 							Splash.at(cell, 0x000000, 5);
 							Char caustic = Actor.findChar(cell);
 							if (caustic != null) {
-								Buff.affect(caustic, Ooze.class).set(5f);
+								Buff.affect(caustic, Ooze.class).set(10f);
 							}
 							Sample.INSTANCE.play(Assets.Sounds.MELD);
 						}
