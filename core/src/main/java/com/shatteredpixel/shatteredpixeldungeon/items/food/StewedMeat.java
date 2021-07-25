@@ -41,8 +41,8 @@ public class StewedMeat extends Food {
 
 	public static int setFood_alchemy() {
 		if (Dungeon.hero.hasTalent(Talent.FOOD_ALCHEMY)){
-			if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 1) return 1;
-			else if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 2) return 3;
+			if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 1) return 2;
+			else if (Dungeon.hero.pointsInTalent(Talent.FOOD_ALCHEMY) == 2) return 4;
 			else return 0;
 		} else return 0;
 	}
