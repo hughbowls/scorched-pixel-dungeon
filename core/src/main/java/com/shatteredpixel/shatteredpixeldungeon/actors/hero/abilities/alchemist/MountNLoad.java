@@ -59,17 +59,13 @@ public class MountNLoad extends ArmorAbility {
 
 		Buff.affect(hero, MountNLoadTracker.class);
 		MountNLoadTracker tracker = hero.buff(MountNLoadTracker.class);
-		tracker.setPos();
 
 		armor.charge -= chargeUse(hero);
 		armor.updateQuickslot();
-
+		pistol.round = pistol.max_round;
+		pistol.updateQuickslot();
 		Sample.INSTANCE.play(Assets.Sounds.CHAINS);
-		Sample.INSTANCE.play(Assets.Sounds.OPEN);
-		hero.sprite.operate(hero.pos);
-
-		Invisibility.dispel();
-		hero.next();
+		
 
 	}
 
