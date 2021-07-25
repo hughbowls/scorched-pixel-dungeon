@@ -226,7 +226,7 @@ public class Hero extends Char {
 
 	public float awareness;
 
-	public int lvl = 1;
+	public int lvl = 30;
 	public int exp = 0;
 
 	public int HTBoost = 0;
@@ -592,7 +592,7 @@ public class Hero extends Char {
 					|| buff(Earthroot.Armor.class) != null
 					|| buff(ArcaneArmor.class) != null
 					|| buff(WandOfLivingEarth.RockArmor.class) != null)
-				dr += pointsInTalent(Talent.ARMORED_TROLL) == 2 ? 3 : 1;
+				dr += pointsInTalent(Talent.ARMORED_TROLL) == 2 ? 3 : 2;
 		}
 
 		if (hero.buff(ExoskeletonBuff.class) != null){
@@ -1255,20 +1255,19 @@ public class Hero extends Char {
 	public Char enemy () {
 		return enemy;
 	}
-
+	
 	public void rest ( boolean fullRest ){
 		spendAndNext(TIME_TO_REST);
 		if (!fullRest) {
 			if (hasTalent(Talent.HOLD_FAST)) {
 				Buff.affect(this, HoldFast.class);
 			}
+			
 			if (hasTalent(Talent.STEADY_AIM)) {
-				Reaction reaction = buff(Reaction.class);
+				Reaction reaction = hero.buff(Reaction.class);
 				Buff.affect(this, Reaction.class);
-				reaction.removeTap();
-
-				if (hasTalent(Talent.DOUBLE_TAP)) reaction.setTap();
 			}
+			
 			if (sprite != null) {
 				sprite.showStatus(CharSprite.DEFAULT, Messages.get(this, "wait"));
 			}
