@@ -111,6 +111,7 @@ public class Item implements Bundlable {
 		Talent.UpgradeMasterTracker tracker = hero.buff(Talent.UpgradeMasterTracker.class);
 		if (isUpgradable() && hero.hasTalent(Talent.UPGRADE_MASTERY)
 				&& hero.pointsInTalent(Talent.UPGRADE_MASTERY) == 3){
+			
 			if (tracker != null) actions.add( AC_REFORGE );
 			if (tracker == null) actions.remove( AC_REFORGE );
 		}
