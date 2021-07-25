@@ -166,7 +166,6 @@ public class SiegeMachine extends ArmorAbility {
 				Dungeon.observe();
 
 				Invisibility.dispel();
-				hero.busy();
 
 			} else {
 				GLog.w(Messages.get(this, "no_space"));
