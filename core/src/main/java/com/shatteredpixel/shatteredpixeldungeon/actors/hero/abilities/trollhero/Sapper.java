@@ -84,7 +84,7 @@ public class Sapper extends ArmorAbility {
 			return;
 		}
 
-		if (!Dungeon.level.adjacent(hero.pos, target)) {
+		if (!Dungeon.level.adjacent(hero.pos, target) && target != hero.pos) {
 			GLog.w(Messages.get(Sapper.class, "too_far"));
 			return;
 		}
@@ -277,9 +277,9 @@ public class Sapper extends ArmorAbility {
 		float needCharge = 3f;
 		switch (hero.pointsInTalent(Talent.EMERGENCY_STAIR)){
 			case 1: default: break;
-			case 2: needCharge = 2.75f; break;
-			case 3: needCharge = 2.5f; break;
-			case 4: needCharge = 2.25f; break;
+			case 2: needCharge = 2.5f; break;
+			case 3: needCharge = 2f; break;
+			case 4: needCharge = 1.5f; break;
 		}
 		if (armor.charge < needCharge*chargeUse(hero)) {
 			GLog.w(Messages.get(ClassArmor.class, "low_charge"));
