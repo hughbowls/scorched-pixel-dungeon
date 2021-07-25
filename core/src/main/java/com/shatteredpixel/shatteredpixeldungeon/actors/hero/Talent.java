@@ -317,7 +317,7 @@ public enum Talent {
 		public String toString() { return Messages.get(this, "name"); }
 		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
 	};
-	public static class UpgradeMasterTracker extends FlavourBuff{};
+	public static class UpgradeMasterTracker extends Buff{};
 	public static class CrucibleTracker extends FlavourBuff{
 		public int icon() { return BuffIndicator.VULNERABLE; }
 		public void tintIcon(Image icon) { icon.hardlight(0xFF2A00); }
@@ -479,8 +479,8 @@ public enum Talent {
 			Gold gold = new Gold();
 			switch (hero.pointsInTalent(MINT_MASTER)) {
 				case 1: gold.quantity(3000).doPickUp(Dungeon.hero); break;
-				case 2: gold.quantity(5000).doPickUp(Dungeon.hero); break;
-				case 3: gold.quantity(7500).doPickUp(Dungeon.hero); break;
+				case 2: gold.quantity(3500).doPickUp(Dungeon.hero); break;
+				case 3: gold.quantity(4000).doPickUp(Dungeon.hero); break;
 			}
 		}
 	}
@@ -712,8 +712,8 @@ public enum Talent {
 			ScrollOfRecharging.charge(hero);
 		}
 		if (hero.hasTalent(KNOWLEDGE_IS_POWER)){
-			//15/20 turns of adrenaline surge with 1 boost
-			Buff.affect(hero, AdrenalineSurge.class).add(1, 10f + 5f*(float)hero.pointsInTalent(KNOWLEDGE_IS_POWER));
+			//20/30 turns of adrenaline surge with 1 boost
+			Buff.affect(hero, AdrenalineSurge.class).add(1, 10f + 10f*(float)hero.pointsInTalent(KNOWLEDGE_IS_POWER));
 		}
 		if (hero.hasTalent(TESTED_STAMINA)){
 			//6/10 turns of stamina
@@ -830,7 +830,7 @@ public enum Talent {
 			Sample.INSTANCE.play(Assets.Sounds.EVOKE, 1f, 0.4f);
 			Buff.affect(hero, MarksTrollCooldown.class,
 					(10-(Dungeon.hero.pointsInTalent(MARKSTROLL) == 2 ? 4 : 0)));
-			Buff.affect( enemy, Paralysis.class, 3f);
+			Buff.affect( enemy, Paralysis.class, 2f);
 		}
 
 		return dmg;
