@@ -1,4 +1,4 @@
-# Scorched Pixel Dungeon (Bugs fixed, better translations)
+# Scorched Pixel Dungeon (Bugs fixed, better translations and balance patches)
 
 Scorched Pixel dungeon gives you 4 new classes to play with:
 Heretic, Alchemist, Elementalist and Troll the Blacksmith.
